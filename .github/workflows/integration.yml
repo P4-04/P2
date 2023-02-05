@@ -21,12 +21,12 @@ jobs:
       with:
         filename: site.zip
     - name: Create Github release
-      uses: actions/create-release@v1
+      uses: yakuhzi/action-release@v1
+      with:
+        file: /site.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: $${{ github.run_number }}
-        release_name: Release $${{ github.run_number }}
+     
   build-project:
     name: Build Project
     runs-on: ubuntu-latest
