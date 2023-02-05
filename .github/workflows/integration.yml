@@ -15,7 +15,11 @@ jobs:
       run: npm install
     - name: Build Project assets
       run: npm run build
-      
+    - name: Upload static content
+      uses: actions/upload-artifact@v3
+      with:
+        name: site
+        path: .next/
       
       
       # macOS Monterey 12	macos-latest or macos-12	The macos-latest label currently uses the macOS 12 runner image.
