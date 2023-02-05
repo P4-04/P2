@@ -5,27 +5,27 @@ on:
   pull_request:
     branches: main
 jobs:
-  release-project:
-    name: Create Release
-    runs-on: ubuntu-latest
-    needs: build-project
-    steps:
-    - name: Download artifact/site
-      uses: actions/download-artifact@v3
-      with:
-        name: site
-    - name: View content of artifact
-      run: ls -R
-    - name: Archive site
-      uses: thedoctor0/zip-release@master
-      with:
-        filename: site.zip
-    - name: Create Github release
-      uses: yakuhzi/action-release@v1
-      with:
-        file: /site.zip
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#  release-project:
+#    name: Create Release
+#    runs-on: ubuntu-latest
+#    needs: build-project
+#    steps:
+#    - name: Download artifact/site
+#      uses: actions/download-artifact@v3
+#      with:
+#        name: site
+#    - name: View content of artifact
+#      run: ls -R
+#    - name: Archive site
+#      uses: thedoctor0/zip-release@master
+#      with:
+#        filename: site.zip
+#    - name: Create Github release
+#      uses: yakuhzi/action-release@v1
+#      with:
+#        file: /site.zip
+#      env:
+#        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
      
   build-project:
     name: Build Project
