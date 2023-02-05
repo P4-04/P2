@@ -16,6 +16,10 @@ jobs:
         name: site
     - name: View content of artifact
       run: ls -R
+    - name: Archive site
+      uses: thedoctor0/zip-release@master
+      with:
+        filename: site.zip
   build-project:
     name: Build Project
     runs-on: ubuntu-latest
