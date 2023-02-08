@@ -1,4 +1,4 @@
-name: Build P2 node Project
+name: Build P2 Project
 on:
   push:
     branches: main
