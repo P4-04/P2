@@ -1,7 +1,5 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
-//ctx.fillStyle = "blue";
-//ctx.fillRect(0, 0, canvas.width, canvas.height);
 const button = document.getElementById("button");
 
 let people = [];
@@ -10,12 +8,11 @@ let xCoordinateNumber = 0;
 let yCoordinateNumber = 0;
 
 function getCursorPosition(canvas, event) {
-    const rect = canvas.getBoundingClientRect()
-    const xCursor = event.clientX - rect.left
-    const yCursor = event.clientY - rect.top
-    console.log("Coordinates on click:", xCursor, yCursor);
-    document.getElementById("xCoordinate").value = xCursor;
-    document.getElementById("yCoordinate").value = yCursor;
+    const rect = canvas.getBoundingClientRect();
+    const xCursor = event.clientX - rect.left;
+    const yCursor = event.clientY - rect.top;
+    document.getElementById("xCoordinate").value = xCursor.toFixed(0);
+    document.getElementById("yCoordinate").value = yCursor.toFixed(0);
 }
 
 canvas.addEventListener("click", function(canvasClick) {
@@ -25,10 +22,8 @@ canvas.addEventListener("click", function(canvasClick) {
 button.addEventListener("click", function() {
     xCoordinateNumber = Number(document.getElementById("xCoordinate").value);
     yCoordinateNumber = Number(document.getElementById("yCoordinate").value);
-    target.x = xCoordinateNumber.toFixed(0);
-    target.y = yCoordinateNumber.toFixed(0);
-    console.log("Coordinates all decimals:", xCoordinateNumber, yCoordinateNumber);
-    console.log("Coordinates no decimals:", xCoordinateNumber.toFixed(0), yCoordinateNumber.toFixed(0));
+    target.x = xCoordinateNumber;
+    target.y = yCoordinateNumber;
     animate();
 });
 
@@ -43,7 +38,6 @@ class Person {
     draw() {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.r, 0, 2 * Math.PI);
-        ctx.fillStyle = "red";
         ctx.fill(); 
     }
 
@@ -66,14 +60,15 @@ class Person {
               this.x = next.x + Math.random() * 2 - 1;
               this.y = next.y + Math.random() * 2 - 1;
             }
+        }
     }
 }
-}
+
 
 for (let i = 0; i < 3; i++) {
     const x = Math.random() * canvas.width;
     const y = Math.random() * canvas.height;
-    const r = 10;
+    const r = Math.random() * (10 - 6) + 6;
     people.push(new Person(x, y, r));
 }
 
