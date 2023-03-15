@@ -10,7 +10,7 @@
 }
 
 #open {
-    height: 50px;
+    height: 40px;
     width: 70px;
     position: absolute;
     z-index: 2;
@@ -26,6 +26,8 @@
     justify-content: center;
     position: absolute;
     z-index: 3;
+    opacity: 0.8;
+    cursor: move;
 }
 
 .menu button {

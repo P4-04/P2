@@ -5,12 +5,37 @@ let closeMenu = document.getElementById("close");
 let openMenu = document.getElementById("open");
 let menu = document.querySelector(".menu");
 
+//Open and close menu
 closeMenu.addEventListener("click", function () {
-    menu.style.visibility = "hidden"
+    openMenu.style.visibility = "visible";
+    menu.style.visibility = "hidden";
 })
 
 openMenu.addEventListener("click", function () {
-    menu.style.visibility = "visible"
+    openMenu.style.visibility = "hidden";
+    menu.style.visibility = "visible";
+})
+
+//Draggable overlay
+menu.addEventListener("mousedown", function (event) {
+    isDraggingOverlay = true;
+    cursorCurrentX = event.clientX;
+    cursorCurrentY = event.clientY;
+})
+
+document.addEventListener("mousemove", function (event) {
+    if (isDraggingOverlay === true) {
+        cursorNewX = cursorCurrentX - event.clientX;
+        cursorNewY = cursorCurrentY - event.clientY;
+        cursorCurrentX = event.clientX;
+        cursorCurrentY = event.clientY;
+        menu.style.left = (menu.offsetLeft - cursorNewX) + "px";
+        menu.style.top = (menu.offsetTop - cursorNewY) + "px";
+    }
+})
+
+menu.addEventListener("mouseup", function () {
+    isDraggingOverlay = false;
 })
 
 // Define canvas parameters
