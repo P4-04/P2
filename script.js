@@ -154,3 +154,4 @@ function redraw() {
 //Or just detect all agents around us, and adapt the agent speed to avoid collision
 //or detect all agents infront of us for example FOV 90 degrees, and adapt on what we 'see'
 //we can always change the FOV range or other paramteres depending on the agent speed
+
