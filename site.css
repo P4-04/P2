@@ -19,19 +19,19 @@
 .menu {
     width: 100;
     height: 200px;
-    background-color: #ccc;
+    background-color: rgba(204, 204, 204, 0.8);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     position: absolute;
     z-index: 3;
-    opacity: 0.8;
     cursor: move;
 }
 
 .menu button {
     margin: 5px;
+    opacity: 1;
 }
 
 .menu::before {
@@ -49,6 +49,6 @@
     position: absolute;
     top: -20px;
     left: 10px;
-    background-color: #ccc;
+    background-color: rgba(255, 255, 255, 0.0);
     padding: 0 10px;
 }

@@ -39,7 +39,7 @@ menu.addEventListener("mouseup", function () {
 })
 
 // Define canvas parameters
-const canvasWidth = 800;
+const canvasWidth = 1200;
 const canvasHeight = 600;
 canvas.width = canvasWidth;
 canvas.height = canvasHeight;
@@ -80,6 +80,7 @@ let isDragging = false
 
 canvas.addEventListener("mousedown", (event) => {
     isDragging = true
+    menu.style.visibility = "hidden";
     prevIndex = getCellIndex(event.offsetX, event.offsetY)
     cellEventHandler(event, prevIndex)
 })
@@ -97,6 +98,7 @@ canvas.addEventListener("mousemove", (event) => {
 canvas.addEventListener("mouseup", () => {
     isDragging = false
     prevIndex = null
+    menu.style.visibility = "visible";
 })
 
 // Add event to "Clear"-button
