@@ -138,7 +138,7 @@ addExitButton.addEventListener("click", () => {
 
 function cellEventHandler(event, index) {
     toggleCellProperties(index)
-    redraw()
+    drawCell(cells[index])
 }
 
 
@@ -183,6 +183,13 @@ function clearCanvas() {
         cell.isExit = false
     })
     redraw()
+}
+
+function drawCell(cell) {
+        ctx.fillStyle = cell.color;
+        ctx.fillRect(cell.x, cell.y, cell.width, cell.height);
+        ctx.strokeStyle = 'black';
+        ctx.strokeRect(cell.x, cell.y, cell.width, cell.height);
 }
 
 
