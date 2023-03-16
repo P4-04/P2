@@ -1,3 +1,5 @@
+//Redrawing agents -> Track if an agent has updated -> Draw
+//Check which method works best for drawing all agents, if chosen -> Rabussys or Maximussys
 // Initialize canvas and context
 let canvas = document.querySelector(".field");
 let ctx = canvas.getContext("2d");
@@ -47,14 +49,15 @@ document.addEventListener("mousemove", function (event) {
 menu.addEventListener("mouseup", function () {
     isDraggingOverlay = false;
 })
+const cellSize = 25;
 
 // Define canvas parameters
-const canvasWidth = 1200;
-const canvasHeight = 600;
+const canvasWidth = window.innerWidth - window.innerWidth % cellSize;
+const canvasHeight = window.innerHeight - window.innerHeight % cellSize;
 canvas.width = canvasWidth;
 canvas.height = canvasHeight;
 
-const cellSize = 25;
+
 
 //For later checks:
 //This is a requirement for correct cell distribution:
@@ -83,7 +86,7 @@ for (let y = 0; y < canvasHeight / cellSize; y++) {
     }
 }
 
-// Inizially draw cells on canvas
+// Inizially draw cells on canvays
 cells.forEach(cell => {
     ctx.fillStyle = cell.color;
     ctx.fillRect(cell.x, cell.y, cell.width, cell.height);
@@ -98,6 +101,7 @@ canvas.addEventListener("mousedown", (event) => {
     isDragging = true   
     menu.style.visibility = "hidden";
     prevIndex = getCellIndex(event.offsetX, event.offsetY)
+    console.log(cells[prevIndex]);
     cellEventHandler(event, prevIndex)
 })
 
