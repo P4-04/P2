@@ -43,6 +43,8 @@ document.addEventListener("mousemove", function (event) {
         cursorCurrentY = event.clientY;
         menu.style.left = (menu.offsetLeft - cursorNewX) + "px";
         menu.style.top = (menu.offsetTop - cursorNewY) + "px";
+        openMenu.style.left = (menu.offsetLeft - cursorNewX) + "px";
+        openMenu.style.top = (menu.offsetTop - cursorNewY) + "px";
     }
 })
 
