@@ -6,17 +6,27 @@ let openMenu = document.getElementById("open");
 let menu = document.querySelector(".menu");
 
 //Open and close menu
+let menuHidden = true;
+
 closeMenu.addEventListener("click", function () {
+    menuHidden = true;
     openMenu.style.visibility = "visible";
     menu.style.visibility = "hidden";
 })
 
 openMenu.addEventListener("click", function () {
+    menuHidden = false;
     openMenu.style.visibility = "hidden";
     menu.style.visibility = "visible";
 })
 
 //Draggable overlay
+let isDraggingOverlay = false;
+let cursorCurrentX = 0;
+let cursorCurrentY = 0;
+let cursorNewX = 0;
+let cursorNewY = 0;
+
 menu.addEventListener("mousedown", function (event) {
     isDraggingOverlay = true;
     cursorCurrentX = event.clientX;
@@ -45,6 +55,12 @@ canvas.width = canvasWidth;
 canvas.height = canvasHeight;
 
 const cellSize = 25;
+
+//For later checks:
+//This is a requirement for correct cell distribution:
+//canvasWidth && canvasHeight % cellSize === 0
+//Otherwise, canvas dimensions can be rounded:
+//Math.floor((canvasWidth && canvasHeight) / cellSize) * cellSize
 
 // Initizialize array for cells
 const cells = [];
@@ -79,7 +95,7 @@ let prevIndex = null
 let isDragging = false
 
 canvas.addEventListener("mousedown", (event) => {
-    isDragging = true
+    isDragging = true   
     menu.style.visibility = "hidden";
     prevIndex = getCellIndex(event.offsetX, event.offsetY)
     cellEventHandler(event, prevIndex)
@@ -98,7 +114,9 @@ canvas.addEventListener("mousemove", (event) => {
 canvas.addEventListener("mouseup", () => {
     isDragging = false
     prevIndex = null
-    menu.style.visibility = "visible";
+    if (menuHidden === false) {
+        menu.style.visibility = "visible";
+    }
 })
 
 // Add event to "Clear"-button
