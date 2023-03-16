@@ -1,6 +1,3 @@
-<<<<<<< Updated upstream
-console.log("Hello actions");
-=======
 // Initialize canvas and context
 // var canvas = document.querySelector(".field")
 // var ctx = canvas.getContext("2d");
@@ -183,4 +180,3 @@ function clearAllRects(){
 //     ctx.strokeRect(cell.x, cell.y, cell.width, cell.height);
 //   });
 // }
->>>>>>> Stashed changes
