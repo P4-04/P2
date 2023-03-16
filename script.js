@@ -59,14 +59,6 @@ const canvasHeight = window.innerHeight - window.innerHeight % cellSize;
 canvas.width = canvasWidth;
 canvas.height = canvasHeight;
 
-
-
-//For later checks:
-//This is a requirement for correct cell distribution:
-//canvasWidth && canvasHeight % cellSize === 0
-//Otherwise, canvas dimensions can be rounded:
-//Math.floor((canvasWidth && canvasHeight) / cellSize) * cellSize
-
 // Initizialize array for cells
 const cells = [];
 
@@ -81,7 +73,7 @@ for (let y = 0; y < canvasHeight / cellSize; y++) {
             color: "white",
             isWall: false,
             isExit: false,
-            agents: []
+            isSpawnPoint: false
         };
         // push cell to cells array
         cells.push(cell);
@@ -129,14 +121,20 @@ canvas.addEventListener("mouseup", () => {
 clearButton = document.querySelector("#clear")
 clearButton.addEventListener("click", clearCanvas)
 
-// Add event to "add exit"-button
+// Add event to "add exit"-button and "add-spawn"-button
 let addingExit = false
+let addingSpawn = false;
 let prevExit = null
 addExitButton = document.querySelector("#add-exit")
 console.log(addExitButton)
 addExitButton.addEventListener("click", () => {
     addingExit = true
 })
+addSpawnButton = document.querySelector("#add-spawn");
+addSpawnButton.addEventListener("click", () => {
+    addingSpawn = true;
+})
+
 
 function cellEventHandler(event, index) {
     toggleCellProperties(index)
@@ -157,6 +155,7 @@ function toggleCellProperties(index) {
     if (addingExit) {
         cells[index].color = "green"
         cells[index].isExit = true
+        cells[index].isSpawnPoint = false;
         cells[index].isWall = false
         if (prevExit) {
             prevExit.color = "white"
@@ -166,13 +165,20 @@ function toggleCellProperties(index) {
             prevExit = cells[index]
         }
         addingExit = false
+    } else if (addingSpawn) {
+        cells[index].color = "blue"
+        cells[index].isExit = false;
+        cells[index].isSpawnPoint = true
+        cells[index].isWall = false
+        addingSpawn = false
     } else if (cells[index].color == "white") {
         cells[index].color = "black"
         cells[index].isWall = true
-    } else if (cells[index].color == "black" || cells[index].color == "green") {
+    } else if (cells[index].color == "black" || cells[index].color == "green" || cells[index].color == "blue") {
         cells[index].color = "white"
         cells[index].isWall = false
         cells[index].isExit = false
+        cells[index].isSpawnPoint = false;
 
     }
     console.log(`cell ${index} has color ${cells[index].color} `)
@@ -183,6 +189,7 @@ function clearCanvas() {
         cell.color = "white"
         cell.isWall = false
         cell.isExit = false
+        cell.isSpawnPoint = false;
     })
     redraw()
 }
@@ -203,3 +210,38 @@ function redraw() {
         ctx.strokeRect(cell.x, cell.y, cell.width, cell.height);
     });
 }
+
+let agents = [];
+
+function populate() {
+    for (let i = 1; i <= 30; i++) {
+        const agent = {
+            x: (Math.floor(Math.random() * canvasWidth)),
+            y: (Math.floor(Math.random() * canvasHeight)),
+            fattiness: (Math.floor(Math.random() * 3) + 5),
+        }
+        agents.push(agent);
+    }
+
+    agents.forEach(agent => {
+        ctx.beginPath();
+        ctx.arc(agent.x, agent.y, agent.fattiness, 0, 2 * Math.PI);
+        ctx.fillStyle = "red"
+        ctx.fill();
+    })
+}
+
+populate();
+
+//Need to delete old agent positions without clearing whole canvas
+function anime() {
+    agents.forEach(agent => {
+        ctx.beginPath();
+        ctx.arc((agent.x + 5), (agent.y + 5), agent.fattiness, 0, 2 * Math.PI);
+        ctx.fillStyle = "red"
+        ctx.fill();
+    })
+    requestAnimationFrame(anime);
+}
+
+anime();
