@@ -293,17 +293,21 @@ function getCellPath(cell) {
             closedPath.push({x, y});
         }
         else if (i === 1) {
-
+            let x = cells[cell].rect.getAttribute("x") + cellSize;
+            let y = cells[cell].rect.getAttribute("y");
+            closedPath.push({x, y});
         }
         else if (i === 2) {
-
+            let x = cells[cell].rect.getAttribute("x") +  cellSize;
+            let y = cells[cell].rect.getAttribute("y") +  cellSize;
+            closedPath.push({x, y});
         }
         else if (i === 3) {
-            
+            let x = cells[cell].rect.getAttribute("x");
+            let y = cells[cell].rect.getAttribute("y") + cellSize;
+            closedPath.push({x, y});
         }
-
     }
-
 }
 
 
