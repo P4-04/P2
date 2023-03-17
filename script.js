@@ -8,9 +8,15 @@ let openMenu = document.getElementById("open");
 let menu = document.querySelector(".menu");
 //const svgNS = "http://www.w3.org/2000/svg";
 //let svgElement = document.createElementNS(svgNS, "svg");
-
+let StartSim = document.getElementById("start");
 //Open and close menu
 let menuHidden = true;
+
+//testing stuff
+let StartPoint = null;
+let EndPoint = null;
+
+const Cords = { x: 0, y: 0 };
 
 closeMenu.addEventListener("click", function () {
     menuHidden = true;
@@ -22,6 +28,21 @@ openMenu.addEventListener("click", function () {
     menuHidden = false;
     openMenu.style.visibility = "hidden";
     menu.style.visibility = "visible";
+})
+
+StartSim.addEventListener("click", function () {
+    sendMessage();
+    if (StartPoint === null) {
+        console.log("Missing start point");
+        return;
+    }
+
+    if (EndPoint === null) {
+        console.log("Missing exit point");
+        return;
+    }
+
+    //AStar
 })
 
 //Draggable overlay
@@ -53,7 +74,7 @@ document.addEventListener("mousemove", function (event) {
 menu.addEventListener("mouseup", function () {
     isDraggingOverlay = false;
 })
-const cellSize = 25;
+const cellSize = 25; //Probably not less than 15
 
 // Define canvas parameters
 const canvasWidth = window.innerWidth - window.innerWidth % cellSize;
@@ -62,42 +83,56 @@ canvas.width = canvasWidth;
 canvas.height = canvasHeight;
 
 // Initizialize array for cells
-const cells = [];
+let cells = [[]];
 
+CreateGrid();
 // Create cells and cell properties.
-for (let y = 0; y < canvasHeight / cellSize; y++) {
+function CreateGrid() {
     for (let x = 0; x < canvasWidth / cellSize; x++) {
-        const cell = {
-            x: x * cellSize,
-            y: y * cellSize,
-            width: cellSize,
-            height: cellSize,
-            color: "white",
-            isWall: false,
-            isExit: false,
-            isSpawnPoint: false
-        };
-        // push cell to cells array
-        cells.push(cell);
+        cells[x] = [];
+        for (let y = 0; y < canvasHeight / cellSize; y++) {
+            const cell = {
+                x: x * cellSize,
+                y: y * cellSize,
+                width: cellSize,
+                height: cellSize,
+                color: "white",
+                isWall: false,
+                isExit: false,
+                isSpawnPoint: false,
+                //Values for AStar
+                f: 0,
+                g: 0,
+                h: 0,
+                vh: 0
+            };
+            // push cell to cells array
+            cells[x][y] = cell;
+        }
     }
+    DrawAllCells();
 }
 
 // Inizially draw cells on canvays
-cells.forEach(cell => {
-    ctx.fillStyle = cell.color;
-    ctx.fillRect(cell.x, cell.y, cell.width, cell.height);
-    ctx.strokeStyle = 'black';
-    ctx.strokeRect(cell.x, cell.y, cell.width, cell.height);
-});
+function DrawAllCells() {
+    for (let x = 0; x < cells.length; x++) {
+        for (let y = 0; y < cells[0].length; y++) {
+            ctx.fillStyle = cells[x][y].color;
+            ctx.fillRect(cells[x][y].x, cells[x][y].y, cells[x][y].width, cells[x][y].height);
+            ctx.strokeStyle = 'black';
+            ctx.strokeRect(cells[x][y].x, cells[x][y].y, cells[x][y].width, cells[x][y].height);
+        }
+    }
+}
 
 let prevIndex = null
 let isDragging = false
 
 canvas.addEventListener("mousedown", (event) => {
-    isDragging = true   
+    isDragging = true;
     menu.style.visibility = "hidden";
-    prevIndex = getCellIndex(event.offsetX, event.offsetY)
-    console.log(cells[prevIndex]);
+    prevIndex = getCellIndex(event.clientX, event.clientY);
+    console.log(cells[prevIndex.x, prevIndex.y]);
     cellEventHandler(event, prevIndex)
 })
 
@@ -128,10 +163,13 @@ let addingExit = false
 let addingSpawn = false;
 let prevExit = null
 addExitButton = document.querySelector("#add-exit")
+
 addExitButton.addEventListener("click", () => {
     addingExit = true
 })
+
 addSpawnButton = document.querySelector("#add-spawn");
+
 addSpawnButton.addEventListener("click", () => {
     addingSpawn = true;
 })
@@ -139,77 +177,93 @@ addSpawnButton.addEventListener("click", () => {
 
 function cellEventHandler(event, index) {
     toggleCellProperties(index)
-    drawCell(cells[index])
+    drawCell(cells[index.x][index.y])
 }
 
 
 
-function getCellIndex(x, y) {
+function getCellIndex(MouseX, MouseY) {
     // find cell row and column 
-    let row = Math.floor(y / cellSize)
-    let column = Math.floor(x / cellSize)
+    let x = Math.floor(MouseX / cellSize)
+    let y = Math.floor(MouseY / cellSize)
     // return index of cell in cells array (row-major order)
-    return row * (canvasWidth / cellSize) + column
+    const Cords = {x, y};
+    return Cords;
 }
 
 function toggleCellProperties(index) {
     if (addingExit) {
-        cells[index].color = "green"
-        cells[index].isExit = true
-        cells[index].isSpawnPoint = false;
-        cells[index].isWall = false
+        cells[index.x][index.y].color = "green"
+        cells[index.x][index.y].isExit = true
+        cells[index.x][index.y].isSpawnPoint = false;
+        cells[index.x][index.y].isWall = false
+
+        EndPoint = cells[index.x][index.y];
+
         if (prevExit) {
             prevExit.color = "white"
             prevExit.isExit = false
-            prevExit = cells[index]
+            prevExit = cells[index.x][index.y]
         } else {
-            prevExit = cells[index]
+            prevExit = cells[index.x][index.y]
         }
         addingExit = false
     } else if (addingSpawn) {
-        cells[index].color = "blue"
-        cells[index].isExit = false;
-        cells[index].isSpawnPoint = true
-        cells[index].isWall = false
+        cells[index.x][index.y].color = "blue"
+        StartPoint = cells[index.x][index.y];
+        cells[index.x][index.y].isExit = false;
+        cells[index.x][index.y].isSpawnPoint = true
+        cells[index.x][index.y].isWall = false
         addingSpawn = false
-    } else if (cells[index].color == "white") {
-        cells[index].color = "black"
-        cells[index].isWall = true
-    } else if (cells[index].color == "black" || cells[index].color == "green" || cells[index].color == "blue") {
-        cells[index].color = "white"
-        cells[index].isWall = false
-        cells[index].isExit = false
-        cells[index].isSpawnPoint = false;
+    } else if (cells[index.x][index.y].color == "white") {
+        cells[index.x][index.y].color = "black"
+        cells[index.x][index.y].isWall = true
+    } else if (cells[index.x][index.y].color == "black" || cells[index.x][index.y].color == "green" || cells[index.x][index.y].color == "blue") {
+        cells[index.x][index.y].color = "white"
+        cells[index.x][index.y].isWall = false
+        cells[index.x][index.y].isExit = false
+        cells[index.x][index.y].isSpawnPoint = false;
 
     }
-    console.log(`cell ${index} has color ${cells[index].color} `)
+    console.log(`cell `+ index.x, index.y +` has color ${cells[index.x][index.y].color} `)
 }
 
 function clearCanvas() {
-    cells.forEach(cell => {
-        cell.color = "white"
-        cell.isWall = false
-        cell.isExit = false
-        cell.isSpawnPoint = false;
-    })
+    for (let x = 0; x < cells.length; x++)
+    {
+        for (let y = 0; y < cells[0].length; y++)
+        {
+            cell[x][y].color = "white"
+            cell[x][y].isWall = false
+            cell[x][y].isExit = false
+            cell[x][y].isSpawnPoint = false;
+
+        }
+    }
+
     redraw()
 }
 
 function drawCell(cell) {
-        ctx.fillStyle = cell.color;
-        ctx.fillRect(cell.x, cell.y, cell.width, cell.height);
-        ctx.strokeStyle = 'black';
-        ctx.strokeRect(cell.x, cell.y, cell.width, cell.height);
+    ctx.fillStyle = cell.color;
+    ctx.fillRect(cell.x, cell.y, cell.width, cell.height);
+    ctx.strokeStyle = 'black';
+    ctx.strokeRect(cell.x, cell.y, cell.width, cell.height);
 }
 
 
 function redraw() {
-    cells.forEach(cell => {
-        ctx.fillStyle = cell.color;
-        ctx.fillRect(cell.x, cell.y, cell.width, cell.height);
-        ctx.strokeStyle = 'black';
-        ctx.strokeRect(cell.x, cell.y, cell.width, cell.height);
-    });
+    for (let x = 0; x < cells.length; x++)
+    {
+        for (let y = 0; y < cells[0].length; y++)
+        {
+            ctx.fillStyle = cell[x][y].color;
+            ctx.fillRect(cell[x][y].x, cell[x][y].y, cell[x][y].width, cell[x][y].height);
+            ctx.strokeStyle = 'black';
+            ctx.strokeRect(cell[x][y].x, cell[x][y].y, cell[x][y].width, cell[x][y].height);
+        }
+    }
+
 }
 
 let agents = [];
