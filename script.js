@@ -3,14 +3,59 @@
 // var ctx = canvas.getContext("2d");
 const svgNS = "http://www.w3.org/2000/svg";
 const drawingArea = document.querySelector(".drawing")
+const closeMenu = document.getElementById("close");
+const openMenu = document.getElementById("open");
+const menu = document.querySelector(".menu");
 
 // Define canvas parameters
-const canvasWidth = 800;
-const canvasHeight = 600;
+const canvasWidth = 1000;
+const canvasHeight = 1000;
 drawingArea.setAttribute('width', canvasWidth);
 drawingArea.setAttribute('height', canvasHeight);
-clearButton = document.querySelector("#clear")
+const clearButton = document.querySelector("#clear")
 clearButton.addEventListener("click", clearAllRects)
+
+let isDraggingOverlay = false;
+let cursorCurrentX = 0;
+let cursorCurrentY = 0;
+let cursorNewX = 0;
+let cursorNewY = 0;
+let menuHidden = true;
+
+menu.addEventListener("mousedown", function (event) {
+  isDraggingOverlay = true;
+  cursorCurrentX = event.clientX;
+  cursorCurrentY = event.clientY;
+})
+
+document.addEventListener("mousemove", function (event) {
+  if (isDraggingOverlay === true) {
+      cursorNewX = cursorCurrentX - event.clientX;
+      cursorNewY = cursorCurrentY - event.clientY;
+      cursorCurrentX = event.clientX;
+      cursorCurrentY = event.clientY;
+      menu.style.left = (menu.offsetLeft - cursorNewX) + "px";
+      menu.style.top = (menu.offsetTop - cursorNewY) + "px";
+      openMenu.style.left = (menu.offsetLeft - cursorNewX) + "px";
+      openMenu.style.top = (menu.offsetTop - cursorNewY) + "px";
+  }
+})
+
+menu.addEventListener("mouseup", function () {
+  isDraggingOverlay = false;
+})
+
+closeMenu.addEventListener("click", function () {
+  menuHidden = true;
+  openMenu.style.visibility = "visible";
+  menu.style.visibility = "hidden";
+})
+
+openMenu.addEventListener("click", function () {
+  menuHidden = false;
+  openMenu.style.visibility = "hidden";
+  menu.style.visibility = "visible";
+})
 
 const cellSize = 25;
 
@@ -36,7 +81,38 @@ for (let y = 0; y < canvasHeight / cellSize; y++) {
   }
 }
 
+class Agent {
+  constructor(x, y, r){
+    this.x = x;
+    this.y = y;
+    this.r = r;
+    this.body = document.createElementNS(svgNS, 'circle')
+    // this.body.setAttribute('cx', this.x)
+    // this.body.setAttribute('cy', this.x)
+    this.body.setAttribute('r', this.r)
+    const dickTransform = drawingArea.createSVGTransform();
+    dickTransform.setTranslate(this.x, this.y);
+    this.body.transform.baseVal.appendItem(dickTransform);
+    drawingArea.appendChild(this.body);
+    
+  }
+  set setX(x) {
+    this.x = x
+    this.body.transform("rotate", (1,2,3))
+  }
+  set setY(y) {
+    this.y = y
+    this.body.setAttribute('cy', y)
+  }
+  // setCoordinates: (x, y) => {}
 
+}
+agents = []
+document.addEventListener("keydown", (event) => {
+  if (event.key === "a") {
+    agents.push(new Agent(2, 3))
+  }
+})
 // Inizially draw cells on canvas
 cells.forEach(cell => {
   // ctx.fillStyle = cell.color;

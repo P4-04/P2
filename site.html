@@ -1,15 +1,22 @@
 <html>
 <head>
+    <script defer src="script1.js"></script>
+    <link rel="stylesheet" type="text/css" href="site.css">
 </head>
+
 <body>
+    <button id="open" style="visibility: visible">Open Menu</button>
+    <div class="menu" style="visibility: hidden;">
+        <h2>Menu</h2>
+        <button id="add-exit">Add Exit</button>
+        <button id="add-spawn">Add Spawn</button>
+        <button id="clear">Clear</button>
+        <button id="toggle-display">Toggle</button>
+        <button id="close">Close Menu</button>
+    </div>
     <div class="container">
-        <!-- <canvas class="field"></canvas> -->
         <svg class="drawing"></svg>
-        <div class="menu">
-            <h2>Menu</h2>
-            <button id="add-exit">Add exit</button>
-            <button id="clear">Clear</button>
-        </div>
     </div>
 </body>
+
 </html>
