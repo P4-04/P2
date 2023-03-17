@@ -212,6 +212,26 @@ function drawCell(cell) {
 
 let agents = [];
 
+class Agent {
+    constructor(x, y, fattiness){
+        this.x = x;
+        this.y = y;
+        this.fattiness = fattiness;
+        this.body = document.createElementNS(svgNS, 'circle')
+        this.body.setAttribute('r', this.r)
+        let xyTransform = drawingArea.createSVGTransform();
+        xyTransform.setTranslate(this.x, this.y);
+        this.body.transform.baseVal.appendItem(xyTransform);
+        drawingArea.appendChild(this.body);
+    }
+    setCoordinates(x, y) {
+        this.x = x;;
+        this.y = y;
+        let xyTransform = drawingArea.createSVGTransform();
+        xyTransform.setTranslate(this.x, this.y);
+        agent.body.transform.baseVal[0] = xyTransform;
+    }
+}
 
 function populate() {
     for (let i = 1; i <= 30; i++) {
@@ -222,9 +242,9 @@ function populate() {
             body: document.createElementNS(svgNS, 'circle'),
         }
         agent.body.setAttribute('r', agent.fattiness);
-        let transformDick = drawingArea.createSVGTransform();
-        transformDick.setTranslate(agent.x, agent.y);
-        agent.body.transform.baseVal.appendItem(transformDick);
+        let xyTransform = drawingArea.createSVGTransform();
+        xyTransform.setTranslate(agent.x, agent.y);
+        agent.body.transform.baseVal.appendItem(xyTransform);
         drawingArea.appendChild(agent.body);
         agents.push(agent);
     }
@@ -252,9 +272,9 @@ function anime() {
             agent.y = (agent.y - Math.random() * 3);
         }
 
-        let transformDick = drawingArea.createSVGTransform();
-        transformDick.setTranslate(agent.x, agent.y);
-        agent.body.transform.baseVal[0] = transformDick;
+        let xyTransform = drawingArea.createSVGTransform();
+        xyTransform.setTranslate(agent.x, agent.y);
+        agent.body.transform.baseVal[0] = xyTransform;
 
     })
     requestAnimationFrame(anime);
