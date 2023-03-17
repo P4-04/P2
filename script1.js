@@ -213,7 +213,7 @@ function drawCell(cell) {
 let agents = [];
 
 class Agent {
-    constructor(x, y, fattiness){
+    constructor(x, y, fattiness) {
         this.x = x;
         this.y = y;
         this.fattiness = fattiness;
@@ -225,21 +225,21 @@ class Agent {
         drawingArea.appendChild(this.body);
     }
     setCoordinates(x, y) {
-        this.x = x;;
+        this.x = x;
         this.y = y;
         let xyTransform = drawingArea.createSVGTransform();
         xyTransform.setTranslate(this.x, this.y);
-        agent.body.transform.baseVal[0] = xyTransform;
+        this.body.transform.baseVal[0] = xyTransform;
     }
 }
 
 function populate() {
-    for (let i = 1; i <= 30; i++) {
+    for (let i = 1; i <= 1; i++) {
         let x = (Math.floor(Math.random() * canvasWidth))
         let y = (Math.floor(Math.random() * canvasHeight))
-        let fattiness =  (Math.floor(Math.random() * 3) + 5)
+        let fattiness = (Math.floor(Math.random() * 3) + 5)
 
-        let agent = new Agent(x, y, fattiness) 
+        let agent = new Agent(x, y, fattiness)
         agents.push(agent);
     }
 }
@@ -248,34 +248,82 @@ function populate() {
 function anime() {
     agents.forEach(agent => {
 
-        let arithmetic = Math.random();
-        if (arithmetic <= 0.25) {
-            agent.x = (agent.x + Math.random() * 3);
-            agent.y = (agent.y + Math.random() * 3);
-        }
-        else if (arithmetic > 0.25 && arithmetic <= 0.5) {
-            agent.x = (agent.x + Math.random() * 3);
-            agent.y = (agent.y - Math.random() * 3);
-        }
-        else if (arithmetic > 0.5 && arithmetic <= 0.75) {
-            agent.x = (agent.x - Math.random() * 3);
-            agent.y = (agent.y + Math.random() * 3);
-        }
-        else {
-            agent.x = (agent.x - Math.random() * 3);
-            agent.y = (agent.y - Math.random() * 3);
-        }
+        getCellPath(cells[getCellIndex(agent.x, agent.y)]);
 
-        let xyTransform = drawingArea.createSVGTransform();
-        xyTransform.setTranslate(agent.x, agent.y);
-        agent.body.transform.baseVal[0] = xyTransform;
+        let arithmetic = Math.random();
+        let x = (agent.x + Math.random() * 3);
+        let y = (agent.y + Math.random() * 3);
+        while (x >= canvasWidth && y >=  canvasHeight && cells[getCellIndex(x, y)].isWall) {
+            x = (agent.x + Math.random() * 5);
+            y = (agent.y + Math.random() * 5);
+        }
+        agent.setCoordinates(x, y)
+
+        // if (arithmetic <= 0.25) {
+        //     agent.x = (agent.x + Math.random() * 3);
+        //     agent.y = (agent.y + Math.random() * 3);
+        // }
+        // else if (arithmetic > 0.25 && arithmetic <= 0.5) {
+        //     agent.x = (agent.x + Math.random() * 3);
+        //     agent.y = (agent.y - Math.random() * 3);
+        // }
+        // else if (arithmetic > 0.5 && arithmetic <= 0.75) {
+        //     agent.x = (agent.x - Math.random() * 3);
+        //     agent.y = (agent.y + Math.random() * 3);
+        // }
+        // else {
+        //     agent.x = (agent.x - Math.random() * 3);
+        //     agent.y = (agent.y - Math.random() * 3);
+        // }
+
+        // let xyTransform = drawingArea.createSVGTransform();
+        // xyTransform.setTranslate(agent.x, agent.y);
+        // agent.body.transform.baseVal[0] = xyTransform;
 
     })
     requestAnimationFrame(anime);
 }
 
+function getCellPath(cell) {
+    let closedPath = [];
+    for (let i = 0; i < 4; i++) {
+        if (i === 0) {
+            let x = cells[cell].rect.getAttribute("x");
+            let y = cells[cell].rect.getAttribute("y");
+            closedPath.push({x, y});
+        }
+        else if (i === 1) {
+
+        }
+        else if (i === 2) {
+
+        }
+        else if (i === 3) {
+            
+        }
+
+    }
+
+}
+
+
+//Got from https://www.inkfood.com/collision-detection-with-svg/
+//poly is an array of points in cartesian space representing a closed path
+//pt is the point to be checked
+//if it is within the closed path, collision is detected 
+function isPointInPoly(poly, pt){
+    for(var c = false, i = -1, l = poly.length, j = l - 1; ++i < l; j = i)
+        ((poly[i].y <= pt.y && pt.y < poly[j].y) || (poly[j].y <= pt.y && pt.y < poly[i].y))
+        && (pt.x < (poly[j].x - poly[i].x) * (pt.y - poly[i].y) / (poly[j].y - poly[i].y) + poly[i].x)
+        && (c = !c);
+    return c;
+}
+
+
+
+
 //Start Simulation
-startSim.addEventListener("click", function() {
+startSim.addEventListener("click", function () {
     populate();
     anime();
 })
