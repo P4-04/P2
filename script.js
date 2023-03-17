@@ -6,6 +6,8 @@ let ctx = canvas.getContext("2d");
 let closeMenu = document.getElementById("close");
 let openMenu = document.getElementById("open");
 let menu = document.querySelector(".menu");
+//const svgNS = "http://www.w3.org/2000/svg";
+//let svgElement = document.createElementNS(svgNS, "svg");
 
 //Open and close menu
 let menuHidden = true;
@@ -126,7 +128,6 @@ let addingExit = false
 let addingSpawn = false;
 let prevExit = null
 addExitButton = document.querySelector("#add-exit")
-console.log(addExitButton)
 addExitButton.addEventListener("click", () => {
     addingExit = true
 })
@@ -213,20 +214,29 @@ function redraw() {
 
 let agents = [];
 
+
 function populate() {
     for (let i = 1; i <= 30; i++) {
         const agent = {
             x: (Math.floor(Math.random() * canvasWidth)),
             y: (Math.floor(Math.random() * canvasHeight)),
             fattiness: (Math.floor(Math.random() * 3) + 5),
+            //body: document.createElementNS(svgNS, 'circle'),
         }
+        /*// agent.body.setAttribute('cx', agent.x);
+        // agent.body.setAttribute('cy', agent.y);
+        agent.body.setAttribute('r', agent.fattiness);
+        let transformDick = svgElement.createSVGTransform();
+        transformDick.setTranslate(agent.x, agent.y);
+        agent.body.transform.baseVal.appendItem(transformDick);
+        canvas.appendChild(agent.body);*/
         agents.push(agent);
     }
 
     agents.forEach(agent => {
         ctx.beginPath();
         ctx.arc(agent.x, agent.y, agent.fattiness, 0, 2 * Math.PI);
-        ctx.fillStyle = "red"
+        ctx.fillStyle = "blue"
         ctx.fill();
     })
 }
@@ -236,9 +246,18 @@ populate();
 //Need to delete old agent positions without clearing whole canvas
 function anime() {
     agents.forEach(agent => {
+        //ctx.translate(agent.x+5, agent.y+100)
+
         ctx.beginPath();
-        ctx.arc((agent.x + 5), (agent.y + 5), agent.fattiness, 0, 2 * Math.PI);
-        ctx.fillStyle = "red"
+        ctx.arc((agent.x), (agent.y), agent.fattiness, 0, 2 * Math.PI);
+        ctx.fillStyle = "white";
+        ctx.fill();
+
+        agent.x += 1;
+        agent.y += 1;
+        ctx.beginPath();
+        ctx.arc((agent.x), (agent.y), agent.fattiness, 0, 2 * Math.PI);
+        ctx.fillStyle = "blue"
         ctx.fill();
     })
     requestAnimationFrame(anime);
