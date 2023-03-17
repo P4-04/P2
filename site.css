@@ -1,8 +1,10 @@
 .container {
     display: flex;
     flex-wrap: wrap;
-    position: relative;
-    z-index: 1;
+    position: absolute; /*Don't touch*/
+    left: 0; /*Don't touch*/
+    top: 0; /*Don't touch*/
+    z-index: 1; /*Don't touch*/
 }
 
 .field {
@@ -10,26 +12,29 @@
 }
 
 #open {
-    height: 50px;
+    height: 40px;
     width: 70px;
     position: absolute;
-    z-index: 2;
+    z-index: 2; /*Don't touch*/
 }
 
 .menu {
     width: 100;
-    height: 200px;
-    background-color: #ccc;
+    height: 240px;
+    background-color: rgba(140, 140, 140, 0.8);
+    border-radius: 7%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    position: absolute;
-    z-index: 3;
+    position: absolute; /*Don't touch*/
+    z-index: 3; /*Don't touch*/
+    cursor: move; /*Don't touch*/
 }
 
 .menu button {
     margin: 5px;
+    opacity: 1;
 }
 
 .menu::before {
@@ -40,13 +45,14 @@
     width: 100%;
     height: 100%;
     border: 1px solid black;
-    z-index: -1;
+    border-radius: 7%;
+    z-index: -1; /*Don't touch*/
 }
 
 .menu h2 {
     position: absolute;
     top: -20px;
     left: 10px;
-    background-color: #ccc;
+    background-color: rgba(255, 255, 255, 0.0);
     padding: 0 10px;
 }
