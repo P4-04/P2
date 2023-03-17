@@ -1,10 +1,9 @@
 //Redrawing agents -> Track if an agent has updated -> Draw
 //Check which method works best for drawing all agents, if chosen -> Rabussys or Maximussys
 // Initialize canvas and context
-// let canvas = document.querySelector(".field");
-// let ctx = canvas.getContext("2d");
 let closeMenu = document.getElementById("close");
 let openMenu = document.getElementById("open");
+let startSim = document.getElementById("start");
 let menu = document.querySelector(".menu");
 const svgNS = "http://www.w3.org/2000/svg";
 const drawingArea = document.querySelector(".drawing")
@@ -92,54 +91,54 @@ cells.forEach(cell => {
     // ctx.fillRect(cell.x, cell.y, cell.width, cell.height);
     // ctx.strokeStyle = 'black';
     // ctx.strokeRect(cell.x, cell.y, cell.width, cell.height);
-    cell.rect = document.createElementNS(svgNS, 'rect')
-    // cell.rect.setAttribute('width', cell.width+500)
-    // cell.rect.setAttribute('height', cell.height+10)
-    cell.rect.setAttribute('x', cell.x)
-    cell.rect.setAttribute('y', cell.y)
-    cell.rect.setAttribute('stroke', 'black')
-    cell.rect.setAttribute('fill', 'white')
+    cell.rect = document.createElementNS(svgNS, 'rect');
+    cell.rect.setAttribute('width', cell.width);
+    cell.rect.setAttribute('height', cell.height);
+    cell.rect.setAttribute('x', cell.x);
+    cell.rect.setAttribute('y', cell.y);
+    cell.rect.setAttribute('stroke', 'black');
+    cell.rect.setAttribute('fill', 'white');
+    drawingArea.appendChild(cell.rect);
 });
 
-let prevIndex = null
-let isDragging = false
+let prevIndex = null;
+let isDragging = false;
 
-// canvas.addEventListener("mousedown", (event) => {
-//     isDragging = true   
-//     menu.style.visibility = "hidden";
-//     prevIndex = getCellIndex(event.offsetX, event.offsetY)
-//     console.log(cells[prevIndex]);
-//     cellEventHandler(event, prevIndex)
-// })
+drawingArea.addEventListener("mousedown", (event) => {
+    isDragging = true;
+    menu.style.visibility = "hidden";
+    prevIndex = getCellIndex(event.offsetX, event.offsetY);
+    console.log(cells[prevIndex]);
+    cellEventHandler(event, prevIndex);
+})
 
-// canvas.addEventListener("mousemove", (event) => {
-//     if (isDragging == true) {
-//         nextIndex = getCellIndex(event.offsetX, event.offsetY)
-//         if (prevIndex != nextIndex) {
-//             cellEventHandler(event, nextIndex)
-//             prevIndex = nextIndex
-//         }
-//     }
-// })
+drawingArea.addEventListener("mousemove", (event) => {
+    if (isDragging == true) {
+        nextIndex = getCellIndex(event.offsetX, event.offsetY);
+        if (prevIndex != nextIndex) {
+            cellEventHandler(event, nextIndex);
+            prevIndex = nextIndex;
+        }
+    }
+})
 
-// canvas.addEventListener("mouseup", () => {
-//     isDragging = false
-//     prevIndex = null
-//     if (menuHidden === false) {
-//         menu.style.visibility = "visible";
-//     }
-// })
+drawingArea.addEventListener("mouseup", () => {
+    isDragging = false;
+    prevIndex = null;
+    if (menuHidden === false) {
+        menu.style.visibility = "visible";
+    }
+})
 
 // Add event to "Clear"-button
-clearButton = document.querySelector("#clear")
-clearButton.addEventListener("click", clearCanvas)
+clearButton = document.querySelector("#clear");
+clearButton.addEventListener("click", clearCanvas);
 
 // Add event to "add exit"-button and "add-spawn"-button
-let addingExit = false
+let addingExit = false;
 let addingSpawn = false;
-let prevExit = null
+let prevExit = null;
 addExitButton = document.querySelector("#add-exit")
-console.log(addExitButton)
 addExitButton.addEventListener("click", () => {
     addingExit = true
 })
@@ -166,31 +165,31 @@ function getCellIndex(x, y) {
 
 function toggleCellProperties(index) {
     if (addingExit) {
-        cells[index].color = "green"
-        cells[index].isExit = true
+        cells[index].color = "green";
+        cells[index].isExit = true;
         cells[index].isSpawnPoint = false;
-        cells[index].isWall = false
+        cells[index].isWall = false;
         if (prevExit) {
-            prevExit.color = "white"
-            prevExit.isExit = false
-            prevExit = cells[index]
+            prevExit.color = "white";
+            prevExit.isExit = false;
+            prevExit = cells[index];
         } else {
-            prevExit = cells[index]
+            prevExit = cells[index];
         }
-        addingExit = false
+        addingExit = false;
     } else if (addingSpawn) {
         cells[index].color = "blue"
         cells[index].isExit = false;
-        cells[index].isSpawnPoint = true
-        cells[index].isWall = false
-        addingSpawn = false
+        cells[index].isSpawnPoint = true;
+        cells[index].isWall = false;
+        addingSpawn = false;
     } else if (cells[index].color == "white") {
-        cells[index].color = "black"
-        cells[index].isWall = true
+        cells[index].color = "black";
+        cells[index].isWall = true;
     } else if (cells[index].color == "black" || cells[index].color == "green" || cells[index].color == "blue") {
-        cells[index].color = "white"
-        cells[index].isWall = false
-        cells[index].isExit = false
+        cells[index].color = "white";
+        cells[index].isWall = false;
+        cells[index].isExit = false;
         cells[index].isSpawnPoint = false;
 
     }
@@ -203,69 +202,66 @@ function clearCanvas() {
         cell.isWall = false
         cell.isExit = false
         cell.isSpawnPoint = false;
+        cell.rect.setAttribute('fill', 'white');
     })
-    redraw()
 }
 
 function drawCell(cell) {
-        // ctx.fillStyle = cell.color;
-        // ctx.fillRect(cell.x, cell.y, cell.width, cell.height);
-        // ctx.strokeStyle = 'black';
-        // ctx.strokeRect(cell.x, cell.y, cell.width, cell.height);
-}
-
-
-function redraw() {
-    // cells.forEach(cell => {
-    //     ctx.fillStyle = cell.color;
-    //     ctx.fillRect(cell.x, cell.y, cell.width, cell.height);
-    //     ctx.strokeStyle = 'black';
-    //     ctx.strokeRect(cell.x, cell.y, cell.width, cell.height);
-    // });
+    cell.rect.setAttribute('fill', cell.color);
 }
 
 let agents = [];
 
 
-// function populate() {
-//     for (let i = 1; i <= 30; i++) {
-//         const agent = {
-//             x: (Math.floor(Math.random() * canvasWidth)),
-//             y: (Math.floor(Math.random() * canvasHeight)),
-//             fattiness: (Math.floor(Math.random() * 3) + 5),
-//             body: document.createElementNS(svgNS, 'circle'),
-//         }
-//         // agent.body.setAttribute('cx', agent.x);
-//         // agent.body.setAttribute('cy', agent.y);
-//         agent.body.setAttribute('r', agent.fattiness);
-//         let transformDick = drawingArea.createSVGTransform();
-//         transformDick.setTranslate(agent.x, agent.y);
-//         agent.body.transform.baseVal.appendItem(transformDick);
-//         canvas.appendChild(agent.body);
-//         agents.push(agent);
-//     }
+function populate() {
+    for (let i = 1; i <= 30; i++) {
+        const agent = {
+            x: (Math.floor(Math.random() * canvasWidth)),
+            y: (Math.floor(Math.random() * canvasHeight)),
+            fattiness: (Math.floor(Math.random() * 3) + 5),
+            body: document.createElementNS(svgNS, 'circle'),
+        }
+        agent.body.setAttribute('r', agent.fattiness);
+        let transformDick = drawingArea.createSVGTransform();
+        transformDick.setTranslate(agent.x, agent.y);
+        agent.body.transform.baseVal.appendItem(transformDick);
+        drawingArea.appendChild(agent.body);
+        agents.push(agent);
+    }
+}
 
-    /*agents.forEach(agent => {
-        ctx.beginPath();
-        ctx.arc(agent.x, agent.y, agent.fattiness, 0, 2 * Math.PI);
-        ctx.fillStyle = "red"
-        ctx.fill();
-    })*/
-// }
 
-populate();
-
-//Need to delete old agent positions without clearing whole canvas
 function anime() {
-    // agents.forEach(agent => {
-    //     ctx.translate(agent.x+5, agent.y+100)
+    agents.forEach(agent => {
 
-    //     ctx.beginPath();
-    //     ctx.arc((agent.x + 5), (agent.y + 5), agent.fattiness, 0, 2 * Math.PI);
-    //     ctx.fillStyle = "red"
-    //     ctx.fill();
-    // })
+        let arithmetic = Math.random();
+        if (arithmetic <= 0.25) {
+            agent.x = (agent.x + Math.random() * 3);
+            agent.y = (agent.y + Math.random() * 3);
+        }
+        else if (arithmetic > 0.25 && arithmetic <= 0.5) {
+            agent.x = (agent.x + Math.random() * 3);
+            agent.y = (agent.y - Math.random() * 3);
+        }
+        else if (arithmetic > 0.5 && arithmetic <= 0.75) {
+            agent.x = (agent.x - Math.random() * 3);
+            agent.y = (agent.y + Math.random() * 3);
+        }
+        else {
+            agent.x = (agent.x - Math.random() * 3);
+            agent.y = (agent.y - Math.random() * 3);
+        }
+
+        let transformDick = drawingArea.createSVGTransform();
+        transformDick.setTranslate(agent.x, agent.y);
+        agent.body.transform.baseVal[0] = transformDick;
+
+    })
     requestAnimationFrame(anime);
 }
 
-anime();
+//Start Simulation
+startSim.addEventListener("click", function() {
+    populate();
+    anime();
+})
