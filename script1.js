@@ -218,7 +218,7 @@ class Agent {
         this.y = y;
         this.fattiness = fattiness;
         this.body = document.createElementNS(svgNS, 'circle')
-        this.body.setAttribute('r', this.r)
+        this.body.setAttribute('r', this.fattiness)
         let xyTransform = drawingArea.createSVGTransform();
         xyTransform.setTranslate(this.x, this.y);
         this.body.transform.baseVal.appendItem(xyTransform);
@@ -235,17 +235,11 @@ class Agent {
 
 function populate() {
     for (let i = 1; i <= 30; i++) {
-        const agent = {
-            x: (Math.floor(Math.random() * canvasWidth)),
-            y: (Math.floor(Math.random() * canvasHeight)),
-            fattiness: (Math.floor(Math.random() * 3) + 5),
-            body: document.createElementNS(svgNS, 'circle'),
-        }
-        agent.body.setAttribute('r', agent.fattiness);
-        let xyTransform = drawingArea.createSVGTransform();
-        xyTransform.setTranslate(agent.x, agent.y);
-        agent.body.transform.baseVal.appendItem(xyTransform);
-        drawingArea.appendChild(agent.body);
+        let x = (Math.floor(Math.random() * canvasWidth))
+        let y = (Math.floor(Math.random() * canvasHeight))
+        let fattiness =  (Math.floor(Math.random() * 3) + 5)
+
+        let agent = new Agent(x, y, fattiness) 
         agents.push(agent);
     }
 }
