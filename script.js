@@ -1,6 +1,8 @@
 //Redrawing agents -> Track if an agent has updated -> Draw
 //Check which method works best for drawing all agents, if chosen -> Rabussys or Maximussys
 // Initialize canvas and context
+//import { initCellValues } from './modules/pathfinding.js';
+//export default es6;
 let canvas = document.querySelector(".field");
 let ctx = canvas.getContext("2d");
 let closeMenu = document.getElementById("close");
@@ -31,7 +33,6 @@ openMenu.addEventListener("click", function () {
 })
 
 StartSim.addEventListener("click", function () {
-    sendMessage();
     if (StartPoint === null) {
         console.log("Missing start point");
         return;
@@ -42,6 +43,7 @@ StartSim.addEventListener("click", function () {
         return;
     }
 
+    initCellValues(cells, EndPoint, StartPoint);
     //AStar
 })
 
@@ -155,20 +157,20 @@ canvas.addEventListener("mouseup", () => {
 })
 
 // Add event to "Clear"-button
-clearButton = document.querySelector("#clear")
+let clearButton = document.querySelector("#clear")
 clearButton.addEventListener("click", clearCanvas)
 
 // Add event to "add exit"-button and "add-spawn"-button
 let addingExit = false
 let addingSpawn = false;
 let prevExit = null
-addExitButton = document.querySelector("#add-exit")
+let addExitButton = document.querySelector("#add-exit")
 
 addExitButton.addEventListener("click", () => {
     addingExit = true
 })
 
-addSpawnButton = document.querySelector("#add-spawn");
+let addSpawnButton = document.querySelector("#add-spawn");
 
 addSpawnButton.addEventListener("click", () => {
     addingSpawn = true;
@@ -318,3 +320,12 @@ function anime() {
 }
 
 anime();
+
+//Generate paths for each agent using pathfinding (A* or Dijkstra)
+// OR generate a path 'master' path and have agents path find to the closest point on the master path
+//If an agent is about to collide with another (use either the pythagorean theorem or vector math) generate path around the agent
+
+//Consider using RVO/RVO2 https://gamma.cs.unc.edu/RVO2/
+//Or just detect all agents around us, and adapt the agent speed to avoid collision
+//or detect all agents infront of us for example FOV 90 degrees, and adapt on what we 'see'
+//we can always change the FOV range or other paramteres depending on the agent speed
