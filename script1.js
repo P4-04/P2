@@ -116,6 +116,7 @@ function DrawAllCells() {
 }
 
 let prevIndex = null;
+let nextIndex = null;
 let isDragging = false;
 
 drawingArea.addEventListener("mousedown", (event) => {
@@ -128,7 +129,7 @@ drawingArea.addEventListener("mousedown", (event) => {
 
 drawingArea.addEventListener("mousemove", (event) => {
     if (isDragging == true) {
-        nextIndex = getCellIndex(event.offsetX, event.offsetY);
+        nextIndex = getCellIndex(event.clientX, event.clientY);
         if (prevIndex != nextIndex) {
             cellEventHandler(event, nextIndex);
             prevIndex = nextIndex;
@@ -171,8 +172,8 @@ function cellEventHandler(event, index) {
 
 function getCellIndex(MouseX, MouseY) {
     // find cell row and column 
-    let x = Math.floor(MouseX / cellSize)
-    let y = Math.floor(MouseY / cellSize)
+    let x = Math.floor(MouseX / cellSize);
+    let y = Math.floor(MouseY / cellSize);
     // return index of cell in cells array (row-major order)
     const Cords = {x, y};
     return Cords;
