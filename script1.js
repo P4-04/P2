@@ -101,8 +101,7 @@ function CreateGrid() {
 // Inizially draw cells on canvays
 function DrawAllCells() {
     for (let x = 0; x < cells.length; x++) {
-        for (let y = 0; y < cells[0].length; y++) 
-        {
+        for (let y = 0; y < cells[0].length; y++) {
             cells[x][y].rect = document.createElementNS(svgNS, 'rect');
             cells[x][y].rect.setAttribute('width', cells[x][y].width);
             cells[x][y].rect.setAttribute('height', cells[x][y].height);
@@ -174,7 +173,7 @@ function getCellIndex(MouseX, MouseY) {
     let x = Math.floor(MouseX / cellSize)
     let y = Math.floor(MouseY / cellSize)
     // return index of cell in cells array (row-major order)
-    const Cords = {x, y};
+    const Cords = { x, y };
     return Cords;
 }
 
@@ -212,16 +211,18 @@ function toggleCellProperties(index) {
         cells[index.x][index.y].isSpawnPoint = false;
 
     }
-    console.log(`cell `+ index.x, index.y +` has color ${cells[index.x][index.y].color} `)
+    console.log(`cell ` + index.x, index.y + ` has color ${cells[index.x][index.y].color} `)
 }
 
 function clearCanvas() {
-    cells.forEach(cell => {
-        cell.color = "white"
-        cell.isWall = false
-        cell.isExit = false
-        cell.isSpawnPoint = false;
-        cell.rect.setAttribute('fill', 'white');
+    cells.forEach(column => {
+        column.forEach(cell => {
+            cell.color = "white"
+            cell.isWall = false
+            cell.isExit = false
+            cell.isSpawnPoint = false;
+            cell.rect.setAttribute('fill', 'white');
+        })
     })
 }
 
