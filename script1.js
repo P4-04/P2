@@ -1,9 +1,8 @@
-//Redrawing agents -> Track if an agent has updated -> Draw
-//Check which method works best for drawing all agents, if chosen -> Rabussys or Maximussys
+//import { initCellValues } from './modules/pathfinding.js';
 // Initialize canvas and context
 let closeMenu = document.getElementById("close");
 let openMenu = document.getElementById("open");
-let startSim = document.getElementById("start");
+let StartSim = document.getElementById("start");
 let menu = document.querySelector(".menu");
 const svgNS = "http://www.w3.org/2000/svg";
 const drawingArea = document.querySelector(".drawing")
@@ -55,6 +54,24 @@ document.addEventListener("mousemove", function (event) {
     }
 })
 
+StartSim.addEventListener("click", function () 
+{
+    if (StartPoint === null) {
+        alert("Missing a start point!");
+        return;
+    }
+
+    if (EndPoint === null) {
+        alert("Missing a exit point!");
+        return;
+    }
+
+    initCellValues(cells, EndPoint, StartPoint);
+    //AStar
+    populate();
+    anime();
+})
+
 menu.addEventListener("mouseup", function () {
     isDraggingOverlay = false;
 })
@@ -104,7 +121,9 @@ drawingArea.setAttribute('height', canvasHeight);
 let cells = [[]];
 
 CreateGrid();
-// Create cells and cell properties.
+/**
+ * Initializes our grid-cells with their default properties and calls DrawAllCells
+*/
 function CreateGrid() {
     for (let x = 0; x < canvasWidth / cellSize; x++) {
         cells[x] = [];
@@ -131,7 +150,9 @@ function CreateGrid() {
     DrawAllCells();
 }
 
-// Inizially draw cells on canvays
+/**
+ * Draws our cells on screen using SVG
+ */
 function DrawAllCells() {
     for (let x = 0; x < cells.length; x++) {
         for (let y = 0; y < cells[0].length; y++) {
@@ -201,7 +222,11 @@ function cellEventHandler(event, index) {
 }
 
 
-
+/** 
+ * @param {int} MouseX The mouse X position on the screen
+ * @param {int} MouseY The mouse Y position on the screen
+ * @returns {Cords} x and y coordinate of our cell (relative to our grid)
+*/
 function getCellIndex(MouseX, MouseY) {
     // find cell row and column 
     let x = Math.floor(MouseX / cellSize);
@@ -211,6 +236,9 @@ function getCellIndex(MouseX, MouseY) {
     return Cords;
 }
 
+/** 
+ * @param {Cords} index The position of the cell to update
+*/
 function toggleCellProperties(index) {
     if (addingExit) {
         cells[index.x][index.y].color = "green";
@@ -248,6 +276,9 @@ function toggleCellProperties(index) {
     console.log(`cell ` + index.x, index.y + ` has color ${cells[index.x][index.y].color} `)
 }
 
+/**
+ * resets the grid to the default
+*/
 function clearCanvas() {
     cells.forEach(column => {
         column.forEach(cell => {
@@ -260,6 +291,10 @@ function clearCanvas() {
     })
 }
 
+/**
+ * Updates a cell
+ * @param {cell} cell the cell to update
+*/
 function drawCell(cell) {
     cell.rect.setAttribute('fill', cell.color);
 }
@@ -459,11 +494,3 @@ removeButton.addEventListener("click", function () {
         drawingArea.removeChild(agent.body);
     }
 });
-
-
-
-//Start Simulation
-startSim.addEventListener("click", function () {
-    populate();
-    anime();
-})

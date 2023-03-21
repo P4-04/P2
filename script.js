@@ -1,7 +1,7 @@
 //Redrawing agents -> Track if an agent has updated -> Draw
 //Check which method works best for drawing all agents, if chosen -> Rabussys or Maximussys
 // Initialize canvas and context
-//import { initCellValues } from './modules/pathfinding.js';
+import { initCellValues } from './modules/pathfinding.js';
 //export default es6;
 let canvas = document.querySelector(".field");
 let ctx = canvas.getContext("2d");
@@ -183,7 +183,7 @@ function cellEventHandler(event, index) {
 }
 
 
-    
+
 function getCellIndex(MouseX, MouseY) {
     // find cell row and column 
     let x = Math.floor(MouseX / cellSize)
