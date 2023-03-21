@@ -183,7 +183,7 @@ function cellEventHandler(event, index) {
 }
 
 
-
+    
 function getCellIndex(MouseX, MouseY) {
     // find cell row and column 
     let x = Math.floor(MouseX / cellSize)
