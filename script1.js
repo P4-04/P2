@@ -129,7 +129,7 @@ drawingArea.addEventListener("mousedown", (event) => {
 drawingArea.addEventListener("mousemove", (event) => {
     if (isDragging == true) {
         nextIndex = getCellIndex(event.clientX, event.clientY);
-        if (prevIndex != nextIndex) {
+        if (prevIndex.x !== nextIndex.x || prevIndex.y !== nextIndex.y) {
             cellEventHandler(event, nextIndex);
             prevIndex = nextIndex;
         }
