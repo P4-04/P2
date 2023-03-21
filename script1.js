@@ -265,8 +265,8 @@ function populate() {
 
 function anime() {
     agents.forEach(agent => {
-        let x = (agent.x + Math.random() * 3) - 1;
-        let y = (agent.y + Math.random() * 3) - 1;
+        let x = (agent.x + Math.random() * 2) - 1;
+        let y = (agent.y + Math.random() * 2) - 1;
         agent.setCoordinates(x, y);
 
 
