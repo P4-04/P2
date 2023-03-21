@@ -246,7 +246,16 @@ function populate() {
 
 function anime() {
     agents.forEach(agent => {
-        let collision = false;
+        let x = (agent.x + Math.random() * 3) - 1;
+        let y = (agent.y + Math.random() * 3) - 1;
+        agent.setCoordinates(x, y);
+
+
+
+
+
+
+        /*let collision = false;
 
         let pt = (agent.x, agent.y);
 
@@ -261,7 +270,7 @@ function anime() {
                 x = (agent.x + Math.random() * 5);
                 y = (agent.y + Math.random() * 5);
             }
-            agent.setCoordinates(x, y)
+            agent.setCoordinates(x, y)*/
         //}
 
         // if (arithmetic <= 0.25) {
@@ -333,34 +342,34 @@ function isPointInPoly(poly, pt) {
 function toggleAgentsSubMenu() {
     var submenu = document.getElementById("agents-submenu");
     if (submenu.style.display === "none") {
-      submenu.style.display = "block";
+        submenu.style.display = "block";
     } else {
-      submenu.style.display = "none";
+        submenu.style.display = "none";
     }
-  }
+}
 
-  let spawnButton = document.querySelector("#agents-submenu button:nth-of-type(1)");
-  let removeButton = document.querySelector("#agents-submenu button:nth-of-type(2)");
-  let numAgentsInput = document.querySelector("#num-agents");
-  
-  spawnButton.addEventListener("click", function () {
+let spawnButton = document.querySelector("#agents-submenu button:nth-of-type(1)");
+let removeButton = document.querySelector("#agents-submenu button:nth-of-type(2)");
+let numAgentsInput = document.querySelector("#num-agents");
+
+spawnButton.addEventListener("click", function () {
     let numAgents = parseInt(numAgentsInput.value);
     for (let i = 0; i < numAgents; i++) {
-      let x = Math.floor(Math.random() * canvasWidth);
-      let y = Math.floor(Math.random() * canvasHeight);
-      let fattiness = Math.floor(Math.random() * 3) + 5;
-      let agent = new Agent(x, y, fattiness);
-      agents.push(agent);
+        let x = Math.floor(Math.random() * canvasWidth);
+        let y = Math.floor(Math.random() * canvasHeight);
+        let fattiness = Math.floor(Math.random() * 3) + 5;
+        let agent = new Agent(x, y, fattiness);
+        agents.push(agent);
     }
-  });
-  
-  removeButton.addEventListener("click", function () {
+});
+
+removeButton.addEventListener("click", function () {
     let numAgents = parseInt(numAgentsInput.value);
     for (let i = 0; i < numAgents; i++) {
-      let agent = agents.pop();
-      drawingArea.removeChild(agent.body);
+        let agent = agents.pop();
+        drawingArea.removeChild(agent.body);
     }
-  });
+});
 //slutning af emils kode
 
 //Start Simulation

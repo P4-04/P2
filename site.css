@@ -132,11 +132,3 @@ button:active {
     margin-left: 5px;
     vertical-align: middle;
 }
-
-.menu h2 {
-    position: absolute;
-    top: -20px;
-    left: 10px;
-    background-color: rgba(255, 255, 255, 0.0);
-    padding: 0 10px;
-}
