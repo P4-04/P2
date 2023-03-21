@@ -152,11 +152,11 @@ clearButton.addEventListener("click", clearCanvas);
 let addingExit = false;
 let addingSpawn = false;
 let prevExit = null;
-let addExitButton = document.querySelector("#add-exit")
+let addExitButton = document.querySelector("#addExit")
 addExitButton.addEventListener("click", () => {
     addingExit = true
 })
-let addSpawnButton = document.querySelector("#add-spawn");
+let addSpawnButton = document.querySelector("#addSpawn");
 addSpawnButton.addEventListener("click", () => {
     addingSpawn = true;
 })
@@ -360,18 +360,53 @@ function isPointInPoly(poly, pt) {
 }
 
 //emils kode
-function toggleAgentsSubMenu() {
-    var submenu = document.getElementById("agents-submenu");
+// function toggleAgentsSubMenu() {
+//     let submenu = document.getElementById("agents-submenu");
+//     if (submenu.style.display === "none") {
+//         submenu.style.display = "block";
+//     } else {
+//         submenu.style.display = "none";
+//     }
+// }
+
+// let spawnButton = document.querySelector("#agents-submenu button:nth-of-type(1)");
+// let removeButton = document.querySelector("#agents-submenu button:nth-of-type(2)");
+// let numAgentsInput = document.querySelector("#num-agents");
+
+// spawnButton.addEventListener("click", function () {
+//     let numAgents = parseInt(numAgentsInput.value);
+//     for (let i = 0; i < numAgents; i++) {
+//         let x = Math.floor(Math.random() * canvasWidth);
+//         let y = Math.floor(Math.random() * canvasHeight);
+//         let fattiness = Math.floor(Math.random() * 3) + 5;
+//         let agent = new Agent(x, y, fattiness);
+//         agents.push(agent);
+//     }
+// });
+
+// removeButton.addEventListener("click", function () {
+//     let numAgents = parseInt(numAgentsInput.value);
+//     for (let i = 0; i < numAgents; i++) {
+//         let agent = agents.pop();
+//         drawingArea.removeChild(agent.body);
+//     }
+// });
+//slutning af emils kode
+
+//Alternativ emilkode
+let toggleAgentsSubmenu = document.getElementById("agentsButton");
+let spawnButton = document.getElementById("spawnButton");
+let removeButton = document.getElementById("removeButton");
+let numAgentsInput = document.querySelector("#numAgents");
+
+toggleAgentsSubmenu.addEventListener("click", function () {
+    let submenu = document.getElementById("agentsSubmenu");
     if (submenu.style.display === "none") {
         submenu.style.display = "block";
     } else {
         submenu.style.display = "none";
-    }
-}
-
-let spawnButton = document.querySelector("#agents-submenu button:nth-of-type(1)");
-let removeButton = document.querySelector("#agents-submenu button:nth-of-type(2)");
-let numAgentsInput = document.querySelector("#num-agents");
+    } 
+})
 
 spawnButton.addEventListener("click", function () {
     let numAgents = parseInt(numAgentsInput.value);
@@ -391,7 +426,8 @@ removeButton.addEventListener("click", function () {
         drawingArea.removeChild(agent.body);
     }
 });
-//slutning af emils kode
+
+
 
 //Start Simulation
 startSim.addEventListener("click", function () {

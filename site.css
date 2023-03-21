@@ -106,7 +106,7 @@ button:active {
     background-color: #454545;
 }
 
-#agents-submenu {
+#agentsSubmenu {
     position: absolute;
     top: 0;
     left: 100%;
@@ -116,7 +116,7 @@ button:active {
     background-color: white;
   }
   
-#agents-submenu input[type="number"] {
+#agentsSubmenu input[type="number"] {
     width: 150px;
     height: 30px;
     font-size: 16px;
@@ -128,7 +128,7 @@ button:active {
     vertical-align: middle;
 }
 
-#agents-submenu label {
+#agentsSubmenu label {
     width: 150px;
     height: 30px;
     font-size: 16px;
