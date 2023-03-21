@@ -234,7 +234,7 @@ class Agent {
 }
 
 function populate() {
-    for (let i = 1; i <= 1; i++) {
+    for (let i = 1; i <= 10; i++) {
         let x = (Math.floor(Math.random() * canvasWidth))
         let y = (Math.floor(Math.random() * canvasHeight))
         let fattiness = (Math.floor(Math.random() * 3) + 5)
@@ -244,20 +244,25 @@ function populate() {
     }
 }
 
-
 function anime() {
     agents.forEach(agent => {
+        let collision = false;
 
-        getCellPath(cells[getCellIndex(agent.x, agent.y)]);
+        let pt = (agent.x, agent.y);
 
-        let arithmetic = Math.random();
-        let x = (agent.x + Math.random() * 3);
-        let y = (agent.y + Math.random() * 3);
-        while (x >= canvasWidth && y >=  canvasHeight && cells[getCellIndex(x, y)].isWall) {
-            x = (agent.x + Math.random() * 5);
-            y = (agent.y + Math.random() * 5);
-        }
-        agent.setCoordinates(x, y)
+        let poly = getCellPath(cells[getCellIndex(agent.x, agent.y)]);
+        isPointInPoly(poly, pt);
+
+        //if (collision === false) {
+            let arithmetic = Math.random();
+            let x = (agent.x + Math.random() * 3);
+            let y = (agent.y + Math.random() * 3);
+            while (x >= canvasWidth && y >= canvasHeight && cells[getCellIndex(x, y)].isWall) {
+                x = (agent.x + Math.random() * 5);
+                y = (agent.y + Math.random() * 5);
+            }
+            agent.setCoordinates(x, y)
+        //}
 
         // if (arithmetic <= 0.25) {
         //     agent.x = (agent.x + Math.random() * 3);
@@ -288,26 +293,27 @@ function getCellPath(cell) {
     let closedPath = [];
     for (let i = 0; i < 4; i++) {
         if (i === 0) {
-            let x = cells[cell].rect.getAttribute("x");
-            let y = cells[cell].rect.getAttribute("y");
-            closedPath.push({x, y});
+            let x = cell.rect.getAttribute("x");
+            let y = cell.rect.getAttribute("y");
+            closedPath.push({ x, y });
         }
         else if (i === 1) {
-            let x = cells[cell].rect.getAttribute("x") + cellSize;
-            let y = cells[cell].rect.getAttribute("y");
-            closedPath.push({x, y});
+            let x = cell.rect.getAttribute("x") + cellSize;
+            let y = cell.rect.getAttribute("y");
+            closedPath.push({ x, y });
         }
         else if (i === 2) {
-            let x = cells[cell].rect.getAttribute("x") +  cellSize;
-            let y = cells[cell].rect.getAttribute("y") +  cellSize;
-            closedPath.push({x, y});
+            let x = cell.rect.getAttribute("x") + cellSize;
+            let y = cell.rect.getAttribute("y") + cellSize;
+            closedPath.push({ x, y });
         }
         else if (i === 3) {
-            let x = cells[cell].rect.getAttribute("x");
-            let y = cells[cell].rect.getAttribute("y") + cellSize;
-            closedPath.push({x, y});
+            let x = cell.rect.getAttribute("x");
+            let y = cell.rect.getAttribute("y") + cellSize;
+            closedPath.push({ x, y });
         }
     }
+    return closedPath;
 }
 
 
@@ -315,11 +321,11 @@ function getCellPath(cell) {
 //poly is an array of points in cartesian space representing a closed path
 //pt is the point to be checked
 //if it is within the closed path, collision is detected 
-function isPointInPoly(poly, pt){
-    for(var c = false, i = -1, l = poly.length, j = l - 1; ++i < l; j = i)
+function isPointInPoly(poly, pt) {
+    for (var c = false, i = -1, l = poly.length, j = l - 1; ++i < l; j = i)
         ((poly[i].y <= pt.y && pt.y < poly[j].y) || (poly[j].y <= pt.y && pt.y < poly[i].y))
-        && (pt.x < (poly[j].x - poly[i].x) * (pt.y - poly[i].y) / (poly[j].y - poly[i].y) + poly[i].x)
-        && (c = !c);
+            && (pt.x < (poly[j].x - poly[i].x) * (pt.y - poly[i].y) / (poly[j].y - poly[i].y) + poly[i].x)
+            && (c = !c);
     return c;
 }
 
