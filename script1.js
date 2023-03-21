@@ -18,9 +18,11 @@ closeMenu.addEventListener("click", function () {
 })
 
 openMenu.addEventListener("click", function () {
-    menuHidden = false;
-    openMenu.style.visibility = "hidden";
-    menu.style.visibility = "visible";
+    if (isDraggingOverlay === false) {
+        menuHidden = false;
+        openMenu.style.visibility = "hidden";
+        menu.style.visibility = "visible";
+    }
 })
 
 //Draggable overlay
@@ -56,6 +58,37 @@ document.addEventListener("mousemove", function (event) {
 menu.addEventListener("mouseup", function () {
     isDraggingOverlay = false;
 })
+
+openMenu.addEventListener("mousedown", function (event) {
+    setTimeout(() => {
+            isDraggingOverlay = true;
+            cursorCurrentX = event.clientX;
+            cursorCurrentY = event.clientY;
+    }, 50);
+})
+
+document.addEventListener("mousemove", function (event) {
+    if (isDraggingOverlay === true) {
+        cursorNewX = cursorCurrentX - event.clientX;
+        cursorNewY = cursorCurrentY - event.clientY;
+        cursorCurrentX = event.clientX;
+        cursorCurrentY = event.clientY;
+        menu.style.left = (menu.offsetLeft - cursorNewX) + "px";
+        menu.style.top = (menu.offsetTop - cursorNewY) + "px";
+        openMenu.style.left = (menu.offsetLeft - cursorNewX) + "px";
+        openMenu.style.top = (menu.offsetTop - cursorNewY) + "px";
+    }
+})
+
+openMenu.addEventListener("mouseup", function () {
+    if (isDraggingOverlay === true) {
+        isDraggingOverlay = false;
+        menuHidden = true;
+        openMenu.style.visibility = "visible";
+        menu.style.visibility = "hidden";
+    }
+})
+
 const cellSize = 25;
 
 // Define canvas parameters
@@ -405,7 +438,7 @@ toggleAgentsSubmenu.addEventListener("click", function () {
         submenu.style.display = "block";
     } else {
         submenu.style.display = "none";
-    } 
+    }
 })
 
 spawnButton.addEventListener("click", function () {
