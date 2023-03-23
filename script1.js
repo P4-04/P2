@@ -290,12 +290,10 @@ drawingArea.addEventListener("mouseup", (event) => {
     }
 })
 
-
 function cellEventHandler(index) {
     toggleCellProperties(index);
     drawCell(cells[index.x][index.y]);
 }
-
 
 /** 
  * @param {int} MouseX The mouse X position on the screen
@@ -333,7 +331,7 @@ function toggleCellProperties(index) {
         addingExit = false
     } else if (addingSpawn) {
         cells[index.x][index.y].color = "blue"
-        StartPoint = cells[index.x][index.y];
+        startPoint = cells[index.x][index.y];
         cells[index.x][index.y].isExit = false;
         cells[index.x][index.y].isSpawnPoint = true
         cells[index.x][index.y].isWall = false
@@ -530,40 +528,6 @@ function isPointInPoly(poly, pt) {
             && (c = !c);
     return c;
 }
-
-//emils kode
-// function toggleAgentsSubMenu() {
-//     let submenu = document.getElementById("agents-submenu");
-//     if (submenu.style.display === "none") {
-//         submenu.style.display = "block";
-//     } else {
-//         submenu.style.display = "none";
-//     }
-// }
-
-// let spawnButton = document.querySelector("#agents-submenu button:nth-of-type(1)");
-// let removeButton = document.querySelector("#agents-submenu button:nth-of-type(2)");
-// 
-
-// spawnButton.addEventListener("click", function () {
-//     let numAgents = parseInt(numAgentsInput.value);
-//     for (let i = 0; i < numAgents; i++) {
-//         let x = Math.floor(Math.random() * canvasWidth);
-//         let y = Math.floor(Math.random() * canvasHeight);
-//         let fattiness = Math.floor(Math.random() * 3) + 5;
-//         let agent = new Agent(x, y, fattiness);
-//         agents.push(agent);
-//     }
-// });
-
-// removeButton.addEventListener("click", function () {
-//     let numAgents = parseInt(numAgentsInput.value);
-//     for (let i = 0; i < numAgents; i++) {
-//         let agent = agents.pop();
-//         drawingArea.removeChild(agent.body);
-//     }
-// });
-//slutning af emils kode
 
 //Alternativ emilkode
 let toggleAgentsSubmenu = document.getElementById("agentsButton");
