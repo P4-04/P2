@@ -1,9 +1,10 @@
 //import { initCellValues } from './modules/pathfinding.js';
 // Initialize canvas and context
-let closeMenu = document.getElementById("close");
-let openMenu = document.getElementById("open");
-let startSim = document.getElementById("start");
-let menu = document.querySelector(".menu");
+const closeMenu = document.getElementById("close");
+const openMenu = document.getElementById("open");
+const startSim = document.getElementById("start");
+const numAgents = document.getElementById("numAgents")
+const menu = document.querySelector(".menu");
 const svgNS = "http://www.w3.org/2000/svg";
 const drawingArea = document.querySelector(".drawing")
 
@@ -388,7 +389,7 @@ function populate() {
     }
     let totalCells = 0
     let agentNum = null;
-    agentNum = document.getElementById("numAgents").value;
+    agentNum = numAgents.value;
     console.log(agentNum + "hello");
     // Count the total number of spawn area cells
     spawnAreas.forEach(area => {
