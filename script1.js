@@ -1,8 +1,9 @@
-//import { initCellValues } from './modules/pathfinding.js';
+//Redrawing agents -> Track if an agent has updated -> Draw
+//Check which method works best for drawing all agents, if chosen -> Rabussys or Maximussys
 // Initialize canvas and context
 let closeMenu = document.getElementById("close");
 let openMenu = document.getElementById("open");
-let StartSim = document.getElementById("start");
+let startSim = document.getElementById("start");
 let menu = document.querySelector(".menu");
 const svgNS = "http://www.w3.org/2000/svg";
 const drawingArea = document.querySelector(".drawing")
@@ -17,11 +18,9 @@ closeMenu.addEventListener("click", function () {
 })
 
 openMenu.addEventListener("click", function () {
-    if (isDraggingOverlay === false) {
-        menuHidden = false;
-        openMenu.style.visibility = "hidden";
-        menu.style.visibility = "visible";
-    }
+    menuHidden = false;
+    openMenu.style.visibility = "hidden";
+    menu.style.visibility = "visible";
 })
 
 //Draggable overlay
@@ -54,58 +53,9 @@ document.addEventListener("mousemove", function (event) {
     }
 })
 
-StartSim.addEventListener("click", function () 
-{
-    if (StartPoint === null) {
-        alert("Missing a start point!");
-        return;
-    }
-
-    if (EndPoint === null) {
-        alert("Missing a exit point!");
-        return;
-    }
-
-    initCellValues(cells, EndPoint, StartPoint);
-    //AStar
-    populate();
-    anime();
-})
-
 menu.addEventListener("mouseup", function () {
     isDraggingOverlay = false;
 })
-
-openMenu.addEventListener("mousedown", function (event) {
-    setTimeout(() => {
-            isDraggingOverlay = true;
-            cursorCurrentX = event.clientX;
-            cursorCurrentY = event.clientY;
-    }, 50);
-})
-
-document.addEventListener("mousemove", function (event) {
-    if (isDraggingOverlay === true) {
-        cursorNewX = cursorCurrentX - event.clientX;
-        cursorNewY = cursorCurrentY - event.clientY;
-        cursorCurrentX = event.clientX;
-        cursorCurrentY = event.clientY;
-        menu.style.left = (menu.offsetLeft - cursorNewX) + "px";
-        menu.style.top = (menu.offsetTop - cursorNewY) + "px";
-        openMenu.style.left = (menu.offsetLeft - cursorNewX) + "px";
-        openMenu.style.top = (menu.offsetTop - cursorNewY) + "px";
-    }
-})
-
-openMenu.addEventListener("mouseup", function () {
-    if (isDraggingOverlay === true) {
-        isDraggingOverlay = false;
-        menuHidden = true;
-        openMenu.style.visibility = "visible";
-        menu.style.visibility = "hidden";
-    }
-})
-
 const cellSize = 25;
 
 // Define canvas parameters
@@ -121,9 +71,7 @@ drawingArea.setAttribute('height', canvasHeight);
 let cells = [[]];
 
 CreateGrid();
-/**
- * Initializes our grid-cells with their default properties and calls DrawAllCells
-*/
+// Create cells and cell properties.
 function CreateGrid() {
     for (let x = 0; x < canvasWidth / cellSize; x++) {
         cells[x] = [];
@@ -150,9 +98,7 @@ function CreateGrid() {
     DrawAllCells();
 }
 
-/**
- * Draws our cells on screen using SVG
- */
+// Inizially draw cells on canvays
 function DrawAllCells() {
     for (let x = 0; x < cells.length; x++) {
         for (let y = 0; y < cells[0].length; y++) {
@@ -169,29 +115,38 @@ function DrawAllCells() {
 }
 
 let prevIndex = null;
-let nextIndex = null;
 let isDragging = false;
 
 drawingArea.addEventListener("mousedown", (event) => {
+    if (addingSpawn) {
+        return
+    }
     isDragging = true;
     menu.style.visibility = "hidden";
     prevIndex = getCellIndex(event.clientX, event.clientY);
     console.log(cells[prevIndex.x, prevIndex.y]);
-    cellEventHandler(event, prevIndex);
+    cellEventHandler(prevIndex);
 })
 
 drawingArea.addEventListener("mousemove", (event) => {
+    if (addingSpawn) {
+        return
+    }
     if (isDragging == true) {
-        nextIndex = getCellIndex(event.clientX, event.clientY);
-        if (prevIndex.x !== nextIndex.x || prevIndex.y !== nextIndex.y) {
-            cellEventHandler(event, nextIndex);
+        let nextIndex = getCellIndex(event.offsetX, event.offsetY);
+        if (prevIndex.x != nextIndex.x || prevIndex.y != nextIndex.y) {
+            cellEventHandler(nextIndex);
             prevIndex = nextIndex;
         }
     }
 })
 
 drawingArea.addEventListener("mouseup", () => {
+    if (addingSpawn) {
+        return
+    }
     isDragging = false;
+    addingSpawn = false
     prevIndex = null;
     if (menuHidden === false) {
         menu.style.visibility = "visible";
@@ -206,39 +161,79 @@ clearButton.addEventListener("click", clearCanvas);
 let addingExit = false;
 let addingSpawn = false;
 let prevExit = null;
-let addExitButton = document.querySelector("#addExit")
+let addExitButton = document.querySelector("#add-exit")
 addExitButton.addEventListener("click", () => {
     addingExit = true
 })
-let addSpawnButton = document.querySelector("#addSpawn");
+let addSpawnButton = document.querySelector("#add-spawn");
+
 addSpawnButton.addEventListener("click", () => {
     addingSpawn = true;
 })
 
+let startingCell
+let spawnAreas = []
 
-function cellEventHandler(event, index) {
+drawingArea.addEventListener("mousedown", (event) => {
+    if (addingSpawn) {
+        isDragging = true
+        startingCell = getCellIndex(event.offsetX, event.offsetY)
+        prevIndex = getCellIndex(event.offsetX, event.offsetY)
+        cellEventHandler(prevIndex)
+    }
+})
+
+drawingArea.addEventListener("mousemove", (event) => {
+    if (addingSpawn && isDragging) {
+        let nextIndex = getCellIndex(event.offsetX, event.offsetY)
+        if (prevIndex.x != nextIndex.x || prevIndex.y != nextIndex.y) {
+            for (let x = nextIndex.x; x >= startingCell.x; --x) {
+                for (let y = nextIndex.y; y >= startingCell.y; --y) {
+                    let index = { x, y }
+                    cellEventHandler(index)
+                }
+            }
+            prevIndex = nextIndex;
+        }
+    }
+}
+)
+
+drawingArea.addEventListener("mouseup", (event) => {
+    if (addingSpawn) {
+        isDragging = false
+        addingSpawn = false
+        let spawnGroup = []
+        let finalCell = getCellIndex(event.offsetX, event.offsetY)
+        for (let x = finalCell.x; x >= startingCell.x; --x) {
+            for (let y = finalCell.y; y >= startingCell.y; --y) {
+                let index = { x, y }
+                spawnGroup.push(index)
+            }
+        }
+        spawnAreas.push(spawnGroup)
+        console.log(spawnGroup)
+        console.log(spawnAreas)
+    }
+})
+
+
+function cellEventHandler(index) {
     toggleCellProperties(index);
     drawCell(cells[index.x][index.y]);
 }
 
 
-/** 
- * @param {int} MouseX The mouse X position on the screen
- * @param {int} MouseY The mouse Y position on the screen
- * @returns {Cords} x and y coordinate of our cell (relative to our grid)
-*/
+
 function getCellIndex(MouseX, MouseY) {
     // find cell row and column 
-    let x = Math.floor(MouseX / cellSize);
-    let y = Math.floor(MouseY / cellSize);
+    let x = Math.floor(MouseX / cellSize)
+    let y = Math.floor(MouseY / cellSize)
     // return index of cell in cells array (row-major order)
     const Cords = { x, y };
     return Cords;
 }
 
-/** 
- * @param {Cords} index The position of the cell to update
-*/
 function toggleCellProperties(index) {
     if (addingExit) {
         cells[index.x][index.y].color = "green";
@@ -262,7 +257,6 @@ function toggleCellProperties(index) {
         cells[index.x][index.y].isExit = false;
         cells[index.x][index.y].isSpawnPoint = true
         cells[index.x][index.y].isWall = false
-        addingSpawn = false
     } else if (cells[index.x][index.y].color == "white") {
         cells[index.x][index.y].color = "black"
         cells[index.x][index.y].isWall = true
@@ -276,9 +270,6 @@ function toggleCellProperties(index) {
     console.log(`cell ` + index.x, index.y + ` has color ${cells[index.x][index.y].color} `)
 }
 
-/**
- * resets the grid to the default
-*/
 function clearCanvas() {
     cells.forEach(column => {
         column.forEach(cell => {
@@ -291,10 +282,6 @@ function clearCanvas() {
     })
 }
 
-/**
- * Updates a cell
- * @param {cell} cell the cell to update
-*/
 function drawCell(cell) {
     cell.rect.setAttribute('fill', cell.color);
 }
@@ -323,15 +310,43 @@ class Agent {
 }
 
 function populate() {
-    for (let i = 1; i <= 10; i++) {
-        let x = (Math.floor(Math.random() * canvasWidth))
-        let y = (Math.floor(Math.random() * canvasHeight))
-        let fattiness = (Math.floor(Math.random() * 3) + 5)
+    if (spawnAreas.length == 0) {
+        window.alert("Please add spawn areas")
+        return
+    }
+    let totalCells = 0
+    let agentNum = 1000
+    // Count the total number of spawn area cells
+    spawnAreas.forEach(area => {
+        totalCells += area.length
+    })
+    spawnAreas.forEach(area => {
+        let ratio = area.length / totalCells
+        let agentsPerArea = Math.floor(ratio * agentNum)
+        populateCells(area, agentsPerArea)
+    })
+    console.log(agents)
+}
 
+function populateCells(area, agentsPerArea) {
+    let firstCell = area[area.length-1]
+    let lastCell = area[0]
+    let areaSize = {x: lastCell.x-firstCell.x , y: lastCell.y-firstCell.y  }
+    for (let i = 0; i <= agentsPerArea; ++i) {
+        let fattiness = (Math.floor(Math.random() * 3) + 5)
+        let x = getRandomArbitrary(firstCell.x*cellSize+fattiness, lastCell.x*cellSize+cellSize-fattiness)
+        let y = getRandomArbitrary(firstCell.y*cellSize+fattiness, lastCell.y*cellSize+cellSize-fattiness)
         let agent = new Agent(x, y, fattiness)
         agents.push(agent);
     }
 }
+
+function getRandomArbitrary(min, max) {
+    return Math.random() * (max - min) + min;
+  }
+
+let popButton = document.querySelector("#populate")
+popButton.addEventListener("click", populate)
 
 function anime() {
     agents.forEach(agent => {
@@ -428,53 +443,18 @@ function isPointInPoly(poly, pt) {
 }
 
 //emils kode
-// function toggleAgentsSubMenu() {
-//     let submenu = document.getElementById("agents-submenu");
-//     if (submenu.style.display === "none") {
-//         submenu.style.display = "block";
-//     } else {
-//         submenu.style.display = "none";
-//     }
-// }
-
-// let spawnButton = document.querySelector("#agents-submenu button:nth-of-type(1)");
-// let removeButton = document.querySelector("#agents-submenu button:nth-of-type(2)");
-// let numAgentsInput = document.querySelector("#num-agents");
-
-// spawnButton.addEventListener("click", function () {
-//     let numAgents = parseInt(numAgentsInput.value);
-//     for (let i = 0; i < numAgents; i++) {
-//         let x = Math.floor(Math.random() * canvasWidth);
-//         let y = Math.floor(Math.random() * canvasHeight);
-//         let fattiness = Math.floor(Math.random() * 3) + 5;
-//         let agent = new Agent(x, y, fattiness);
-//         agents.push(agent);
-//     }
-// });
-
-// removeButton.addEventListener("click", function () {
-//     let numAgents = parseInt(numAgentsInput.value);
-//     for (let i = 0; i < numAgents; i++) {
-//         let agent = agents.pop();
-//         drawingArea.removeChild(agent.body);
-//     }
-// });
-//slutning af emils kode
-
-//Alternativ emilkode
-let toggleAgentsSubmenu = document.getElementById("agentsButton");
-let spawnButton = document.getElementById("spawnButton");
-let removeButton = document.getElementById("removeButton");
-let numAgentsInput = document.querySelector("#numAgents");
-
-toggleAgentsSubmenu.addEventListener("click", function () {
-    let submenu = document.getElementById("agentsSubmenu");
+function toggleAgentsSubMenu() {
+    var submenu = document.getElementById("agents-submenu");
     if (submenu.style.display === "none") {
         submenu.style.display = "block";
     } else {
         submenu.style.display = "none";
     }
-})
+}
+
+let spawnButton = document.querySelector("#agents-submenu button:nth-of-type(1)");
+let removeButton = document.querySelector("#agents-submenu button:nth-of-type(2)");
+let numAgentsInput = document.querySelector("#num-agents");
 
 spawnButton.addEventListener("click", function () {
     let numAgents = parseInt(numAgentsInput.value);
@@ -494,3 +474,10 @@ removeButton.addEventListener("click", function () {
         drawingArea.removeChild(agent.body);
     }
 });
+//slutning af emils kode
+
+//Start Simulation
+startSim.addEventListener("click", function () {
+    populate();
+    anime();
+})
