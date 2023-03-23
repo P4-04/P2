@@ -11,21 +11,6 @@ const drawingArea = document.querySelector(".drawing")
 //Open and close menu
 let menuHidden = true;
 
-closeMenu.addEventListener("click", function () {
-    menuHidden = true;
-    openMenu.style.visibility = "visible";
-    menu.style.visibility = "hidden";
-})
-
-openMenu.addEventListener("mousedown", function () {
-    setTimeout(() => {
-        if (isDraggingOverlay === false) {
-    menuHidden = false;
-    openMenu.style.visibility = "hidden";
-    menu.style.visibility = "visible";
-        }
-    }, 100)
-})
 
 //Draggable overlay
 let isDraggingOverlay = false;
@@ -33,28 +18,63 @@ let cursorCurrentX = 0;
 let cursorCurrentY = 0;
 let cursorNewX = 0;
 let cursorNewY = 0;
+let isMouseDown = false;
 
 /**pathfinding stuff*/
 let EndPoint = null;
 let StartPoint = null;
 
 menu.addEventListener("mousedown", function (event) {
-    isDraggingOverlay = true;
+    isMouseDown = true;
+    isDraggingOverlay = false;
+    cursorCurrentX = event.clientX;
+    cursorCurrentY = event.clientY;
+})
+
+menu.addEventListener("mouseup", function () {
+    isMouseDown = false
+    isDraggingOverlay = false
+})
+
+closeMenu.addEventListener("click", function () {
+    isMouseDown = false
+    menuHidden = true;
+    if (isDraggingOverlay === false) {
+        menuHidden = true;
+        openMenu.style.visibility = "visible";
+        menu.style.visibility = "hidden";
+    }
+})
+
+openMenu.addEventListener("mousedown", function (event) {
+    isMouseDown = true;
+    isDraggingOverlay = false;
     cursorCurrentX = event.clientX;
     cursorCurrentY = event.clientY;
 })
 
 document.addEventListener("mousemove", function (event) {
-    if (isDraggingOverlay === true) {
         cursorNewX = cursorCurrentX - event.clientX;
         cursorNewY = cursorCurrentY - event.clientY;
-        cursorCurrentX = event.clientX;
-        cursorCurrentY = event.clientY;
-        menu.style.left = (menu.offsetLeft - cursorNewX) + "px";
-        menu.style.top = (menu.offsetTop - cursorNewY) + "px";
-        openMenu.style.left = (menu.offsetLeft - cursorNewX) + "px";
-        openMenu.style.top = (menu.offsetTop - cursorNewY) + "px";
-    }
+        console.log(`current x: ${cursorCurrentX} current y: ${cursorCurrentY} new x: ${cursorNewY} new y: ${cursorNewY}` )
+        if ((cursorCurrentX !== cursorNewX || cursorCurrentY !== cursorNewY) && isMouseDown === true) {
+            isDraggingOverlay = true;
+            cursorCurrentX = event.clientX;
+            cursorCurrentY = event.clientY;
+            menu.style.left = (menu.offsetLeft - cursorNewX) + "px";
+            menu.style.top = (menu.offsetTop - cursorNewY) + "px";
+            openMenu.style.left = (menu.offsetLeft - cursorNewX) + "px";
+            openMenu.style.top = (menu.offsetTop - cursorNewY) + "px";
+        }
+})
+
+openMenu.addEventListener("mouseup", function () {
+    isMouseDown = false
+    if (isDraggingOverlay === false) {
+        menuHidden = false;
+        openMenu.style.visibility = "hidden";
+        menu.style.visibility = "visible";
+    } 
 })
 
 startSim.addEventListener("click", function () 
@@ -75,39 +95,29 @@ startSim.addEventListener("click", function ()
     anime();
 })
 
-menu.addEventListener("mouseup", function () {
-    isDraggingOverlay = false;
-})
 
-openMenu.addEventListener("mousedown", function (event) {
-    setTimeout(() => {
-            isDraggingOverlay = true;
-            cursorCurrentX = event.clientX;
-            cursorCurrentY = event.clientY;
-    }, 50);
-})
 
-document.addEventListener("mousemove", function (event) {
-    if (isDraggingOverlay === true) {
-        cursorNewX = cursorCurrentX - event.clientX;
-        cursorNewY = cursorCurrentY - event.clientY;
-        cursorCurrentX = event.clientX;
-        cursorCurrentY = event.clientY;
-        menu.style.left = (menu.offsetLeft - cursorNewX) + "px";
-        menu.style.top = (menu.offsetTop - cursorNewY) + "px";
-        openMenu.style.left = (menu.offsetLeft - cursorNewX) + "px";
-        openMenu.style.top = (menu.offsetTop - cursorNewY) + "px";
-    }
-})
+// document.addEventListener("mousemove", function (event) {
+    
+//     isDraggingOverlay = true;
+//     cursorNewX = cursorCurrentX - event.clientX;
+//     cursorNewY = cursorCurrentY - event.clientY;
+//     cursorCurrentX = event.clientX;
+//     cursorCurrentY = event.clientY;
+//     menu.style.left = (menu.offsetLeft - cursorNewX) + "px";
+//     menu.style.top = (menu.offsetTop - cursorNewY) + "px";
+//     openMenu.style.left = (menu.offsetLeft - cursorNewX) + "px";
+//     openMenu.style.top = (menu.offsetTop - cursorNewY) + "px";
+// })
 
-openMenu.addEventListener("mouseup", function () {
-    if (isDraggingOverlay === true) {
-        isDraggingOverlay = false;
-        menuHidden = true;
-        openMenu.style.visibility = "visible";
-        menu.style.visibility = "hidden";
-    }
-})
+// openMenu.addEventListener("mouseup", function () {
+//     // if (isDraggingOverlay === true) {
+//     //     menuHidden = true;
+//     //     openMenu.style.visibility = "visible";
+//     //     menu.style.visibility = "hidden";
+//     // }
+    
+// })
 
 const cellSize = 25;
 

@@ -26,6 +26,8 @@ h2 {
     z-index: 1;
 }
 
+
+
 .drawing {
     background-color: #eee;
     left: 0;
@@ -33,17 +35,14 @@ h2 {
     position: absolute;
 }
 
-
 #open {
     height: 55px;
     width: 100px;
     position: absolute;
     z-index: 2;
-    cursor: move;
 }
 
 .menu {
-    display: flex;
     width: 160px;
     height: 345px;
     background-color: rgb(47, 47, 47);
@@ -56,7 +55,6 @@ h2 {
     justify-content: center;
     position: absolute;
     z-index: 10;
-    cursor: move;
 }
 
 .menu button {
