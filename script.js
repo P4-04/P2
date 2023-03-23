@@ -55,7 +55,6 @@ openMenu.addEventListener("mousedown", function (event) {
 document.addEventListener("mousemove", function (event) {
         cursorNewX = cursorCurrentX - event.clientX;
         cursorNewY = cursorCurrentY - event.clientY;
-        console.log(`current x: ${cursorCurrentX} current y: ${cursorCurrentY} new x: ${cursorNewY} new y: ${cursorNewY}` )
         if ((cursorCurrentX !== cursorNewX || cursorCurrentY !== cursorNewY) && isMouseDown === true) {
             isDraggingOverlay = true;
             cursorCurrentX = event.clientX;
@@ -167,7 +166,6 @@ drawingArea.addEventListener("mousedown", (event) => {
     isDragging = true;
     menu.style.visibility = "hidden";
     prevIndex = getCellIndex(event.clientX, event.clientY);
-    console.log(cells[prevIndex.x, prevIndex.y]);
     cellEventHandler(prevIndex);
 })
 
@@ -254,8 +252,6 @@ drawingArea.addEventListener("mouseup", (event) => {
             }
         }
         spawnAreas.push(spawnGroup)
-        console.log(spawnGroup)
-        console.log(spawnAreas)
     }
 })
 
@@ -314,7 +310,6 @@ function toggleCellProperties(index) {
         cells[index.x][index.y].isSpawnPoint = false;
 
     }
-    console.log(`cell ` + index.x, index.y + ` has color ${cells[index.x][index.y].color} `)
 }
 
 /**
@@ -371,7 +366,6 @@ function populate() {
     let totalCells = 0
     let agentNum = null;
     agentNum = document.getElementById("numAgents").value;
-    console.log(agentNum + "hello");
     // Count the total number of spawn area cells
     spawnAreas.forEach(area => {
         totalCells += area.length;
@@ -538,8 +532,6 @@ removeButton.addEventListener("click", function () {
         }
         removedAgents += removeAgentsFromArea(area, agentsToRemovePerArea);
     });
-
-    console.log(`Removed ${removedAgents} agents`);
 });
 
 
