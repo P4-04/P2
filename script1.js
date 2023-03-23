@@ -270,8 +270,7 @@ drawingArea.addEventListener("mousemove", (event) => {
             prevIndex = nextIndex;
         }
     }
-}
-)
+})
 
 drawingArea.addEventListener("mouseup", (event) => {
     if (addingSpawn) {
@@ -404,24 +403,29 @@ function populate() {
     }
     let totalCells = 0
     let agentNum = null;
-    agentNum = numAgents.value;
+    agentNum = document.getElementById("numAgents").value;
     console.log(agentNum + "hello");
     // Count the total number of spawn area cells
     spawnAreas.forEach(area => {
-        totalCells += area.length
-    })
-    spawnAreas.forEach(area => {
-        let ratio = area.length / totalCells
-        let agentsPerArea = Math.floor(ratio * agentNum)
-        populateCells(area, agentsPerArea)
-    })
-    console.log(agents);
+        totalCells += area.length;
+    });
+
+    let agentsSpawned = 0;
+    spawnAreas.forEach((area, index) => {
+        let ratio = area.length / totalCells;
+        let agentsPerArea = Math.floor(ratio * agentNum);
+        if (index === spawnAreas.length - 1) {
+            agentsPerArea = agentNum - agentsSpawned;
+        }
+        agentsSpawned += agentsPerArea;
+        populateCells(area, agentsPerArea);
+    });
 }
 
 function populateCells(area, agentsPerArea) {
     let firstCell = area[area.length - 1]
     let lastCell = area[0]
-    let areaSize = { x: lastCell.x - firstCell.x, y: lastCell.y - firstCell.y }
+    let areaSize = {x: lastCell.x-firstCell.x , y: lastCell.y-firstCell.y}
     for (let i = 0; i <= agentsPerArea; ++i) {
         let fattiness = (Math.floor(Math.random() * 3) + 5)
         let x = getRandomArbitrary(firstCell.x * cellSize + fattiness, lastCell.x * cellSize + cellSize - fattiness)
@@ -443,11 +447,6 @@ function anime() {
         let x = (agent.x + Math.random() * 2) - 1;
         let y = (agent.y + Math.random() * 2) - 1;
         agent.setCoordinates(x, y);
-
-
-
-
-
 
         /*let collision = false;
 
@@ -544,7 +543,7 @@ function isPointInPoly(poly, pt) {
 
 // let spawnButton = document.querySelector("#agents-submenu button:nth-of-type(1)");
 // let removeButton = document.querySelector("#agents-submenu button:nth-of-type(2)");
-// let numAgentsInput = document.querySelector("#num-agents");
+// 
 
 // spawnButton.addEventListener("click", function () {
 //     let numAgents = parseInt(numAgentsInput.value);
@@ -570,6 +569,7 @@ function isPointInPoly(poly, pt) {
 let toggleAgentsSubmenu = document.getElementById("agentsButton");
 let spawnButton = document.getElementById("spawnButton");
 let removeButton = document.getElementById("removeButton");
+let numAgentsInput = document.querySelector("#num-agents");
 
 toggleAgentsSubmenu.addEventListener("click", function () {
     let submenu = document.getElementById("agentsSubmenu");
@@ -585,12 +585,56 @@ spawnButton.addEventListener("click", function () {
 });
 
 removeButton.addEventListener("click", function () {
-    let numAgents = parseInt(numAgentsInput.value);
-    for (let i = 0; i < numAgents; i++) {
-        let agent = agents.pop();
-        drawingArea.removeChild(agent.body);
+    let agentNumToRemove = document.getElementById("numAgents").value;
+    if (isNaN(agentNumToRemove) || agentNumToRemove <= 0) {
+        window.alert("Please enter a valid number of agents to remove");
+        return;
     }
+
+    let totalCells = 0;
+    spawnAreas.forEach(area => {
+        totalCells += area.length;
+    });
+
+    let removedAgents = 0;
+    spawnAreas.forEach((area, index) => {
+        let ratio = area.length / totalCells;
+        let agentsToRemovePerArea = Math.floor(ratio * agentNumToRemove);
+        if (index === spawnAreas.length - 1) {
+            agentsToRemovePerArea = agentNumToRemove - removedAgents;
+        }
+        removedAgents += removeAgentsFromArea(area, agentsToRemovePerArea);
+    });
+
+    console.log(`Removed ${removedAgents} agents`);
 });
+
+
+function removeAgentsFromArea(area, agentsToRemovePerArea) {
+    let removedAgents = 0;
+    let agentsInArea = agents.filter(agent => {
+        return area.some(cell => {
+            return cell.x === Math.floor(agent.x / cellSize) && cell.y === Math.floor(agent.y / cellSize);
+        });
+    });
+
+    let totalAgentsInArea = agentsInArea.length;
+    let agentsToRemove = Math.min(agentsToRemovePerArea, totalAgentsInArea);
+    let agentsToKeep = [];
+
+    for (let i = 0; i < agents.length; i++) {
+        if (agentsToRemove > 0 && agentsInArea.includes(agents[i])) {
+            drawingArea.removeChild(agents[i].body);
+            removedAgents++;
+            agentsToRemove--;
+        } else {
+            agentsToKeep.push(agents[i]);
+        }
+    }
+
+    agents = agentsToKeep;
+    return removedAgents;
+}
 
 //Start Simulation
 startSim.addEventListener("click", function () {
