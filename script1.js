@@ -423,8 +423,8 @@ function populate() {
 function populateCells(area, agentsPerArea) {
     let firstCell = area[area.length - 1]
     let lastCell = area[0]
-    let areaSize = {x: lastCell.x-firstCell.x , y: lastCell.y-firstCell.y}
-    for (let i = 0; i <= agentsPerArea; ++i) {
+    let areaSize = { x: lastCell.x - firstCell.x, y: lastCell.y - firstCell.y }
+    for (let i = 0; i < agentsPerArea; ++i) {
         let fattiness = (Math.floor(Math.random() * 3) + 5)
         let x = getRandomArbitrary(firstCell.x * cellSize + fattiness, lastCell.x * cellSize + cellSize - fattiness)
         let y = getRandomArbitrary(firstCell.y * cellSize + fattiness, lastCell.y * cellSize + cellSize - fattiness)
