@@ -16,26 +16,17 @@ closeMenu.addEventListener("click", function () {
     menu.style.visibility = "hidden";
 })
 
-openMenu.addEventListener("mousedown", function () {
-    setTimeout(() => {
-        if (isDraggingOverlay === false) {
-    menuHidden = false;
-    openMenu.style.visibility = "hidden";
-    menu.style.visibility = "visible";
-        }
-    }, 100)
-})
-
 //Draggable overlay
 let isDraggingOverlay = false;
+let isMouseDown = false;
 let cursorCurrentX = 0;
 let cursorCurrentY = 0;
 let cursorNewX = 0;
 let cursorNewY = 0;
 
 /**pathfinding stuff*/
-let EndPoint = null;
-let StartPoint = null;
+let endPoint = null;
+let startPoint = null;
 
 menu.addEventListener("mousedown", function (event) {
     isDraggingOverlay = true;
@@ -56,8 +47,7 @@ document.addEventListener("mousemove", function (event) {
     }
 })
 
-startSim.addEventListener("click", function () 
-{
+startSim.addEventListener("click", function () {
     if (startPoint === null) {
         alert("Missing a start point!");
         return;
@@ -68,7 +58,7 @@ startSim.addEventListener("click", function ()
         return;
     }
 
-    initCellValues(cells, EndPoint, StartPoint);
+    initCellValues(cells, endPoint, startPoint);
     //AStar
     populate();
     anime();
@@ -80,11 +70,29 @@ menu.addEventListener("mouseup", function () {
 
 openMenu.addEventListener("mousedown", function (event) {
     setTimeout(() => {
-            isDraggingOverlay = true;
-            cursorCurrentX = event.clientX;
-            cursorCurrentY = event.clientY;
+        document.body.onmousedown = () => {
+            isMouseDown = true;
+        }
+        document.body.onmouseup = () => {
+            isMouseDown = false;
+        }
+        if (isDraggingOverlay === false && isMouseDown === true) {
+            setTimeout(() => {
+                isDraggingOverlay = true;
+                cursorCurrentX = event.clientX;
+                cursorCurrentY = event.clientY;
+            }, 50);
+        }
     }, 50);
 })
+
+// openMenu.addEventListener("mousedown", function () {
+//     if (isDraggingOverlay === false) {
+//         menuHidden = false;
+//         openMenu.style.visibility = "hidden";
+//         menu.style.visibility = "visible";
+//     }
+// })
 
 document.addEventListener("mousemove", function (event) {
     if (isDraggingOverlay === true) {
@@ -100,8 +108,15 @@ document.addEventListener("mousemove", function (event) {
 })
 
 openMenu.addEventListener("mouseup", function () {
-    if (isDraggingOverlay === true) {
+    if (isDraggingOverlay === false) {
+        isMouseDown = false
+        menuHidden = false;
+        openMenu.style.visibility = "hidden";
+        menu.style.visibility = "visible";
+    }
+    else if (isDraggingOverlay === true) {
         isDraggingOverlay = false;
+        isMouseDown = false;
         menuHidden = true;
         openMenu.style.visibility = "visible";
         menu.style.visibility = "hidden";
@@ -403,13 +418,13 @@ function populate() {
 }
 
 function populateCells(area, agentsPerArea) {
-    let firstCell = area[area.length-1]
+    let firstCell = area[area.length - 1]
     let lastCell = area[0]
-    let areaSize = {x: lastCell.x-firstCell.x , y: lastCell.y-firstCell.y}
+    let areaSize = { x: lastCell.x - firstCell.x, y: lastCell.y - firstCell.y }
     for (let i = 0; i <= agentsPerArea; ++i) {
         let fattiness = (Math.floor(Math.random() * 3) + 5)
-        let x = getRandomArbitrary(firstCell.x*cellSize+fattiness, lastCell.x*cellSize+cellSize-fattiness)
-        let y = getRandomArbitrary(firstCell.y*cellSize+fattiness, lastCell.y*cellSize+cellSize-fattiness)
+        let x = getRandomArbitrary(firstCell.x * cellSize + fattiness, lastCell.x * cellSize + cellSize - fattiness)
+        let y = getRandomArbitrary(firstCell.y * cellSize + fattiness, lastCell.y * cellSize + cellSize - fattiness)
         let agent = new Agent(x, y, fattiness)
         agents.push(agent);
     }
@@ -417,7 +432,7 @@ function populateCells(area, agentsPerArea) {
 
 function getRandomArbitrary(min, max) {
     return Math.random() * (max - min) + min;
-  }
+}
 
 let popButton = document.querySelector("#populate")
 popButton.addEventListener("click", populate)
