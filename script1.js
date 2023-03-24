@@ -3,10 +3,10 @@
 const closeMenu = document.getElementById("close");
 const openMenu = document.getElementById("open");
 const startSim = document.getElementById("start");
-const numAgents = document.getElementById("numAgents")
+const numAgents = document.getElementById("numAgents");
 const menu = document.querySelector(".menu");
 const svgNS = "http://www.w3.org/2000/svg";
-const drawingArea = document.querySelector(".drawing")
+const drawingArea = document.querySelector(".drawing");
 
 //Open and close menu
 let menuHidden = true;
@@ -16,13 +16,13 @@ let menuHidden = true;
 let isDraggingOverlay = false;
 let cursorCurrentX = 0;
 let cursorCurrentY = 0;
-let cursorNewX = 0;
+let cursorNewX = 0
 let cursorNewY = 0;
 let isMouseDown = false;
 
 /**pathfinding stuff*/
-let EndPoint = null;
-let StartPoint = null;
+let endPoint = null;
+let startPoint = null;
 
 menu.addEventListener("mousedown", function (event) {
     isMouseDown = true;
@@ -32,12 +32,12 @@ menu.addEventListener("mousedown", function (event) {
 })
 
 menu.addEventListener("mouseup", function () {
-    isMouseDown = false
-    isDraggingOverlay = false
+    isMouseDown = false;
+    isDraggingOverlay = false;
 })
 
 closeMenu.addEventListener("click", function () {
-    isMouseDown = false
+    isMouseDown = false;0
     menuHidden = true;
     if (isDraggingOverlay === false) {
         menuHidden = true;
@@ -56,7 +56,7 @@ openMenu.addEventListener("mousedown", function (event) {
 document.addEventListener("mousemove", function (event) {
         cursorNewX = cursorCurrentX - event.clientX;
         cursorNewY = cursorCurrentY - event.clientY;
-        console.log(`current x: ${cursorCurrentX} current y: ${cursorCurrentY} new x: ${cursorNewY} new y: ${cursorNewY}` )
+        console.log(`current x: ${cursorCurrentX} current y: ${cursorCurrentY} new x: ${cursorNewY} new y: ${cursorNewY}` );
         if ((cursorCurrentX !== cursorNewX || cursorCurrentY !== cursorNewY) && isMouseDown === true) {
             isDraggingOverlay = true;
             cursorCurrentX = event.clientX;
@@ -69,7 +69,7 @@ document.addEventListener("mousemove", function (event) {
 })
 
 openMenu.addEventListener("mouseup", function () {
-    isMouseDown = false
+    isMouseDown = false;
     if (isDraggingOverlay === false) {
         menuHidden = false;
         openMenu.style.visibility = "hidden";
@@ -89,7 +89,7 @@ startSim.addEventListener("click", function ()
         return;
     }
 
-    initCellValues(cells, EndPoint, StartPoint);
+    initCellValues(cells, endPoint, startPoint);
     //AStar
     populate();
     anime();
@@ -188,7 +188,7 @@ let isDragging = false;
 
 drawingArea.addEventListener("mousedown", (event) => {
     if (addingSpawn) {
-        return
+        return;
     }
     isDragging = true;
     menu.style.visibility = "hidden";
@@ -199,7 +199,7 @@ drawingArea.addEventListener("mousedown", (event) => {
 
 drawingArea.addEventListener("mousemove", (event) => {
     if (addingSpawn) {
-        return
+        return;
     }
     if (isDragging == true) {
         nextIndex = getCellIndex(event.clientX, event.clientY);
@@ -212,10 +212,10 @@ drawingArea.addEventListener("mousemove", (event) => {
 
 drawingArea.addEventListener("mouseup", () => {
     if (addingSpawn) {
-        return
+        return;
     }
     isDragging = false;
-    addingSpawn = false
+    addingSpawn = false;
     prevIndex = null;
     if (menuHidden === false) {
         menu.style.visibility = "visible";
@@ -226,11 +226,11 @@ drawingArea.addEventListener("mouseup", () => {
 let clearButton = document.querySelector("#clear");
 clearButton.addEventListener("click", clearCanvas);
 
-// Add event to "add exit"-button and "add-spawn"-button
+// Add event to "addExit"-button and "addSpawn"-button
 let addingExit = false;
 let addingSpawn = false;
 let prevExit = null;
-let addExitButton = document.querySelector("#addExit")
+let addExitButton = document.querySelector("#addExit");
 addExitButton.addEventListener("click", () => {
     addingExit = true
 })
@@ -240,26 +240,26 @@ addSpawnButton.addEventListener("click", () => {
     addingSpawn = true;
 })
 
-let startingCell
-let spawnAreas = []
+let startingCell;
+let spawnAreas = [];
 
 drawingArea.addEventListener("mousedown", (event) => {
     if (addingSpawn) {
-        isDragging = true
-        startingCell = getCellIndex(event.offsetX, event.offsetY)
-        prevIndex = getCellIndex(event.offsetX, event.offsetY)
-        cellEventHandler(prevIndex)
+        isDragging = true;
+        startingCell = getCellIndex(event.offsetX, event.offsetY);
+        prevIndex = getCellIndex(event.offsetX, event.offsetY);
+        cellEventHandler(prevIndex);
     }
 })
 
 drawingArea.addEventListener("mousemove", (event) => {
     if (addingSpawn && isDragging) {
-        let nextIndex = getCellIndex(event.offsetX, event.offsetY)
+        let nextIndex = getCellIndex(event.offsetX, event.offsetY);
         if (prevIndex.x != nextIndex.x || prevIndex.y != nextIndex.y) {
             for (let x = nextIndex.x; x >= startingCell.x; --x) {
                 for (let y = nextIndex.y; y >= startingCell.y; --y) {
-                    let index = { x, y }
-                    cellEventHandler(index)
+                    let index = { x, y };
+                    cellEventHandler(index);
                 }
             }
             prevIndex = nextIndex;
@@ -270,21 +270,21 @@ drawingArea.addEventListener("mousemove", (event) => {
 
 drawingArea.addEventListener("mouseup", (event) => {
     if (addingSpawn) {
-        isDragging = false
-        addingSpawn = false
-        let spawnGroup = []
-        let finalCell = getCellIndex(event.offsetX, event.offsetY)
+        isDragging = false;
+        addingSpawn = false;
+        let spawnGroup = [];
+        let finalCell = getCellIndex(event.offsetX, event.offsetY);
         for (let x = finalCell.x; x >= startingCell.x; --x) {
             for (let y = finalCell.y; y >= startingCell.y; --y) {
-                let index = { x, y }
-                spawnGroup.push(index)
+                let index = { x, y };
+                spawnGroup.push(index);
             }
         }
-        spawnAreas.push(spawnGroup)
-        console.log(spawnGroup)
-        console.log(spawnAreas)
+        spawnAreas.push(spawnGroup);
+        console.log(spawnGroup);
+        console.log(spawnAreas);
     }
-})
+});
 
 
 function cellEventHandler(index) {
@@ -317,33 +317,33 @@ function toggleCellProperties(index) {
         cells[index.x][index.y].isSpawnPoint = false;
         cells[index.x][index.y].isWall = false
 
-        EndPoint = cells[index.x][index.y];
+        endPoint = cells[index.x][index.y];
 
         if (prevExit) {
-            prevExit.color = "white"
-            prevExit.isExit = false
-            prevExit = cells[index.x][index.y]
+            prevExit.color = "white";
+            prevExit.isExit = false;
+            prevExit = cells[index.x][index.y];
         } else {
-            prevExit = cells[index.x][index.y]
+            prevExit = cells[index.x][index.y];
         }
-        addingExit = false
+        addingExit = false;
     } else if (addingSpawn) {
-        cells[index.x][index.y].color = "blue"
-        StartPoint = cells[index.x][index.y];
+        cells[index.x][index.y].color = "blue";
+        startPoint = cells[index.x][index.y];
         cells[index.x][index.y].isExit = false;
-        cells[index.x][index.y].isSpawnPoint = true
-        cells[index.x][index.y].isWall = false
+        cells[index.x][index.y].isSpawnPoint = true;
+        cells[index.x][index.y].isWall = false;
     } else if (cells[index.x][index.y].color == "white") {
-        cells[index.x][index.y].color = "black"
-        cells[index.x][index.y].isWall = true
+        cells[index.x][index.y].color = "black";
+        cells[index.x][index.y].isWall = true;
     } else if (cells[index.x][index.y].color == "black" || cells[index.x][index.y].color == "green" || cells[index.x][index.y].color == "blue") {
-        cells[index.x][index.y].color = "white"
-        cells[index.x][index.y].isWall = false
-        cells[index.x][index.y].isExit = false
+        cells[index.x][index.y].color = "white";
+        cells[index.x][index.y].isWall = false;
+        cells[index.x][index.y].isExit = false;
         cells[index.x][index.y].isSpawnPoint = false;
 
     }
-    console.log(`cell ` + index.x, index.y + ` has color ${cells[index.x][index.y].color} `)
+    console.log(`cell ` + index.x, index.y + ` has color ${cells[index.x][index.y].color} `);
 }
 
 /**
@@ -352,13 +352,13 @@ function toggleCellProperties(index) {
 function clearCanvas() {
     cells.forEach(column => {
         column.forEach(cell => {
-            cell.color = "white"
-            cell.isWall = false
-            cell.isExit = false
+            cell.color = "white";
+            cell.isWall = false;
+            cell.isExit = false;
             cell.isSpawnPoint = false;
             cell.rect.setAttribute('fill', 'white');
-        })
-    })
+        });
+    });
 }
 
 /**
@@ -376,8 +376,8 @@ class Agent {
         this.x = x;
         this.y = y;
         this.fattiness = fattiness;
-        this.body = document.createElementNS(svgNS, 'circle')
-        this.body.setAttribute('r', this.fattiness)
+        this.body = document.createElementNS(svgNS, 'circle');
+        this.body.setAttribute('r', this.fattiness);
         let xyTransform = drawingArea.createSVGTransform();
         xyTransform.setTranslate(this.x, this.y);
         this.body.transform.baseVal.appendItem(xyTransform);
@@ -394,34 +394,34 @@ class Agent {
 
 function populate() {
     if (spawnAreas.length == 0) {
-        window.alert("Please add spawn areas")
-        return
+        window.alert("Please add spawn areas");
+        return;
     }
-    let totalCells = 0
+    let totalCells = 0;
     let agentNum = null;
     agentNum = numAgents.value;
     console.log(agentNum + "hello");
     // Count the total number of spawn area cells
     spawnAreas.forEach(area => {
-        totalCells += area.length
+        totalCells += area.length;
     })
     spawnAreas.forEach(area => {
-        let ratio = area.length / totalCells
-        let agentsPerArea = Math.floor(ratio * agentNum)
-        populateCells(area, agentsPerArea)
+        let ratio = area.length / totalCells;
+        let agentsPerArea = Math.floor(ratio * agentNum);
+        populateCells(area, agentsPerArea);
     })
     console.log(agents);
 }
 
 function populateCells(area, agentsPerArea) {
-    let firstCell = area[area.length-1]
-    let lastCell = area[0]
-    let areaSize = {x: lastCell.x-firstCell.x , y: lastCell.y-firstCell.y}
+    let firstCell = area[area.length-1];
+    let lastCell = area[0];
+    let areaSize = {x: lastCell.x-firstCell.x , y: lastCell.y-firstCell.y};
     for (let i = 0; i <= agentsPerArea; ++i) {
-        let fattiness = (Math.floor(Math.random() * 3) + 5)
-        let x = getRandomArbitrary(firstCell.x*cellSize+fattiness, lastCell.x*cellSize+cellSize-fattiness)
-        let y = getRandomArbitrary(firstCell.y*cellSize+fattiness, lastCell.y*cellSize+cellSize-fattiness)
-        let agent = new Agent(x, y, fattiness)
+        let fattiness = (Math.floor(Math.random() * 3) + 5);
+        let x = getRandomArbitrary(firstCell.x*cellSize+fattiness, lastCell.x*cellSize+cellSize-fattiness);
+        let y = getRandomArbitrary(firstCell.y*cellSize+fattiness, lastCell.y*cellSize+cellSize-fattiness);
+        let agent = new Agent(x, y, fattiness);
         agents.push(agent);
     }
 }
@@ -430,8 +430,8 @@ function getRandomArbitrary(min, max) {
     return Math.random() * (max - min) + min;
   }
 
-let popButton = document.querySelector("#populate")
-popButton.addEventListener("click", populate)
+let popButton = document.querySelector("#populate");
+popButton.addEventListener("click", populate);
 
 function anime() {
     agents.forEach(agent => {
