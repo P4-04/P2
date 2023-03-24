@@ -1,4 +1,4 @@
-//import { initCellValues } from './modules/pathfinding.js';
+import { initCellValues } from './modules/pathfinding.js';
 // Initialize canvas and context
 const closeMenu = document.getElementById("close");
 const openMenu = document.getElementById("open");
@@ -586,9 +586,3 @@ removeButton.addEventListener("click", function () {
         drawingArea.removeChild(agent.body);
     }
 });
-
-//Start Simulation
-startSim.addEventListener("click", function () {
-    //populate();
-    anime();
-})
