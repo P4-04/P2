@@ -1,6 +1,7 @@
 import { initCellValues, SetEssenVariables } from './modules/pathfinding.js';
-import { addSpawnArea, getSpawnArea, populate, removeAgentsFromArea } from './modules/agents.js';
+import { addSpawnArea, getSpawnArea, populate, removeAgentsFromArea, anime } from './modules/agents.js';
 import { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit, getCells } from './modules/cells.js';
+
 //Initialize DOM elements
 const closeMenu = document.querySelector("#close");
 const openMenu = document.querySelector("#open");
@@ -160,7 +161,7 @@ startSim.addEventListener("click", function () {
     SetEssenVariables(canvasWidth, canvasHeight, cellSize);
     initCellValues(getCells(), endPoint, startPoint);
     //AStar
-    populate();
+    //populate();
     anime();
 });
 
@@ -195,7 +196,7 @@ let nextIndex = null;
 let isDragging = false;
 
 drawingArea.addEventListener("mousedown", (event) => {
-    if (getAddingSpawn) {
+    if (getAddingSpawn()) {
         return;
     }
     isDragging = true;
@@ -205,7 +206,7 @@ drawingArea.addEventListener("mousedown", (event) => {
 });
 
 drawingArea.addEventListener("mousemove", (event) => {
-    if (getAddingSpawn) {
+    if (getAddingSpawn()) {
         return;
     }
     if (isDragging == true) {
@@ -218,11 +219,11 @@ drawingArea.addEventListener("mousemove", (event) => {
 });
 
 drawingArea.addEventListener("mouseup", () => {
-    if (getAddingSpawn) {
+    if (getAddingSpawn()) {
         return;
     }
     isDragging = false;
-    setaddingSpawn(false);
+    setAddingSpawn(false);
     prevIndex = null;
     if (menuHidden === false) {
         menu.style.visibility = "visible";
@@ -233,7 +234,7 @@ drawingArea.addEventListener("mouseup", () => {
 let startingCell;
 
 drawingArea.addEventListener("mousedown", (event) => {
-    if (getAddingSpawn) {
+    if (getAddingSpawn()) {
         isDragging = true;
         startingCell = getCellIndex(event.offsetX, event.offsetY);
         prevIndex = getCellIndex(event.offsetX, event.offsetY);
@@ -242,7 +243,7 @@ drawingArea.addEventListener("mousedown", (event) => {
 });
 
 drawingArea.addEventListener("mousemove", (event) => {
-    if (getAddingSpawn && isDragging) {
+    if (getAddingSpawn() && isDragging) {
         let nextIndex = getCellIndex(event.offsetX, event.offsetY);
         if (prevIndex.x != nextIndex.x || prevIndex.y != nextIndex.y) {
             for (let x = nextIndex.x; x >= startingCell.x; --x) {
@@ -257,7 +258,7 @@ drawingArea.addEventListener("mousemove", (event) => {
 });
 
 drawingArea.addEventListener("mouseup", (event) => {
-    if (getAddingSpawn) {
+    if (getAddingSpawn()) {
         isDragging = false;
         setAddingSpawn(false);
         let spawnGroup = [];
