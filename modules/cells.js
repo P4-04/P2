@@ -98,6 +98,9 @@ function drawTxt(cell, value) {
     numbering.setAttribute('x', cell.x)
     numbering.setAttribute('y', cell.y+17)
     numbering.classList.add('svgText');
+    if (cell.isWall){
+        numbering.setAttribute('fill', "white");
+    }
     numbering.textContent = Math.round(value);
     drawingArea.appendChild(numbering)
 }

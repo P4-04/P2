@@ -77,35 +77,27 @@ function AStar(start, goal) {
     // }
 }
 
-function initCellValues(cells, goal, startpoint){
-
-    console.log("running...");
-    console.log(cells[0].length);
+function initCellValues(cells, goal, startpoint)
+{
     for (let x = 0; x < cells.length; x++)
     {
         for (let y = 0; y < cells[0].length; y++)
         {
-            console.log("pre heurestic");
-            cells[x][y].h = heuristic(cells[x][y], goal);
-            console.log("post heurestic");
+            cells[x][y].h = heuristic(cells[x][y], goal, cells);
             let neighbors = GetNeighbors(cells[x][y], cells);
-            console.log("post neighbors");
+
             for (let i = 0; i < neighbors; i++)
             {
-                let tempG = heurestic(cells[x+1][y-1], cells[x][y]); 
+                let tempG = heurestic(cells[x+1][y-1], cells[x][y], cells); 
                 cells[x+1][y-1].g = tempG;
-                console.log("post temp g");
             }
 
             cells[x][y].vh = visualDistance(cells[x][y], goal);
-            console.log("post vD");
             cells[x][y].f = cells[x][y].g + cells[x][y].h;
-            drawTxt(cells[x][y], cells[x][y].f);
+            /* Uncomment if you need to see the value of the cells*/
+            //drawTxt(cells[x][y], cells[x][y].f);
         }
     }
-    console.log("pre AStar");
-    //AStar(startpoint, goal);
-    console.log("fin");
 }
 
 let pCanvasWidth = 0;
@@ -181,12 +173,14 @@ let manhatten = false;
  * @param {cell} goal the place to reach 
  * //https://www.diva-portal.org/smash/get/diva2:918778/FULLTEXT02.pdf Check this
 */
-function heuristic(cell, goal)
+function heuristic(cell, goal, cells)
 {
+    if (cell.isWall){
+        return cells.length * cells[0].length + 100;
+    }
+
     if (manhatten === true)
     {
-        let x = Math.abs(cell.x - goal.x) + Math.abs(cell.y - goal.y);
-        console.log("Heu: "+x);
         return Math.abs(cell.x - goal.x) + Math.abs(cell.y - goal.y);
     }
     else{//Euclidean Distance
