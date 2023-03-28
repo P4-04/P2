@@ -1,6 +1,6 @@
-import { initCellValues } from './modules/pathfinding.js';
+import { initCellValues, SetEssenVariables } from './modules/pathfinding.js';
 import { addSpawnArea, getSpawnArea, populate, removeAgentsFromArea } from './modules/agents.js';
-import { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit } from './modules/cells.js';
+import { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit, getCells } from './modules/cells.js';
 //Initialize DOM elements
 const closeMenu = document.querySelector("#close");
 const openMenu = document.querySelector("#open");
@@ -157,19 +157,12 @@ startSim.addEventListener("click", function () {
         return;
     }
 
-    initCellValues(cells, endPoint, startPoint);
+    SetEssenVariables(canvasWidth, canvasHeight, cellSize);
+    initCellValues(getCells(), endPoint, startPoint);
     //AStar
     populate();
     anime();
 });
-
-// //Start Simulation
-// startSim.addEventListener("click", function () {
-//     //populate();
-//     anime();
-// });
-
-
 
 //
 //

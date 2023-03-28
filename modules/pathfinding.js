@@ -1,99 +1,129 @@
 export { sendMessage };
+
 /** 
 * @param {cell} start the start point of our search
 * @param {cell} goal the end point of our search
 * @param {function} h is our heuristic function. h(n) is an estimate of the cost to reach our goal from the node n
 */
 function AStar(start, goal) {
-    try
-    {
+    // try
+    // {
 
         //
-        let openSet = [];
-        openSet.push(start);
+    let openSet = [];
+    openSet.push(start);
 
-        let cameFrom = [];
+    let cameFrom = [];
 
-        let Readcells = []
+    let Readcells = []
 
-        let defaults = [1];
+    let defaults = [1];
 
-        let cScore = defaults.map(x => x * Infinity);
+    let cScore = defaults.map(x => x * Infinity);
 
-        //for the node n, fScore[n] = cScoren] + h(n). fScore[n] represents our best guess as to how cheap our path would be from start to finish, if it goes through n
-        let fScore = defaults.map(x => x * Infinity);
+    //for the node n, fScore[n] = cScoren] + h(n). fScore[n] represents our best guess as to how cheap our path would be from start to finish, if it goes through n
+    let fScore = defaults.map(x => x * Infinity);
 
-        fScore[start] = h(start);
+    //do heurestics
+    //fScore[start] = h(start);
 
-        while (openSet.length > 0){
-            let winner = 0;
+    while (openSet.length > 0) {
+        let winner = 0;
 
-            // This operation can occur in O(Log(N)) time if openSet is a min-heap or a priority queue
-            //This get's the openSet with the lowest value
-            for (let i = 1; i < openSet.length; i++){
-                if (openSet[i].f < openSet[winner].f){
-                    winner = i;
-                    cameFrom.push(winner);
-                }
-                if (winner === goal){
-                    return DoPath(cameFrom, winner);
-                }
-                tempset.push(GetNeighbors(openSet[i]), cells);
-                Readcells.push[openSet[i]];
+        // This operation can occur in O(Log(N)) time if openSet is a min-heap or a priority queue
+        //This get's the openSet with the lowest value
 
-                for (let y = 0; y < Readcells.length; y++)
-                {
-                    for (let z = 0; z < tempset.length; z++)
-                    {
-                        if (Readcells[y].x === tempset[z].x){
-                            if (Readcells[y].y === tempset[z].y){
-                                tempset.Remove(z);
-                            }
+        let current = openSet[0];
+
+        for (let i = 1; i < openSet.length; i++) {
+            if (openSet[i].f < openSet[winner].f) {
+                winner = i;
+                cameFrom.push(winner);
+                current == i;
+            }
+            if (winner === goal) {
+                return DoPath(cameFrom, winner);
+            }
+            tempset.push(GetNeighbors(openSet[i]), cells);
+            Readcells.push[openSet[i]];
+
+            for (let y = 0; y < Readcells.length; y++) {
+                for (let z = 0; z < tempset.length; z++) {
+                    if (Readcells[y].x === tempset[z].x) {
+                        if (Readcells[y].y === tempset[z].y) {
+                            removeItem(tempset, z);
                         }
-
                     }
+
                 }
-
-
-                openSet.push(tempset);
             }
 
-            openSet.Remove(current);
 
+            openSet.push(tempset);
         }
+
+        removeItem(openSet, current);
+
+    }
 
     // Open set is empty but goal was never reached
     return failure
-    } 
-    catch{e}
-    {
-        let s = "AStar failed :( \n The error is: " + e + " \nI recieved the start point: " + start + " and end point: " + goal;
-        sendMessage(s);
-    }
+    // } catch{e}
+    // {
+    //     let s = "AStar failed :( \n The error is: " + e + " \nI recieved the start point: " + start + " and end point: " + goal;
+    //     console.log(s);
+    //     //sendMessage(s);
+    // }
 }
 
 function initCellValues(cells, goal, startpoint){
 
-    for (let x = 0; x < cells.length/2; x++)
+    console.log("running...");
+    console.log(cells[0].length);
+    for (let x = 0; x < cells.length; x++)
     {
-        for (let y = 0; y < cells[0].length/2; y++)
+        for (let y = 0; y < cells[0].length; y++)
         {
+            console.log("pre heurestic");
             cells[x][y].h = heuristic(cells[x][y], goal);
-            
+            console.log("post heurestic");
             let neighbors = GetNeighbors(cells[x][y], cells);
-
+            console.log("post neighbors");
             for (let i = 0; i < neighbors; i++)
             {
                 let tempG = heurestic(cells[x+1][y-1], cells[x][y]); 
                 cells[x+1][y-1].g = tempG;
+                console.log("post temp g");
             }
 
             cells[x][y].vh = visualDistance(cells[x][y], goal);
+            console.log("post vD");
             cells[x][y].f = cells[x][y].g + cells[x][y].h;
         }
     }
+    console.log("pre AStar");
     AStar(startpoint, goal);
+    console.log("fin");
 }
+
+let pCanvasWidth = 0;
+let pCanvasHeight = 0;
+let pCellSize = 0;
+
+function SetEssenVariables(Width, Height, Size)
+{
+    pCanvasHeight = Height;
+    pCanvasWidth = Width;
+    pCellSize = Size;
+}
+
+function removeItem(arr, value) {
+    let index = arr.indexOf(value);
+    if (index > -1) {
+      arr.splice(index, 1);
+    }
+    return arr;
+  }
 
 function GetNeighbors(cell, cells)
 {
@@ -101,29 +131,44 @@ function GetNeighbors(cell, cells)
     //Get x neighbors
     if (cell.x != 0)
     {
-        console.log("Cell with cords: " + cell.x + " " + cell.y + " has neighbor: "+ cells[cell.x-1][cell.y].x + " " + cells[cell.x-1][cell.y].y);
-        neighbors[0] = cells[cell.x-1][cell.y];
+        //neighbors[0] = cells[(cell.x/pCellSize)-1][cell.y/pCellSize];
+        //console.log("Current cell: " + cell.x + " " + cell.y);
+        //console.log(neighbors[0].x + " " + neighbors[0].y);
     } else{
+        console.log("Current cell: " + cell.x + " " + cell.y);
         console.log("false");
     }
-    
-    if (cell.x != cells[cells.length][cell.y].x)
+
+    if (cell.x != cells[cells.length-1][cells[0].length-1].x)
     {
-        //console.log(cells[cell.x+1][cell.y])
-        neighbors[1] = cells[cell.x+1][cell.y];
+        console.log(cell.y/pCellSize);
+        console.log(pCellSize);
+        neighbors[1] = cells[(cell.x/pCellSize)+1][cell.y/pCellSize];
+        console.log(neighbors[1].x + " " + neighbors[1].y);
     }
         //Get y neighbors
-    if (cell.height < 0){
+    if (cell.y != 0){
         //console.log(cells[cell.x][cell.y-1])
-        neighbors[2] = cells[cell.x][cell.y-1];
+        //neighbors[2] = cells[cell.x/pCellSize][(cell.y/pCellSize)-1];
+        //console.log(neighbors[2].x + " " + neighbors[2].y);
     }
 
-    if (cell.y != cells[0][cells[0].length].y)
+    if (cell.y != cells[0][cells[0].length-1].y)
     {
         //console.log(cells[cell.x][cell.y+1])
-        neighbors[3] = cells[cell.x][cell.y+1];
+        neighbors[3] = cells[cell.x/pCellSize][(cell.y/pCellSize)+1];
+        console.log(neighbors[3].x + " " + neighbors[3].y);
 
     }
+
+    cell.color = "purple"; 
+    cell.rect.setAttribute('fill', cell.color);
+
+    neighbors.forEach(neig => {
+        neig.color = "black";
+        cell.rect.setAttribute('fill', cell.color);
+        setTimeout(500);
+    });
     return neighbors;
 }
 
@@ -219,4 +264,4 @@ function sendMessage(error) {
 
     request.send(JSON.stringify(params));
 }
-export { initCellValues };
+export { initCellValues, SetEssenVariables };

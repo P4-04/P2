@@ -1,4 +1,4 @@
-export { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit, svgNS}
+export { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit, svgNS, getCells}
 
 //Custom cell size
 const cellSize = 25;
@@ -141,6 +141,8 @@ function DrawAllCells(drawingArea) {
         }
     }
 }
+
+function getCells(){ return cells; }
 
 function setAddingExit(isAdding) { addingExit = isAdding };
 function setAddingSpawn(isAdding) { addingSpawn = isAdding };
