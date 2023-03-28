@@ -1,4 +1,5 @@
 export { sendMessage };
+import { drawTxt } from './cells.js'
 
 /** 
 * @param {cell} start the start point of our search
@@ -67,7 +68,7 @@ function AStar(start, goal) {
     }
 
     // Open set is empty but goal was never reached
-    return failure
+    return false
     // } catch{e}
     // {
     //     let s = "AStar failed :( \n The error is: " + e + " \nI recieved the start point: " + start + " and end point: " + goal;
@@ -99,10 +100,11 @@ function initCellValues(cells, goal, startpoint){
             cells[x][y].vh = visualDistance(cells[x][y], goal);
             console.log("post vD");
             cells[x][y].f = cells[x][y].g + cells[x][y].h;
+            drawTxt(cells[x][y], cells[x][y].f);
         }
     }
     console.log("pre AStar");
-    AStar(startpoint, goal);
+    //AStar(startpoint, goal);
     console.log("fin");
 }
 
@@ -182,10 +184,12 @@ function heuristic(cell, goal)
 {
     if (manhatten === true)
     {
-        return Math.abs(start.x_value - goal.x) + Math.abs(start.y - goal.y);
+        let x = Math.abs(cell.x - goal.x) + Math.abs(cell.y - goal.y);
+        console.log("Heu: "+x);
+        return Math.abs(cell.x - goal.x) + Math.abs(cell.y - goal.y);
     }
     else{//Euclidean Distance
-        Math.sqrt(Math.pow(goal.x - start.x, 2) + Math.pow(goal.y - start.y, 2));
+        return Math.sqrt(Math.pow(goal.x - start.x, 2) + Math.pow(goal.y - start.y, 2));
         
     }
 }
@@ -195,7 +199,7 @@ function heuristic(cell, goal)
 */
 function visualDistance(NCell, goal)
 {
-    return Math.abs(start.x_value - goal.x) + Math.abs(start.y - goal.y);
+    return Math.abs(start.x - goal.x) + Math.abs(start.y - goal.y);
 }
 
 

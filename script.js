@@ -2,6 +2,7 @@ import { initCellValues, SetEssenVariables } from './modules/pathfinding.js';
 import { addSpawnArea, getSpawnArea, populate, removeAgentsFromArea, anime } from './modules/agents.js';
 import { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit, getCells } from './modules/cells.js';
 
+
 //Initialize DOM elements
 const closeMenu = document.querySelector("#close");
 const openMenu = document.querySelector("#open");
@@ -181,7 +182,7 @@ drawingArea.setAttribute('width', canvasWidth);
 drawingArea.setAttribute('height', canvasHeight);
 
 
-createGrid(canvasWidth, canvasHeight, drawingArea );
+createGrid(canvasWidth, canvasHeight);
 
 
 //

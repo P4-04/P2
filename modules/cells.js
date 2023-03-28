@@ -1,4 +1,4 @@
-export { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit, svgNS, getCells}
+export { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit, svgNS, getCells, drawTxt}
 
 //Custom cell size
 const cellSize = 25;
@@ -11,9 +11,9 @@ let addingSpawn = false;
 let endPoint = null
 let startPoint = null
 
-
-
+const drawingArea = document.querySelector(".drawing");
 const svgNS = "http://www.w3.org/2000/svg";
+
 //Function caller for correctly handling actions on cells
 function cellEventHandler(index) {
     toggleCellProperties(index);
@@ -93,12 +93,19 @@ function clearCanvas() {
 function drawCell(cell) {
     cell.rect.setAttribute('fill', cell.color);
 }
-
+function drawTxt(cell, value) {
+    let numbering = document.createElementNS(svgNS, "text")
+    numbering.setAttribute('x', cell.x)
+    numbering.setAttribute('y', cell.y+17)
+    numbering.classList.add('svgText');
+    numbering.textContent = value;
+    drawingArea.appendChild(numbering)
+}
 
 /**
  * Initializes our grid-cells with their default properties and calls DrawAllCells
 */
-function createGrid(canvasWidth, canvasHeight, drawingArea) {
+function createGrid(canvasWidth, canvasHeight) {
     for (let x = 0; x < canvasWidth / cellSize; x++) {
         cells[x] = [];
         for (let y = 0; y < canvasHeight / cellSize; y++) {
@@ -127,7 +134,7 @@ function createGrid(canvasWidth, canvasHeight, drawingArea) {
 /**
  * Draws our cells on screen using SVG
  */
-function DrawAllCells(drawingArea) {
+function DrawAllCells() {
     for (let x = 0; x < cells.length; x++) {
         for (let y = 0; y < cells[0].length; y++) {
             cells[x][y].rect = document.createElementNS(svgNS, 'rect');
