@@ -1,6 +1,6 @@
 import { initCellValues } from './modules/pathfinding.js';
 import { addSpawnArea, getSpawnArea, populate, removeAgentsFromArea, anime } from './modules/agents.js';
-import { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit } from './modules/cells.js';
+import { CreateGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit } from './modules/cells.js';
 
 //Initialize DOM elements
 const closeMenu = document.querySelector("#close");
@@ -183,12 +183,11 @@ startSim.addEventListener("click", function () {
 //Define canvas parameters and setting svg attributes
 const canvasWidth = window.innerWidth - window.innerWidth % cellSize;
 const canvasHeight = window.innerHeight - window.innerHeight % cellSize;
-drawingArea.setAttribute('viewBox', `0 0 ${canvasWidth} ${canvasHeight}`);
 drawingArea.setAttribute('width', canvasWidth);
 drawingArea.setAttribute('height', canvasHeight);
 
 
-createGrid(canvasWidth, canvasHeight, drawingArea );
+CreateGrid(canvasWidth, canvasHeight, drawingArea );
 
 
 //

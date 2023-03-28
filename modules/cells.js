@@ -1,4 +1,4 @@
-export { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit, svgNS}
+export { CreateGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit, svgNS}
 
 //Custom cell size
 const cellSize = 25;
@@ -38,36 +38,35 @@ function getCellIndex(MouseX, MouseY) {
  * @param {Cords} index The position of the cell to update
 */
 function toggleCellProperties(index) {
+    let currentCell = cells[index.x][index.y];
     if (addingExit) {
-        cells[index.x][index.y].color = "green";
-        cells[index.x][index.y].isExit = true;
-        cells[index.x][index.y].isSpawnPoint = false;
-        cells[index.x][index.y].isWall = false;
-
-        endPoint = cells[index.x][index.y];
+        currentCell.color = "green";
+        currentCell.isExit = true;
+        currentCell.isSpawnPoint = false;
+        currentCell.isWall = false;
 
         if (prevExit) {
             prevExit.color = "white";
             prevExit.isExit = false;
-            prevExit = cells[index.x][index.y];
+            prevExit = currentCell;
         } else {
-            prevExit = cells[index.x][index.y];
+            prevExit = currentCell;
         }
         addingExit = false;
     } else if (addingSpawn) {
-        cells[index.x][index.y].color = "blue";
-        startPoint = cells[index.x][index.y];
-        cells[index.x][index.y].isExit = false;
-        cells[index.x][index.y].isSpawnPoint = true;
-        cells[index.x][index.y].isWall = false;
-    } else if (cells[index.x][index.y].color == "white") {
-        cells[index.x][index.y].color = "black";
-        cells[index.x][index.y].isWall = true;
-    } else if (cells[index.x][index.y].color == "black" || cells[index.x][index.y].color == "green" || cells[index.x][index.y].color == "blue") {
-        cells[index.x][index.y].color = "white";
-        cells[index.x][index.y].isWall = false;
-        cells[index.x][index.y].isExit = false;
-        cells[index.x][index.y].isSpawnPoint = false;
+        currentCell.color = "blue";
+        startPoint = currentCell;
+        currentCell.isExit = false;
+        currentCell.isSpawnPoint = true;
+        currentCell.isWall = false;
+    } else if (currentCell.color == "white") {
+        currentCell.color = "black";
+        currentCell.isWall = true;
+    } else if (currentCell.color == "black" || currentCell.color == "green" || currentCell.color == "blue") {
+        currentCell.color = "white";
+        currentCell.isWall = false;
+        currentCell.isExit = false;
+        currentCell.isSpawnPoint = false;
     }
 }
 
@@ -98,7 +97,7 @@ function drawCell(cell) {
 /**
  * Initializes our grid-cells with their default properties and calls DrawAllCells
 */
-function createGrid(canvasWidth, canvasHeight, drawingArea) {
+function CreateGrid(canvasWidth, canvasHeight, drawingArea) {
     for (let x = 0; x < canvasWidth / cellSize; x++) {
         cells[x] = [];
         for (let y = 0; y < canvasHeight / cellSize; y++) {
@@ -130,14 +129,15 @@ function createGrid(canvasWidth, canvasHeight, drawingArea) {
 function DrawAllCells(drawingArea) {
     for (let x = 0; x < cells.length; x++) {
         for (let y = 0; y < cells[0].length; y++) {
-            cells[x][y].rect = document.createElementNS(svgNS, 'rect');
-            cells[x][y].rect.setAttribute('width', cells[x][y].width);
-            cells[x][y].rect.setAttribute('height', cells[x][y].height);
-            cells[x][y].rect.setAttribute('x', cells[x][y].x);
-            cells[x][y].rect.setAttribute('y', cells[x][y].y);
-            cells[x][y].rect.setAttribute('stroke', 'black');
-            cells[x][y].rect.setAttribute('fill', 'white');
-            drawingArea.appendChild(cells[x][y].rect);
+            let currentCell = cells[x][y]; 
+            currentCell.rect = document.createElementNS(svgNS, 'rect');
+            currentCell.rect.setAttribute('width', currentCell.width);
+            currentCell.rect.setAttribute('height', currentCell.height);
+            currentCell.rect.setAttribute('x', currentCell.x);
+            currentCell.rect.setAttribute('y', currentCell.y);
+            currentCell.rect.setAttribute('stroke', 'black');
+            currentCell.rect.setAttribute('fill', 'white');
+            drawingArea.appendChild(currentCell.rect);
         }
     }
 }
