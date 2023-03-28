@@ -98,7 +98,7 @@ function drawTxt(cell, value) {
     numbering.setAttribute('x', cell.x)
     numbering.setAttribute('y', cell.y+17)
     numbering.classList.add('svgText');
-    numbering.textContent = value;
+    numbering.textContent = Math.round(value);
     drawingArea.appendChild(numbering)
 }
 

@@ -175,7 +175,7 @@ function GetNeighbors(cell, cells)
     return neighbors;
 }
 
-let manhatten = true;
+let manhatten = false;
 /**Does a heuristic analysis on the cell to decide it's h value
  * @param {cell} Cell the cell to do the calculation for.
  * @param {cell} goal the place to reach 
@@ -190,7 +190,7 @@ function heuristic(cell, goal)
         return Math.abs(cell.x - goal.x) + Math.abs(cell.y - goal.y);
     }
     else{//Euclidean Distance
-        return Math.sqrt(Math.pow(goal.x - start.x, 2) + Math.pow(goal.y - start.y, 2));
+        return Math.sqrt(Math.pow(goal.x - cell.x, 2) + Math.pow(goal.y - cell.y, 2));
         
     }
 }
