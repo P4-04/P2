@@ -1,4 +1,3 @@
-export { sendMessage };
 import { drawTxt } from './cells.js'
 
 /** 
@@ -77,25 +76,28 @@ function AStar(start, goal) {
     // }
 }
 
-function initCellValues(cells, goal, startpoint)
+async function perfMeasure(board, endPoint, startPoint){
+    const start = performance.now();
+
+    initCellValues(board, endPoint, startPoint);
+
+    const end = performance.now();
+    console.log(`Execution time: ${end - start} ms`);
+}
+
+async function initCellValues(cells, goal, startpoint)
 {
     for (let x = 0; x < cells.length; x++)
     {
         for (let y = 0; y < cells[0].length; y++)
         {
             cells[x][y].h = heuristic(cells[x][y], goal, cells);
-            let neighbors = GetNeighbors(cells[x][y], cells);
-
-            for (let i = 0; i < neighbors; i++)
-            {
-                let tempG = heurestic(cells[x+1][y-1], cells[x][y], cells); 
-                cells[x+1][y-1].g = tempG;
-            }
-
+            
             cells[x][y].vh = visualDistance(cells[x][y], goal);
             cells[x][y].f = cells[x][y].g + cells[x][y].h;
+            //cells[x][y].f = Math.max((cells[x][y].g - Math.min(0))/Math.max(10)-Math.min(0)*10)
             /* Uncomment if you need to see the value of the cells*/
-            //drawTxt(cells[x][y], cells[x][y].f);
+            drawTxt(cells[x][y], cells[x][y].f);
         }
     }
 }
@@ -135,11 +137,9 @@ function GetNeighbors(cell, cells)
 
     if (cell.x != cells[cells.length-1][cells[0].length-1].x)
     {
-        console.log(cell.y/pCellSize);
-        console.log(pCellSize);
+        
         neighbors[1] = cells[(cell.x/pCellSize)+1][cell.y/pCellSize];
-        console.log(neighbors[1].x + " " + neighbors[1].y);
-    }
+        }
         //Get y neighbors
     if (cell.y != 0){
         //console.log(cells[cell.x][cell.y-1])
@@ -151,7 +151,6 @@ function GetNeighbors(cell, cells)
     {
         //console.log(cells[cell.x][cell.y+1])
         neighbors[3] = cells[cell.x/pCellSize][(cell.y/pCellSize)+1];
-        console.log(neighbors[3].x + " " + neighbors[3].y);
 
     }
 
@@ -263,4 +262,4 @@ function sendMessage(error) {
 
     request.send(JSON.stringify(params));
 }
-export { initCellValues, SetEssenVariables };
+export { initCellValues, SetEssenVariables, sendMessage, perfMeasure };

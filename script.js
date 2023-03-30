@@ -1,4 +1,4 @@
-import { initCellValues, SetEssenVariables } from './modules/pathfinding.js';
+import { initCellValues, SetEssenVariables, perfMeasure } from './modules/pathfinding.js';
 import { addSpawnArea, getSpawnArea, populate, removeAgentsFromArea, anime } from './modules/agents.js';
 import { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit, getCells } from './modules/cells.js';
 
@@ -160,8 +160,7 @@ startSim.addEventListener("click", function () {
     }
 
     SetEssenVariables(canvasWidth, canvasHeight, cellSize);
-    initCellValues(getCells(), endPoint, startPoint);
-    //AStar
+    perfMeasure(getCells(), endPoint, startPoint);
     //populate();
     anime();
 });
