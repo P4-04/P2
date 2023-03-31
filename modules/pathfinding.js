@@ -44,8 +44,7 @@ function GetNeighbors(cell, cells)
     //Get x neighbors
     if (cell.x != 0)
     {
-        neighbors[0] = cells[(cell.x/pCellSize)-1][cell.y/pCellSize];
-            
+        neighbors[0] = cells[(cell.x/pCellSize)-1][cell.y/pCellSize];    
     } 
     else{
         
@@ -56,7 +55,6 @@ function GetNeighbors(cell, cells)
         neighbors[1] = cells[(cell.x/pCellSize)+1][cell.y/pCellSize];
     }
     
-        //Get y neighbors
     if (cell.y != 0){
         neighbors[2] = cells[cell.x/pCellSize][(cell.y/pCellSize)-1];
     }
@@ -66,12 +64,30 @@ function GetNeighbors(cell, cells)
         neighbors[3] = cells[cell.x/pCellSize][(cell.y/pCellSize)+1];
     }
 
+
+    if (neighbors[0]==undefined)
+    {
+        neighbors.splice(0,0)
+    }
+    if (neighbors[1]==undefined)
+    {
+        neighbors.splice(1,1)
+    }
+    if (neighbors[2]==undefined)
+    {
+        neighbors.splice(2,2)
+    }
+    if (neighbors[3]==undefined)
+    {
+        neighbors.splice(3,3)
+    }
     //Visualisation of our astar scan
-    //cell.color = "purple"; 
-    //cell.rect.setAttribute('fill', cell.color);
+    // cell.color = "black"; 
+    // cell.rect.setAttribute('fill', cell.color);
     // neighbors.forEach(neig => {
-    //     neig.color = "black";
-    //     cell.rect.setAttribute('fill', cell.color);
+    //     neig.color = "purple";
+    //     neig.rect.setAttribute('fill', neig.color);
+    //     console.log(neig.x + " " + neig.y);
     //     setTimeout(500);
     // });
     //---------------------------------------------------
