@@ -8,9 +8,7 @@ async function perfMeasure(cells, goal, spawn) {
     let initCellsArray = [];
     initCellsArray[0] = goal;
     let cellsArray = [];
-    //console.log("Array initialized")
     cellsArray = setArray(cells, initCellsArray);
-    //console.log("Array set");
     markCells(cells, cellsArray);
 
     const end = performance.now();
@@ -134,27 +132,24 @@ let distVal = 0;
 let recursion = false;
 
 function setArray(cells, cellsArray) {
-    //console.log("setArray function called");
     let updateArray = [];
-    //console.log("cellsArray content: " + cells[cellsArray[0].x / pCellSize]);
     for (let i = 0; i < cellsArray.length; i++) {
-        //console.log("setArray iteration " + i);
         updateArray[i] = cells[cellsArray[i].x / pCellSize][cellsArray[i].y / pCellSize];
     }
-    //console.log("End of setArray");
     return updateArray;
 }
 
 function markCells(cells, currentCell) {
-    //console.log("current cell coords: " + currentCell.x + " " + currentCell.y);
     console.log("Distance value: " + distVal);
-    //console.log("Current cell value: " + cells[currentCell.x / pCellSize][currentCell.y / pCellSize].value);
 
     let nextNeighbors = [];
     let tempArr = [];
 
     console.log("current cells " + currentCell[0].x + currentCell[0].y);
+    console.log("current cell mark " + currentCell[0].mark);
     for (let i = 0; i < currentCell.length; i++) {
+        console.log("iteration " + i);
+        console.log("current Coords " + currentCell[i].x + currentCell[i].y);
         if (currentCell[i].mark === false) {
             markCellsController(cells, currentCell[i]);
 
@@ -167,9 +162,9 @@ function markCells(cells, currentCell) {
         }
     }
     distVal++;
-    let nextArray = [];
+    //let nextArray = [];
     if (nextNeighbors.length !== 0) {
-        console.log("next array before call " + nextArray[0]);
+        console.log("next array before call " + nextNeighbors);
         markCells(cells, nextNeighbors);
     }
 }
@@ -186,7 +181,7 @@ function getNeighbors2(cells, currentCell) {
     if (currentCell.x != 0) {
         newCurrentCell[0] = cells[(currentCell.x / pCellSize) - 1][currentCell.y / pCellSize];
         if (newCurrentCell[0] === undefined) {
-            newCurrentCell.splice(0, 0)
+            newCurrentCell.splice(0, 1);
         }
     }
     else {
@@ -196,21 +191,21 @@ function getNeighbors2(cells, currentCell) {
     if (currentCell.x != cells[cells.length - 1][cells[0].length - 1].x) {
         newCurrentCell[1] = cells[(currentCell.x / pCellSize) + 1][currentCell.y / pCellSize];
         if (newCurrentCell[1] === undefined) {
-            newCurrentCell.splice(1, 1)
+            newCurrentCell.splice(1, 1);
         }
     }
 
     if (currentCell.y != 0) {
         newCurrentCell[2] = cells[currentCell.x / pCellSize][(currentCell.y / pCellSize) - 1];
         if (newCurrentCell[2] === undefined) {
-            newCurrentCell.splice(2, 2)
+            newCurrentCell.splice(2, 1);
         }
     }
 
     if (currentCell.y != cells[0][cells[0].length - 1].y) {
         newCurrentCell[3] = cells[currentCell.x / pCellSize][(currentCell.y / pCellSize) + 1];
         if (newCurrentCell[3] === undefined) {
-            newCurrentCell.splice(3, 3)
+            newCurrentCell.splice(3, 1);
         }
     }
     return newCurrentCell;
@@ -218,9 +213,3 @@ function getNeighbors2(cells, currentCell) {
 
 
 export { initCellValues, setEssenVariables, sendMessage, perfMeasure };
-
-
-//find neighbors, check for marks
-//set current cells value
-//increment value
-//
