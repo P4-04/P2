@@ -1,10 +1,17 @@
-import { drawTxt } from './cells.js'
+import { cellSize, drawTxt } from './cells.js'
 
-async function perfMeasure(board, endPoint, startPoint)
-{
+async function perfMeasure(cells, goal, spawn) {
     const start = performance.now();
 
-    initCellValues(board, endPoint, startPoint);
+    //initCellValues(board, endPoint, startPoint);
+
+    let initCellsArray = [];
+    initCellsArray[0] = goal;
+    let cellsArray = [];
+    //console.log("Array initialized")
+    cellsArray = setArray(cells, initCellsArray);
+    //console.log("Array set");
+    markCells(cells, cellsArray);
 
     const end = performance.now();
     console.log(`Execution time: ${end - start} ms`);
@@ -12,14 +19,11 @@ async function perfMeasure(board, endPoint, startPoint)
 //If a wall is checked, check how many neighboring walls there are - if theres is only one, this wall is probably then end, therefore all the neighboring walkable cells should have a low value
 //If it has more than one wall as a neighbor, the walkable cells next to, should have a higher value. From this we should also be able to consider if it's the 'middle' of the wall or not.
 //The closer to the middle we get, the futher away the values should increase  
-async function initCellValues(cells, goal, startpoint)
-{
-    for (let x = 0; x < cells.length; x++)
-    {
-        for (let y = 0; y < cells[0].length; y++)
-        {
-            cells[x][y].h = heuristic(cells[x][y], goal, cells);            
-            cells[x][y].f = cells[x][y].g + cells[x][y].h;
+async function initCellValues(cells, goal, startpoint) {
+    for (let x = 0; x < cells.length; x++) {
+        for (let y = 0; y < cells[0].length; y++) {
+            cells[x][y].h = heuristic(cells[x][y], goal, cells);
+            cells[x][y].f = cells[x][y].h / cellSize;
             //cells[x][y].f = Math.max((cells[x][y].g - Math.min(0))/Math.max(10)-Math.min(0)*10)
             /* Uncomment if you need to see the value of the cells*/
             drawTxt(cells[x][y], cells[x][y].f);
@@ -31,55 +35,46 @@ let pCanvasWidth = 0;
 let pCanvasHeight = 0;
 let pCellSize = 0;
 
-function SetEssenVariables(Width, Height, Size)
-{
+function setEssenVariables(Width, Height, Size) {
     pCanvasHeight = Height;
     pCanvasWidth = Width;
     pCellSize = Size;
 }
 
-function GetNeighbors(cell, cells)
-{
+function getNeighbors(cell, cells) {
     let neighbors = [];
     //Get x neighbors
-    if (cell.x != 0)
-    {
-        neighbors[0] = cells[(cell.x/pCellSize)-1][cell.y/pCellSize];    
-    } 
-    else{
-        
+    if (cell.x != 0) {
+        neighbors[0] = cells[(cell.x / pCellSize) - 1][cell.y / pCellSize];
+    }
+    else {
+
     }
 
-    if (cell.x != cells[cells.length-1][cells[0].length-1].x)
-    {
-        neighbors[1] = cells[(cell.x/pCellSize)+1][cell.y/pCellSize];
-    }
-    
-    if (cell.y != 0){
-        neighbors[2] = cells[cell.x/pCellSize][(cell.y/pCellSize)-1];
+    if (cell.x != cells[cells.length - 1][cells[0].length - 1].x) {
+        neighbors[1] = cells[(cell.x / pCellSize) + 1][cell.y / pCellSize];
     }
 
-    if (cell.y != cells[0][cells[0].length-1].y)
-    {
-        neighbors[3] = cells[cell.x/pCellSize][(cell.y/pCellSize)+1];
+    if (cell.y != 0) {
+        neighbors[2] = cells[cell.x / pCellSize][(cell.y / pCellSize) - 1];
+    }
+
+    if (cell.y != cells[0][cells[0].length - 1].y) {
+        neighbors[3] = cells[cell.x / pCellSize][(cell.y / pCellSize) + 1];
     }
 
 
-    if (neighbors[0]==undefined)
-    {
-        neighbors.splice(0,0)
+    if (neighbors[0] == undefined) {
+        neighbors.splice(0, 0)
     }
-    if (neighbors[1]==undefined)
-    {
-        neighbors.splice(1,1)
+    if (neighbors[1] == undefined) {
+        neighbors.splice(1, 1)
     }
-    if (neighbors[2]==undefined)
-    {
-        neighbors.splice(2,2)
+    if (neighbors[2] == undefined) {
+        neighbors.splice(2, 2)
     }
-    if (neighbors[3]==undefined)
-    {
-        neighbors.splice(3,3)
+    if (neighbors[3] == undefined) {
+        neighbors.splice(3, 3)
     }
     //Visualisation of our astar scan
     // cell.color = "black"; 
@@ -94,25 +89,23 @@ function GetNeighbors(cell, cells)
     return neighbors;
 }
 
-let manhatten = false;
+let manhatten = true;
 /**Does a heuristic analysis on the cell to decide it's h value
  * @param {cell} Cell the cell to do the calculation for.
  * @param {cell} goal the place to reach 
  * //https://www.diva-portal.org/smash/get/diva2:918778/FULLTEXT02.pdf Check this
 */
-function heuristic(cell, goal, cells)
-{
-    if (cell.isWall){
-        return cells.length * cells[0].length + 100;
+function heuristic(cell, goal, cells) {
+    if (cell.isWall) {
+        return cells.length * cells[0].length + 10000;
     }
 
-    if (manhatten === true)
-    {
+    if (manhatten === true) {
         return Math.abs(cell.x - goal.x) + Math.abs(cell.y - goal.y);
     }
-    else{//Euclidean Distance
+    else {//Euclidean Distance
         return Math.sqrt(Math.pow(goal.x - cell.x, 2) + Math.pow(goal.y - cell.y, 2));
-        
+
     }
 }
 
@@ -130,4 +123,104 @@ function sendMessage(error) {
 
     request.send(JSON.stringify(params));
 }
-export { initCellValues, SetEssenVariables, sendMessage, perfMeasure };
+
+
+//Bug notice:
+//If for turning corners, the wall value is high, the agent will not turn the corner,
+//but instead follow a vector away fromt eh corner, essentially in the wrong (x,y) direction, 
+//depending on the direction of the wall.
+//Fix: ignore the direction given by wall / even out wall opposite, give vector direction 0 in wall axis
+let distVal = 0;
+let recursion = false;
+
+function setArray(cells, cellsArray) {
+    //console.log("setArray function called");
+    let updateArray = [];
+    //console.log("cellsArray content: " + cells[cellsArray[0].x / pCellSize]);
+    for (let i = 0; i < cellsArray.length; i++) {
+        //console.log("setArray iteration " + i);
+        updateArray[i] = cells[cellsArray[i].x / pCellSize][cellsArray[i].y / pCellSize];
+    }
+    //console.log("End of setArray");
+    return updateArray;
+}
+
+function markCells(cells, currentCell) {
+    //console.log("current cell coords: " + currentCell.x + " " + currentCell.y);
+    console.log("Distance value: " + distVal);
+    //console.log("Current cell value: " + cells[currentCell.x / pCellSize][currentCell.y / pCellSize].value);
+
+    let nextNeighbors = [];
+    let tempArr = [];
+
+    console.log("current cells " + currentCell[0].x + currentCell[0].y);
+    for (let i = 0; i < currentCell.length; i++) {
+        if (currentCell[i].mark === false) {
+            markCellsController(cells, currentCell[i]);
+
+            tempArr = getNeighbors2(cells, currentCell[i]);
+
+            nextNeighbors.push(tempArr[0]);
+            nextNeighbors.push(tempArr[1]);
+            nextNeighbors.push(tempArr[2]);
+            nextNeighbors.push(tempArr[3]);
+        }
+    }
+    distVal++;
+    let nextArray = [];
+    if (nextNeighbors.length !== 0) {
+        console.log("next array before call " + nextArray[0]);
+        markCells(cells, nextNeighbors);
+    }
+}
+
+function markCellsController(cells, currentCell) {
+    cells[currentCell.x / pCellSize][currentCell.y / pCellSize].value = distVal;
+    drawTxt(cells[currentCell.x / pCellSize][currentCell.y / pCellSize], distVal);
+    cells[currentCell.x / pCellSize][currentCell.y / pCellSize].mark = true;
+    currentCell.mark = true;
+}
+
+function getNeighbors2(cells, currentCell) {
+    let newCurrentCell = [];
+    if (currentCell.x != 0) {
+        newCurrentCell[0] = cells[(currentCell.x / pCellSize) - 1][currentCell.y / pCellSize];
+        if (newCurrentCell[0] === undefined) {
+            newCurrentCell.splice(0, 0)
+        }
+    }
+    else {
+
+    }
+
+    if (currentCell.x != cells[cells.length - 1][cells[0].length - 1].x) {
+        newCurrentCell[1] = cells[(currentCell.x / pCellSize) + 1][currentCell.y / pCellSize];
+        if (newCurrentCell[1] === undefined) {
+            newCurrentCell.splice(1, 1)
+        }
+    }
+
+    if (currentCell.y != 0) {
+        newCurrentCell[2] = cells[currentCell.x / pCellSize][(currentCell.y / pCellSize) - 1];
+        if (newCurrentCell[2] === undefined) {
+            newCurrentCell.splice(2, 2)
+        }
+    }
+
+    if (currentCell.y != cells[0][cells[0].length - 1].y) {
+        newCurrentCell[3] = cells[currentCell.x / pCellSize][(currentCell.y / pCellSize) + 1];
+        if (newCurrentCell[3] === undefined) {
+            newCurrentCell.splice(3, 3)
+        }
+    }
+    return newCurrentCell;
+}
+
+
+export { initCellValues, setEssenVariables, sendMessage, perfMeasure };
+
+
+//find neighbors, check for marks
+//set current cells value
+//increment value
+//
