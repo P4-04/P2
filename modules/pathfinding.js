@@ -11,6 +11,8 @@ async function perfMeasure(cells, goal, spawn) {
     cellsArray = setArray(cells, initCellsArray);
     markCells(cells, cellsArray);
 
+    calcVectorField(cells);
+
     const end = performance.now();
     console.log(`Execution time: ${end - start} ms`);
 }
@@ -129,7 +131,6 @@ function sendMessage(error) {
 //depending on the direction of the wall.
 //Fix: ignore the direction given by wall / even out wall opposite, give vector direction 0 in wall axis
 let distVal = 0;
-let recursion = false;
 
 function setArray(cells, cellsArray) {
     let updateArray = [];
@@ -211,5 +212,21 @@ function getNeighbors2(cells, currentCell) {
     return newCurrentCell;
 }
 
+function calcVectorField(cells) {
+    console.log("im here!!");
+    for (let i = 1; i < cells.length-1; i++) {
+        for (let j = 1; j < cells[i].length-1; j++) {
+            console.log("vector field cell iteration: " + i + cells[i][j].mark);
+            if (cells[i][j].mark === true) {
+                //let currentCell = cells[i][j];
+                //let neighbors = [];
+                //neighbors = getNeighbors2(cells, currentCell);
+                cells[i][j].vectorX = (cells[i-1][j].value - cells[i+1][j].value);
+                cells[i][j].vectorY = (cells[i][j-1].value - cells[i][j+1].value);
+                console.log("Vector of cell i " + i + cells[i][j].vectorX + cells[i][j].vectorY);
+            }
+        }
+    }
+}
 
 export { initCellValues, setEssenVariables, sendMessage, perfMeasure };

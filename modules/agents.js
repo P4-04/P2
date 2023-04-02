@@ -1,5 +1,5 @@
 export { populate, removeAgentsFromArea, anime, getSpawnArea, addSpawnArea }
-import { cellSize, svgNS } from './cells.js'
+import { cellSize, svgNS, getCells } from './cells.js'
 
 const drawingArea = document.querySelector(".drawing");
 let spawnAreas = [];
@@ -83,9 +83,36 @@ function getRandomArbitrary(min, max) {
 //Animate function, sets random position
 function anime() {
     agents.forEach(agent => {
-        let x = (agent.x + Math.random() * 2) - 1;
-        let y = (agent.y + Math.random() * 2) - 1;
-        agent.setCoordinates(x, y);
+        // let x = (agent.x + Math.random() * 2) - 1;
+        // let y = (agent.y + Math.random() * 2) - 1;
+        // agent.setCoordinates(x, y);
+
+        console.log("init coords = " + agent.x + " " + agent.y);
+
+        let x = Math.floor(agent.x / cellSize);
+        let y = Math.floor(agent.y / cellSize);
+
+        //console.log("current cell index = " + cells[x][y]);
+
+        let cells = getCells();
+        
+        let vectorX = cells[x][y].vectorX;
+        let vectorY = cells[x][y].vectorY;
+
+        console.log("current cell index = " + cells[x][y]);
+
+        console.log("vectors = " + vectorX + vectorY);
+
+        let newX = agent.x + (vectorX / 5);
+        let newY = agent.y + (vectorY / 5);
+
+        console.log("new coords = " + newX + " " + newY);
+
+        agent.setCoordinates(newX, newY);
+
+
+
+
 
         /*let collision = false;
 
@@ -198,5 +225,5 @@ function removeAgentsFromArea(area, agentsToRemovePerArea, drawingArea) {
     return removedAgents;
 }
 
-function addSpawnArea(spawnGroup){ spawnAreas.push(spawnGroup); }
-function getSpawnArea(){ return spawnAreas; }
+function addSpawnArea(spawnGroup) { spawnAreas.push(spawnGroup); }
+function getSpawnArea() { return spawnAreas; }

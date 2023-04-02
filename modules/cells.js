@@ -1,7 +1,7 @@
 export { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit, svgNS, getCells, drawTxt}
 
 //Custom cell size
-const cellSize = 75;
+const cellSize = 25;
 //Initialize 2d array for cells
 let cells = [[]];
 //Initialization of variables needed for adding spawn / exit cells
@@ -64,12 +64,14 @@ function toggleCellProperties(index) {
         cells[index.x][index.y].color = "black";
         cells[index.x][index.y].isWall = true;
         cells[index.x][index.y].mark = true;
+        cells[index.x][index.y].value = cells.length * cells[0].length / 3;
     } else if (cells[index.x][index.y].color == "black" || cells[index.x][index.y].color == "green" || cells[index.x][index.y].color == "blue") {
         cells[index.x][index.y].color = "white";
         cells[index.x][index.y].isWall = false;
         cells[index.x][index.y].isExit = false;
         cells[index.x][index.y].mark = false;
         cells[index.x][index.y].isSpawnPoint = false;
+        cells[index.x][index.y].value = 0;
     }
 }
 
@@ -130,7 +132,9 @@ function createGrid(canvasWidth, canvasHeight) {
                 vh: 0,
                 //Vector field values
                 mark: false,
-                value: 0
+                value: 0,
+                vectorX: 0,
+                vectorY: 0
             };
             //Push cell to cells array
             cells[x][y] = cell;
