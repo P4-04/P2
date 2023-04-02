@@ -132,6 +132,7 @@ function sendMessage(error) {
 //Fix: ignore the direction given by wall / even out wall opposite, give vector direction 0 in wall axis
 let distVal = 0;
 
+//Makes an array for input in markCells
 function setArray(cells, cellsArray) {
     let updateArray = [];
     for (let i = 0; i < cellsArray.length; i++) {
@@ -140,22 +141,20 @@ function setArray(cells, cellsArray) {
     return updateArray;
 }
 
+//Recursive function for marking arrau of cells and counting distance
 function markCells(cells, currentCell) {
-    console.log("Distance value: " + distVal);
-
     let nextNeighbors = [];
     let tempArr = [];
 
-    console.log("current cells " + currentCell[0].x + currentCell[0].y);
-    console.log("current cell mark " + currentCell[0].mark);
     for (let i = 0; i < currentCell.length; i++) {
-        console.log("iteration " + i);
-        console.log("current Coords " + currentCell[i].x + currentCell[i].y);
+        //Update cell if not already marked as updated or wall
+        //cell.isWall === true => cell.mark === true
         if (currentCell[i].mark === false) {
             markCellsController(cells, currentCell[i]);
 
             tempArr = getNeighbors2(cells, currentCell[i]);
 
+            //A maximum of 4 neighbors can be found for each cell
             nextNeighbors.push(tempArr[0]);
             nextNeighbors.push(tempArr[1]);
             nextNeighbors.push(tempArr[2]);
@@ -163,13 +162,15 @@ function markCells(cells, currentCell) {
         }
     }
     distVal++;
-    //let nextArray = [];
+
+    //If neighbors are present around current cells, do same procedure on cells
     if (nextNeighbors.length !== 0) {
-        console.log("next array before call " + nextNeighbors);
         markCells(cells, nextNeighbors);
     }
 }
 
+//Sets distance value and mark on cell
+//Draws text on cell
 function markCellsController(cells, currentCell) {
     cells[currentCell.x / pCellSize][currentCell.y / pCellSize].value = distVal;
     drawTxt(cells[currentCell.x / pCellSize][currentCell.y / pCellSize], distVal);
@@ -177,6 +178,7 @@ function markCellsController(cells, currentCell) {
     currentCell.mark = true;
 }
 
+//Make array of neighbors on given cell
 function getNeighbors2(cells, currentCell) {
     let newCurrentCell = [];
     if (currentCell.x != 0) {
@@ -212,18 +214,14 @@ function getNeighbors2(cells, currentCell) {
     return newCurrentCell;
 }
 
+//Sets vector attribute on marked cell
+//Calculated from direct neighbor values
 function calcVectorField(cells) {
-    console.log("im here!!");
     for (let i = 1; i < cells.length-1; i++) {
         for (let j = 1; j < cells[i].length-1; j++) {
-            console.log("vector field cell iteration: " + i + cells[i][j].mark);
             if (cells[i][j].mark === true) {
-                //let currentCell = cells[i][j];
-                //let neighbors = [];
-                //neighbors = getNeighbors2(cells, currentCell);
                 cells[i][j].vectorX = (cells[i-1][j].value - cells[i+1][j].value);
                 cells[i][j].vectorY = (cells[i][j-1].value - cells[i][j+1].value);
-                console.log("Vector of cell i " + i + cells[i][j].vectorX + cells[i][j].vectorY);
             }
         }
     }
