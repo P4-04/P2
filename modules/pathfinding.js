@@ -1,4 +1,4 @@
-import { cellSize, drawTxt } from './cells.js'
+import { cellSize, drawTxt, getCellIndex } from './cells.js'
 
 async function perfMeasure(cells, goal, spawn) {
     const start = performance.now();
@@ -236,6 +236,7 @@ function calculateVectors(cells) {
             if (cell.value === 0 || cell.isWall === true) {
                 continue;
             }
+            let currentCellIndex = getCellIndex(cell.x, cell.y)
             let neighbors = getNeighbors2(cells, cell);
             let lowestCost = neighbors.reduce(function (acc, curr) {
                 return Math.min(acc, curr.value);
@@ -243,20 +244,24 @@ function calculateVectors(cells) {
             let lowestCells = neighbors.filter(function (obj) {
                 return obj.value === lowestCost;
             });
+
             if (lowestCells.length == 2) {
-                let vector1 = { x: lowestCells[0].x - cell.x, y: lowestCells[0].y - cell.y }
-                let vector2 = { x: lowestCells[1].x - cell.x, y: lowestCells[1].y - cell.y }
+                let cell1Index = getCellIndex(lowestCells[0].x, lowestCells[0].y)
+                let cell2Index = getCellIndex(lowestCells[1].x, lowestCells[1].y)
+                let vector1 = { x: cell1Index.x - currentCellIndex.x, y: cell1Index.y - currentCellIndex.y }
+                let vector2 = { x: cell2Index.x - currentCellIndex.x, y: cell2Index.y - currentCellIndex.y }
                 let x = vector1.x + vector2.x;
                 let y = vector1.y + vector2.y;
-                console.log("vectors" + cell.dVector.x + " " + cell.dVector.y);
                 cell.dVector.x = x;
                 cell.dVector.y = y;
+                console.log("vectors" + cell.dVector.x + " " + cell.dVector.y);
             } else if (lowestCells.length == 1) {
-                let x = lowestCells[0].x - cell.x;
-                let y = lowestCells[0].y - cell.y;
-                console.log("vectors" + cell.dVector.x + " " + cell.dVector.y);
+                let cellVector = getCellIndex(lowestCells[0].x, lowestCells[0].y)
+                let x = cellVector.x-currentCellIndex.x
+                let y = cellVector.y - currentCellIndex.y;
                 cell.dVector.x = x;
                 cell.dVector.y = y;
+                console.log("vectors" + cell.dVector.x + " " + cell.dVector.y);
             }
         }
     });

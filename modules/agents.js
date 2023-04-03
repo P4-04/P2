@@ -87,8 +87,8 @@ function anime() {
     while (i < len) {
         let x = Math.floor(agents[i].x / cellSize);
         let y = Math.floor(agents[i].y / cellSize);
-        let newX = agents[i].x + (cells[x][y].dVector.x / 50);
-        let newY = agents[i].y + (cells[x][y].dVector.y / 50);
+        let newX = agents[i].x + (cells[x][y].dVector.x);
+        let newY = agents[i].y + (cells[x][y].dVector.y);
         agents[i].setCoordinates(newX, newY);
         i++;
     }
