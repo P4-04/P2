@@ -232,9 +232,9 @@ function getNeighbors2(cells, currentCell) {
 
 function calculateVectors(cells) {
     cells.forEach(row => {
-        row.forEach(cell => {
-            if (cell.value < 0 || cell.isWall === true) {
-                return;
+        for (let cell of row) {
+            if (cell.value === 0 || cell.isWall === true) {
+                continue;
             }
             let neighbors = getNeighbors2(cells, cell);
             let lowestCost = neighbors.reduce(function (acc, curr) {
@@ -258,7 +258,7 @@ function calculateVectors(cells) {
                 cell.dVector.x = x;
                 cell.dVector.y = y;
             }
-        });
+        }
     });
 }
 
