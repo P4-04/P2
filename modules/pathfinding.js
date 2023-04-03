@@ -11,7 +11,9 @@ async function perfMeasure(cells, goal, spawn) {
     cellsArray = setArray(cells, initCellsArray);
     markCells(cells, cellsArray);
 
-    calcVectorField(cells);
+    //calcVectorField(cells);
+
+    calculateVectors(cells);
 
     const end = performance.now();
     console.log(`Execution time: ${end - start} ms`);
@@ -216,15 +218,50 @@ function getNeighbors2(cells, currentCell) {
 
 //Sets vector attribute on marked cell
 //Calculated from direct neighbor values
-function calcVectorField(cells) {
-    for (let i = 1; i < cells.length-1; i++) {
-        for (let j = 1; j < cells[i].length-1; j++) {
-            if (cells[i][j].mark === true) {
-                cells[i][j].vectorX = (cells[i-1][j].value - cells[i+1][j].value);
-                cells[i][j].vectorY = (cells[i][j-1].value - cells[i][j+1].value);
+// function calcVectorField(cells) {
+//     for (let i = 1; i < cells.length-1; i++) {
+//         for (let j = 1; j < cells[i].length-1; j++) {
+//             if (cells[i][j].mark === true) {
+//                 cells[i][j].vectorX = (cells[i-1][j].value - cells[i+1][j].value);
+//                 cells[i][j].vectorY = (cells[i][j-1].value - cells[i][j+1].value);
+//             }
+//         }
+//     }
+// }
+
+
+function calculateVectors(cells) {
+    cells.forEach(row => {
+        row.forEach(cell => {
+            if (cell.value < 0 || cell.isWall === true) {
+                return;
             }
-        }
-    }
+            let neighbors = getNeighbors2(cells, cell);
+            let lowestCost = neighbors.reduce(function (acc, curr) {
+                return Math.min(acc, curr.value);
+            }, Infinity);
+            let lowestCells = neighbors.filter(function (obj) {
+                return obj.value === lowestCost;
+            });
+            if (lowestCells.length == 2) {
+                let vector1 = { x: lowestCells[0].x - cell.x, y: lowestCells[0].y - cell.y }
+                let vector2 = { x: lowestCells[1].x - cell.x, y: lowestCells[1].y - cell.y }
+                let x = vector1.x + vector2.x;
+                let y = vector1.y + vector2.y;
+                console.log("vectors" + cell.dVector.x + " " + cell.dVector.y);
+                cell.dVector.x = x;
+                cell.dVector.y = y;
+            } else if (lowestCells.length == 1) {
+                let x = lowestCells[0].x - cell.x;
+                let y = lowestCells[0].y - cell.y;
+                console.log("vectors" + cell.dVector.x + " " + cell.dVector.y);
+                cell.dVector.x = x;
+                cell.dVector.y = y;
+            }
+        });
+    });
 }
+
+
 
 export { initCellValues, setEssenVariables, sendMessage, perfMeasure };

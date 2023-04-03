@@ -134,7 +134,8 @@ function createGrid(canvasWidth, canvasHeight) {
                 mark: false,
                 value: 0,
                 vectorX: 0,
-                vectorY: 0
+                vectorY: 0,
+                dVector: {x, y}
             };
             //Push cell to cells array
             cells[x][y] = cell;
