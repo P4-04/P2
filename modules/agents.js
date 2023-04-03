@@ -82,69 +82,16 @@ function getRandomArbitrary(min, max) {
 
 //Animate function, sets random position
 function anime() {
-    agents.forEach(agent => {
-
-        console.log("init coords = " + agent.x + " " + agent.y);
-
-        let x = Math.floor(agent.x / cellSize);
-        let y = Math.floor(agent.y / cellSize);
-
-        let cells = getCells();
-        
-        let vectorX = cells[x][y].dVector.x;
-        let vectorY = cells[x][y].dVector.y;
-
-        let newX = agent.x + (vectorX / 50);
-        let newY = agent.y + (vectorY / 50);
-
-        agent.setCoordinates(newX, newY);
-
-
-
-
-
-        /*let collision = false;
-
-        let pt = (agent.x, agent.y);
-
-        let poly = getCellPath(cells[getCellIndex(agent.x, agent.y)]);
-        isPointInPoly(poly, pt);
-
-        //if (collision === false) {
-            let arithmetic = Math.random();
-            let x = (agent.x + Math.random() * 3);
-            let y = (agent.y + Math.random() * 3);
-            while (x >= canvasWidth && y >= canvasHeight && cells[getCellIndex(x, y)].isWall) {
-                x = (agent.x + Math.random() * 5);
-                y = (agent.y + Math.random() * 5);
-            }
-            agent.setCoordinates(x, y)*/
-        //}
-
-        // if (arithmetic <= 0.25) {
-        //     agent.x = (agent.x + Math.random() * 3);
-        //     agent.y = (agent.y + Math.random() * 3);
-        // }
-        // else if (arithmetic > 0.25 && arithmetic <= 0.5) {
-        //     agent.x = (agent.x + Math.random() * 3);
-        //     agent.y = (agent.y - Math.random() * 3);
-        // }
-        // else if (arithmetic > 0.5 && arithmetic <= 0.75) {
-        //     agent.x = (agent.x - Math.random() * 3);
-        //     agent.y = (agent.y + Math.random() * 3);
-        // }
-        // else {
-        //     agent.x = (agent.x - Math.random() * 3);
-        //     agent.y = (agent.y - Math.random() * 3);
-        // }
-
-        // let xyTransform = drawingArea.createSVGTransform();
-        // xyTransform.setTranslate(agent.x, agent.y);
-        // agent.body.transform.baseVal[0] = xyTransform;
-
-    });
-
-    //Calls recursively 60 times per second
+    let i = 0, len = agents.length;
+    let cells = getCells();
+    while (i < len) {
+        let x = Math.floor(agents[i].x / cellSize);
+        let y = Math.floor(agents[i].y / cellSize);
+        let newX = agents[i].x + (cells[x][y].dVector.x / 50);
+        let newY = agents[i].y + (cells[x][y].dVector.y / 50);
+        agents[i].setCoordinates(newX, newY);
+        i++;
+    }
     requestAnimationFrame(anime);
 }
 
