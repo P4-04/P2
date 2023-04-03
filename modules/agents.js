@@ -61,7 +61,7 @@ function populateCells(area, agentsPerArea) {
     let lastCell = area[0];
     //let areaSize = { x: lastCell.x - firstCell.x, y: lastCell.y - firstCell.y };
     for (let i = 0; i < agentsPerArea; ++i) {
-        let fattiness = (Math.floor(Math.random() * 3) + 5);
+        let fattiness = ((cellSize / 6) + Math.floor(Math.random() * 3));
         let x = getRandomArbitrary(firstCell.x * cellSize + fattiness, lastCell.x * cellSize + cellSize - fattiness);
         let y = getRandomArbitrary(firstCell.y * cellSize + fattiness, lastCell.y * cellSize + cellSize - fattiness);
         let agent = new Agent(x, y, fattiness);
