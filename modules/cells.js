@@ -1,5 +1,6 @@
 export { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit, svgNS, getCells, drawTxt}
 
+
 //Custom cell size
 const cellSize = 25;
 //Initialize 2d array for cells
@@ -38,20 +39,19 @@ function getCellIndex(MouseX, MouseY) {
  * @param {Cords} index The position of the cell to update
 */
 function toggleCellProperties(index) {
+    let currentCell = cells[index.x][index.y];
     if (addingExit) {
-        cells[index.x][index.y].color = "green";
-        cells[index.x][index.y].isExit = true;
-        cells[index.x][index.y].isSpawnPoint = false;
-        cells[index.x][index.y].isWall = false;
-
-        endPoint = cells[index.x][index.y];
+        currentCell.color = "green";
+        currentCell.isExit = true;
+        currentCell.isSpawnPoint = false;
+        currentCell.isWall = false;
 
         if (prevExit) {
             prevExit.color = "white";
             prevExit.isExit = false;
-            prevExit = cells[index.x][index.y];
+            prevExit = currentCell;
         } else {
-            prevExit = cells[index.x][index.y];
+            prevExit = currentCell;
         }
         addingExit = false;
     } else if (addingSpawn) {
@@ -150,14 +150,15 @@ function createGrid(canvasWidth, canvasHeight) {
 function DrawAllCells() {
     for (let x = 0; x < cells.length; x++) {
         for (let y = 0; y < cells[0].length; y++) {
-            cells[x][y].rect = document.createElementNS(svgNS, 'rect');
-            cells[x][y].rect.setAttribute('width', cells[x][y].width);
-            cells[x][y].rect.setAttribute('height', cells[x][y].height);
-            cells[x][y].rect.setAttribute('x', cells[x][y].x);
-            cells[x][y].rect.setAttribute('y', cells[x][y].y);
-            cells[x][y].rect.setAttribute('stroke', 'black');
-            cells[x][y].rect.setAttribute('fill', 'white');
-            drawingArea.appendChild(cells[x][y].rect);
+            let currentCell = cells[x][y]; 
+            currentCell.rect = document.createElementNS(svgNS, 'rect');
+            currentCell.rect.setAttribute('width', currentCell.width);
+            currentCell.rect.setAttribute('height', currentCell.height);
+            currentCell.rect.setAttribute('x', currentCell.x);
+            currentCell.rect.setAttribute('y', currentCell.y);
+            currentCell.rect.setAttribute('stroke', 'black');
+            currentCell.rect.setAttribute('fill', 'white');
+            drawingArea.appendChild(currentCell.rect);
         }
     }
 }
