@@ -1,5 +1,5 @@
 export { populate, removeAgentsFromArea, anime, getSpawnArea, addSpawnArea }
-import { cellSize, svgNS } from './cells.js'
+import { cellSize, svgNS, getCells, getCellIndex } from './cells.js'
 
 const drawingArea = document.querySelector(".drawing");
 let spawnAreas = [];
@@ -61,7 +61,7 @@ function populateCells(area, agentsPerArea) {
     let lastCell = area[0];
     //let areaSize = { x: lastCell.x - firstCell.x, y: lastCell.y - firstCell.y };
     for (let i = 0; i < agentsPerArea; ++i) {
-        let fattiness = (Math.floor(Math.random() * 3) + 5);
+        let fattiness = ((cellSize / 6) + Math.floor(Math.random() * 3));
         let x = getRandomArbitrary(firstCell.x * cellSize + fattiness, lastCell.x * cellSize + cellSize - fattiness);
         let y = getRandomArbitrary(firstCell.y * cellSize + fattiness, lastCell.y * cellSize + cellSize - fattiness);
         let agent = new Agent(x, y, fattiness);
@@ -82,53 +82,16 @@ function getRandomArbitrary(min, max) {
 
 //Animate function, sets random position
 function anime() {
-    agents.forEach(agent => {
-        let x = (agent.x + Math.random() * 2) - 1;
-        let y = (agent.y + Math.random() * 2) - 1;
-        agent.setCoordinates(x, y);
-
-        /*let collision = false;
-
-        let pt = (agent.x, agent.y);
-
-        let poly = getCellPath(cells[getCellIndex(agent.x, agent.y)]);
-        isPointInPoly(poly, pt);
-
-        //if (collision === false) {
-            let arithmetic = Math.random();
-            let x = (agent.x + Math.random() * 3);
-            let y = (agent.y + Math.random() * 3);
-            while (x >= canvasWidth && y >= canvasHeight && cells[getCellIndex(x, y)].isWall) {
-                x = (agent.x + Math.random() * 5);
-                y = (agent.y + Math.random() * 5);
-            }
-            agent.setCoordinates(x, y)*/
-        //}
-
-        // if (arithmetic <= 0.25) {
-        //     agent.x = (agent.x + Math.random() * 3);
-        //     agent.y = (agent.y + Math.random() * 3);
-        // }
-        // else if (arithmetic > 0.25 && arithmetic <= 0.5) {
-        //     agent.x = (agent.x + Math.random() * 3);
-        //     agent.y = (agent.y - Math.random() * 3);
-        // }
-        // else if (arithmetic > 0.5 && arithmetic <= 0.75) {
-        //     agent.x = (agent.x - Math.random() * 3);
-        //     agent.y = (agent.y + Math.random() * 3);
-        // }
-        // else {
-        //     agent.x = (agent.x - Math.random() * 3);
-        //     agent.y = (agent.y - Math.random() * 3);
-        // }
-
-        // let xyTransform = drawingArea.createSVGTransform();
-        // xyTransform.setTranslate(agent.x, agent.y);
-        // agent.body.transform.baseVal[0] = xyTransform;
-
-    });
-
-    //Calls recursively 60 times per second
+    let i = 0, len = agents.length;
+    let cells = getCells();
+    while (i < len) {
+        let x = Math.floor(agents[i].x / cellSize);
+        let y = Math.floor(agents[i].y / cellSize);
+        let newX = agents[i].x + (cells[x][y].dVector.x);
+        let newY = agents[i].y + (cells[x][y].dVector.y);
+        agents[i].setCoordinates(newX, newY);
+        i++;
+    }
     requestAnimationFrame(anime);
 }
 
@@ -198,5 +161,5 @@ function removeAgentsFromArea(area, agentsToRemovePerArea, drawingArea) {
     return removedAgents;
 }
 
-function addSpawnArea(spawnGroup){ spawnAreas.push(spawnGroup); }
-function getSpawnArea(){ return spawnAreas; }
+function addSpawnArea(spawnGroup) { spawnAreas.push(spawnGroup); }
+function getSpawnArea() { return spawnAreas; }
