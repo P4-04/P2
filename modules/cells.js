@@ -1,4 +1,5 @@
-export { CreateGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit, svgNS}
+export { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit, svgNS, getCells, drawTxt}
+
 
 //Custom cell size
 const cellSize = 25;
@@ -11,9 +12,9 @@ let addingSpawn = false;
 let endPoint = null
 let startPoint = null
 
-
-
+const drawingArea = document.querySelector(".drawing");
 const svgNS = "http://www.w3.org/2000/svg";
+
 //Function caller for correctly handling actions on cells
 function cellEventHandler(index) {
     toggleCellProperties(index);
@@ -54,19 +55,23 @@ function toggleCellProperties(index) {
         }
         addingExit = false;
     } else if (addingSpawn) {
-        currentCell.color = "blue";
-        startPoint = currentCell;
-        currentCell.isExit = false;
-        currentCell.isSpawnPoint = true;
-        currentCell.isWall = false;
-    } else if (currentCell.color == "white") {
-        currentCell.color = "black";
-        currentCell.isWall = true;
-    } else if (currentCell.color == "black" || currentCell.color == "green" || currentCell.color == "blue") {
-        currentCell.color = "white";
-        currentCell.isWall = false;
-        currentCell.isExit = false;
-        currentCell.isSpawnPoint = false;
+        cells[index.x][index.y].color = "blue";
+        startPoint = cells[index.x][index.y];
+        cells[index.x][index.y].isExit = false;
+        cells[index.x][index.y].isSpawnPoint = true;
+        cells[index.x][index.y].isWall = false;
+    } else if (cells[index.x][index.y].color == "white") {
+        cells[index.x][index.y].color = "black";
+        cells[index.x][index.y].isWall = true;
+        cells[index.x][index.y].mark = true;
+        cells[index.x][index.y].value = cells.length * cells[0].length / 3;
+    } else if (cells[index.x][index.y].color == "black" || cells[index.x][index.y].color == "green" || cells[index.x][index.y].color == "blue") {
+        cells[index.x][index.y].color = "white";
+        cells[index.x][index.y].isWall = false;
+        cells[index.x][index.y].isExit = false;
+        cells[index.x][index.y].mark = false;
+        cells[index.x][index.y].isSpawnPoint = false;
+        cells[index.x][index.y].value = 0;
     }
 }
 
@@ -92,12 +97,22 @@ function clearCanvas() {
 function drawCell(cell) {
     cell.rect.setAttribute('fill', cell.color);
 }
-
+function drawTxt(cell, value) {
+    let numbering = document.createElementNS(svgNS, "text")
+    numbering.setAttribute('x', cell.x)
+    numbering.setAttribute('y', cell.y+17)
+    numbering.classList.add('svgText');
+    if (cell.isWall){
+        numbering.setAttribute('fill', "white");
+    }
+    numbering.textContent = Math.round(value);
+    drawingArea.appendChild(numbering)
+}
 
 /**
  * Initializes our grid-cells with their default properties and calls DrawAllCells
 */
-function CreateGrid(canvasWidth, canvasHeight, drawingArea) {
+function createGrid(canvasWidth, canvasHeight) {
     for (let x = 0; x < canvasWidth / cellSize; x++) {
         cells[x] = [];
         for (let y = 0; y < canvasHeight / cellSize; y++) {
@@ -114,7 +129,13 @@ function CreateGrid(canvasWidth, canvasHeight, drawingArea) {
                 f: 0,
                 g: 0,
                 h: 0,
-                vh: 0
+                vh: 0,
+                //Vector field values
+                mark: false,
+                value: 0,
+                vectorX: 0,
+                vectorY: 0,
+                dVector: {x: 0, y: 0}
             };
             //Push cell to cells array
             cells[x][y] = cell;
@@ -126,7 +147,7 @@ function CreateGrid(canvasWidth, canvasHeight, drawingArea) {
 /**
  * Draws our cells on screen using SVG
  */
-function DrawAllCells(drawingArea) {
+function DrawAllCells() {
     for (let x = 0; x < cells.length; x++) {
         for (let y = 0; y < cells[0].length; y++) {
             let currentCell = cells[x][y]; 
@@ -141,6 +162,8 @@ function DrawAllCells(drawingArea) {
         }
     }
 }
+
+function getCells(){ return cells; }
 
 function setAddingExit(isAdding) { addingExit = isAdding };
 function setAddingSpawn(isAdding) { addingSpawn = isAdding };

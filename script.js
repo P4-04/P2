@@ -1,6 +1,6 @@
-import { initCellValues } from './modules/pathfinding.js';
+import { initCellValues, setEssenVariables, perfMeasure } from './modules/pathfinding.js';
 import { addSpawnArea, getSpawnArea, populate, removeAgentsFromArea, anime } from './modules/agents.js';
-import { CreateGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit } from './modules/cells.js';
+import { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit, getCells } from './modules/cells.js';
 
 //Initialize DOM elements
 const closeMenu = document.querySelector("#close");
@@ -158,19 +158,10 @@ startSim.addEventListener("click", function () {
         return;
     }
 
-    //initCellValues(cells, endPoint, startPoint);
-    //AStar
-    //populate();
+    setEssenVariables(canvasWidth, canvasHeight, cellSize);
+    perfMeasure(getCells(), endPoint, startPoint);
     anime();
 });
-
-// //Start Simulation
-// startSim.addEventListener("click", function () {
-//     //populate();
-//     anime();
-// });
-
-
 
 //
 //
@@ -186,9 +177,7 @@ const canvasHeight = window.innerHeight - window.innerHeight % cellSize;
 drawingArea.setAttribute('width', canvasWidth);
 drawingArea.setAttribute('height', canvasHeight);
 
-
-CreateGrid(canvasWidth, canvasHeight, drawingArea );
-
+createGrid(canvasWidth, canvasHeight);
 
 //
 //
