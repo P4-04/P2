@@ -44,6 +44,7 @@ function toggleCellProperties(index) {
         currentCell.isExit = true;
         currentCell.isSpawnPoint = false;
         currentCell.isWall = false;
+        endPoint = currentCell;
 
         if (prevExit) {
             prevExit.color = "white";
