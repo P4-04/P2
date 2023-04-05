@@ -1,3 +1,4 @@
+import { getSpawnArea } from './agents.js';
 import { cellSize, drawTxt, getCellIndex } from './cells.js'
 
 async function perfMeasure(cells, goal, spawn) {
@@ -8,8 +9,15 @@ async function perfMeasure(cells, goal, spawn) {
     let initCellsArray = [];
     initCellsArray[0] = goal;
     let cellsArray = [];
+
     cellsArray = setArray(cells, initCellsArray);
     markCells(cells, cellsArray);
+
+    let spawnCount = getSpawnArea().length;
+
+    if (hitSpawnCells != spawnCount){
+        alert("Not all spawn areas can reach the end point(s)!");
+    }
 
     //calcVectorField(cells);
 
@@ -32,7 +40,7 @@ async function initCellValues(cells, goal, startpoint) {
         }
     }
 }
-
+let hitSpawnCells = 0;
 let pCanvasWidth = 0;
 let pCanvasHeight = 0;
 let pCellSize = 0;
@@ -40,8 +48,9 @@ let pCellSize = 0;
 function setEssenVariables(Width, Height, Size) {
     pCanvasHeight = Height;
     pCanvasWidth = Width;
-    pCellSize = Size;
+    pCellSize = Size;   
 }
+
 
 function getNeighbors(cell, cells) {
     let neighbors = [];
@@ -176,6 +185,13 @@ function markCells(cells, currentCell) {
 function markCellsController(cells, currentCell) {
     cells[currentCell.x / pCellSize][currentCell.y / pCellSize].value = distVal;
     drawTxt(cells[currentCell.x / pCellSize][currentCell.y / pCellSize], distVal);
+    
+    let cell = cells[currentCell.x / pCellSize][currentCell.y / pCellSize]
+
+    if (cell.color == "blue")
+    {
+        hitSpawnCells++;
+    } 
     cells[currentCell.x / pCellSize][currentCell.y / pCellSize].mark = true;
     currentCell.mark = true;
 }
