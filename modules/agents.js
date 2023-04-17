@@ -6,7 +6,7 @@ let spawnAreas = [];
 
 //Initializing array of agents
 let agents = [];
-
+let MaxSpeed = 5;
 //Agents class with relevant svg attributes
 class Agent {
     constructor(x, y, fattiness) {
@@ -19,6 +19,7 @@ class Agent {
         xyTransform.setTranslate(this.x, this.y);
         this.body.transform.baseVal.appendItem(xyTransform);
         drawingArea.appendChild(this.body);
+        this.SpeedModifier = Math.random() * MaxSpeed + 1;
     }
     setCoordinates(x, y) {
         this.x = x;
@@ -87,8 +88,8 @@ function anime() {
     while (i < len) {
         let x = Math.floor(agents[i].x / cellSize);
         let y = Math.floor(agents[i].y / cellSize);
-        let newX = agents[i].x + (cells[x][y].dVector.x);
-        let newY = agents[i].y + (cells[x][y].dVector.y);
+        let newX = agents[i].x + (cells[x][y].dVector.x) * agents[i].SpeedModifier;
+        let newY = agents[i].y + (cells[x][y].dVector.y) * agents[i].SpeedModifier;
         agents[i].setCoordinates(newX, newY);
         i++;
     }
