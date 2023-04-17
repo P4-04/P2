@@ -3,6 +3,13 @@
     padding: 0;
     box-sizing: border-box;
 } */
+.box{
+    width: 100px;
+    height: 100px;
+    border: 1px solid rgb(255, 5, 251);
+    margin: 0;
+    padding: 0;
+    }
 
 body {
     font-family: 'Roboto', Arial, sans-serif;
@@ -25,8 +32,6 @@ h2 {
     top: 0; 
     z-index: 1;
 }
-
-
 
 .drawing {
     background-color: #eee;

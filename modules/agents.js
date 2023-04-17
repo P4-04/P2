@@ -6,7 +6,7 @@ let spawnAreas = [];
 
 //Initializing array of agents
 let agents = [];
-
+let MaxSpeed = 5;
 //Agents class with relevant svg attributes
 class Agent {
     constructor(x, y, fattiness) {
@@ -19,10 +19,21 @@ class Agent {
         xyTransform.setTranslate(this.x, this.y);
         this.body.transform.baseVal.appendItem(xyTransform);
         drawingArea.appendChild(this.body);
+        this.SpeedModifier = Math.random() * MaxSpeed + 1;
+        //We should probably delete all 'rect' from this document once done with collisions
+        this.rect = document.createElementNS(svgNS, 'rect');
+        this.rect.setAttribute('width', fattiness);
+        this.rect.setAttribute('height', fattiness);
+        this.rect.setAttribute('x', x-(fattiness/2));
+        this.rect.setAttribute('y', y-(fattiness/2));
+        this.rect.setAttribute('stroke', "pink");
+        drawingArea.appendChild(this.rect);
     }
     setCoordinates(x, y) {
         this.x = x;
         this.y = y;
+        this.rect.setAttribute('x', x-(this.fattiness/2));
+        this.rect.setAttribute('y', y-(this.fattiness/2));
         let xyTransform = drawingArea.createSVGTransform();
         xyTransform.setTranslate(this.x, this.y);
         this.body.transform.baseVal[0] = xyTransform;
@@ -87,12 +98,16 @@ function anime() {
     while (i < len) {
         let x = Math.floor(agents[i].x / cellSize);
         let y = Math.floor(agents[i].y / cellSize);
-        let newX = agents[i].x + (cells[x][y].dVector.x);
-        let newY = agents[i].y + (cells[x][y].dVector.y);
+        let newX = agents[i].x + (cells[x][y].dVector.x) * agents[i].SpeedModifier;
+        let newY = agents[i].y + (cells[x][y].dVector.y) * agents[i].SpeedModifier;
         agents[i].setCoordinates(newX, newY);
         i++;
     }
     requestAnimationFrame(anime);
+}
+
+function CheckInnerBoxColl(agent){
+    agent
 }
 
 //Finding bounding circumference of given cells, used for border interference detection in collision
