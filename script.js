@@ -161,6 +161,7 @@ startSim.addEventListener("click", function () {
 
     setEssenVariables(canvasWidth, canvasHeight, cellSize);
     perfMeasure(getCells(), endPoint, startPoint);
+    
     anime();
 });
 
@@ -245,11 +246,125 @@ drawingArea.addEventListener("mousemove", (event) => {
     if (getAddingSpawn() && isDragging) {
         let nextIndex = getCellIndex(event.offsetX, event.offsetY);
         if (prevIndex.x != nextIndex.x || prevIndex.y != nextIndex.y) {
-            for (let x = nextIndex.x; x >= startingCell.x; --x) {
-                for (let y = nextIndex.y; y >= startingCell.y; --y) {
-                    let index = { x, y };
-                    cellEventHandler(index);
-                }
+            switch (true) {
+                case (nextIndex.x >= startingCell.x && nextIndex.y <= startingCell.y): // first quadrant 
+                    if (nextIndex.x == startingCell.x || nextIndex.y == startingCell.y) {
+                        let x = prevIndex.x
+                        for (let y = prevIndex.y; y <= startingCell.y; ++y) {
+                            let index = { x, y };
+                            cellEventHandler(index, "remove");
+                        }
+                        let y = prevIndex.y;
+                        for (let x = prevIndex.x; x >= startingCell.x; --x) {
+                            let index = { x, y };
+                            cellEventHandler(index, "remove");
+                        }
+                    }
+                    if (nextIndex.x < prevIndex.x) {
+                        let x = prevIndex.x;
+                        for (let y = prevIndex.y; y <= startingCell.y; ++y) {
+                            let index = { x, y };
+                            cellEventHandler(index, "remove");
+                        }
+                    }
+                    if (nextIndex.y > prevIndex.y) {
+                        let y = prevIndex.y;
+                        for (let x = prevIndex.x; x >= startingCell.x; --x) {
+                            let index = { x, y };
+                            cellEventHandler(index, "remove");
+                        }
+                    } else {
+                        for (let x = nextIndex.x; x >= startingCell.x; --x) {
+                            for (let y = nextIndex.y; y <= startingCell.y; ++y) {
+                                let index = { x, y };
+                                cellEventHandler(index);
+                            }
+                        }
+                    }
+                    break;
+                case (nextIndex.x <= startingCell.x && nextIndex.y <= startingCell.y): // second quadrant
+                    if (nextIndex.y == startingCell.y) {
+                        let y = prevIndex.y;
+                        for (let x = prevIndex.x; x <= startingCell.x; ++x) {
+                            let index = { x, y };
+                            cellEventHandler(index, "remove");
+                        }
+                    }
+                    if (nextIndex.x > prevIndex.x) {
+                        let x = prevIndex.x;
+                        for (let y = prevIndex.y; y <= startingCell.y; ++y) {
+                            let index = { x, y };
+                            cellEventHandler(index, "remove");
+                        }
+                    }
+                    if (nextIndex.y > prevIndex.y) {
+                        let y = prevIndex.y;
+                        for (let x = prevIndex.x; x <= startingCell.x; ++x) {
+                            let index = { x, y };
+                            cellEventHandler(index, "remove");
+                        }
+                    } else {
+                        for (let x = nextIndex.x; x <= startingCell.x; ++x) {
+                            for (let y = nextIndex.y; y <= startingCell.y; ++y) {
+                                let index = { x, y };
+                                cellEventHandler(index);
+                            }
+                        }
+                    }
+                    break;
+                case (nextIndex.x <= startingCell.x && nextIndex.y >= startingCell.y): // 3th quadrant
+                    if (nextIndex.x == startingCell.x) {
+                        let x = prevIndex.x
+                        for (let y = prevIndex.y; y >= startingCell.y; --y) {
+                            let index = { x, y };
+                            cellEventHandler(index, "remove");
+                        }
+                    }
+                    if (nextIndex.x > prevIndex.x) {
+                        let x = prevIndex.x;
+                        for (let y = prevIndex.y; y >= startingCell.y; --y) {
+                            let index = { x, y };
+                            cellEventHandler(index, "remove");
+                        }
+                    }
+                    if (nextIndex.y < prevIndex.y) {
+                        let y = prevIndex.y;
+                        for (let x = prevIndex.x; x <= startingCell.x; ++x) {
+                            let index = { x, y };
+                            cellEventHandler(index, "remove");
+                        }
+                    } else {
+                        for (let x = nextIndex.x; x <= startingCell.x; ++x) {
+                            for (let y = nextIndex.y; y >= startingCell.y; --y) {
+                                let index = { x, y };
+                                cellEventHandler(index);
+                            }
+                        }
+                    }
+                    break;
+                case (nextIndex.x >= startingCell.x && nextIndex.y >= startingCell.y): // 4th quadrant
+                    if (nextIndex.x < prevIndex.x) {
+                        let x = prevIndex.x;
+                        for (let y = prevIndex.y; y >= startingCell.y; --y) {
+                            let index = { x, y };
+                            cellEventHandler(index, "remove");
+                        }
+                    }
+                    if (nextIndex.y < prevIndex.y) {
+                        let y = prevIndex.y;
+                        for (let x = prevIndex.x; x >= startingCell.x; --x) {
+                            let index = { x, y };
+                            cellEventHandler(index, "remove");
+                        }
+                    } else {
+                        for (let x = nextIndex.x; x >= startingCell.x; --x) {
+                            for (let y = nextIndex.y; y >= startingCell.y; --y) {
+                                let index = { x, y };
+                                cellEventHandler(index);
+                            }
+                        }
+                    }
+                    break;
             }
             prevIndex = nextIndex;
         }
@@ -262,11 +377,39 @@ drawingArea.addEventListener("mouseup", (event) => {
         setAddingSpawn(false);
         let spawnGroup = [];
         let finalCell = getCellIndex(event.offsetX, event.offsetY);
-        for (let x = finalCell.x; x >= startingCell.x; --x) {
-            for (let y = finalCell.y; y >= startingCell.y; --y) {
-                let index = { x, y };
-                spawnGroup.push(index);
-            }
+        switch (true) {
+            case (finalCell.x > startingCell.x && finalCell.y < startingCell.y): // 1st quadrant
+                for (let x = finalCell.x; x >= startingCell.x; --x) {
+                    for (let y = finalCell.y; y <= startingCell.y; ++y) {
+                        let index = { x, y };
+                        spawnGroup.push(index);
+                    }
+                }
+                break;
+            case (finalCell.x < startingCell.x && finalCell.y < startingCell.y): // 2th quadrant
+                for (let x = finalCell.x; x <= startingCell.x; ++x) {
+                    for (let y = finalCell.y; y <= startingCell.y; ++y) {
+                        let index = { x, y };
+                        spawnGroup.push(index);
+                    }
+                }
+                break;
+            case (finalCell.x < startingCell.x && finalCell.y > startingCell.y): // 3th quadrant
+                for (let x = finalCell.x; x <= startingCell.x; ++x) {
+                    for (let y = finalCell.y; y >= startingCell.y; --y) {
+                        let index = { x, y };
+                        spawnGroup.push(index);
+                    }
+                }
+                break;
+            case (finalCell.x < startingCell.x && finalCell.y < startingCell.y): // 4th quadrant
+                for (let x = finalCell.x; x >= startingCell.x; --x) {
+                    for (let y = finalCell.y; y >= startingCell.y; --y) {
+                        let index = { x, y };
+                        spawnGroup.push(index);
+                    }
+                }
+                break;
         }
         addSpawnArea(spawnGroup);
     }
