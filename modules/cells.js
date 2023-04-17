@@ -1,4 +1,5 @@
-export { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit, svgNS, getCells, drawTxt}
+export { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, 
+    getAddingSpawn, endPoint, startPoint, prevExit, svgNS, getCells, drawTxt, getCell}
 
 //Custom cell size
 const cellSize = 25;
@@ -125,17 +126,14 @@ function createGrid(canvasWidth, canvasHeight) {
                 isWall: false,
                 isExit: false,
                 isSpawnPoint: false,
-                //Values for AStar
-                f: 0,
-                g: 0,
-                h: 0,
-                vh: 0,
                 //Vector field values
                 mark: false,
                 value: 0,
                 vectorX: 0,
                 vectorY: 0,
-                dVector: {x: 0, y: 0}
+                dVector: {x: 0, y: 0},
+                //Collision stuff
+                agents: []
             };
             //Push cell to cells array
             cells[x][y] = cell;
@@ -163,6 +161,7 @@ function DrawAllCells() {
 }
 
 function getCells(){ return cells; }
+function getCell(x, y){ return cells[x][y]; }
 
 function setAddingExit(isAdding) { addingExit = isAdding };
 function setAddingSpawn(isAdding) { addingSpawn = isAdding };

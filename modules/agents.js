@@ -1,5 +1,5 @@
 export { populate, removeAgentsFromArea, anime, getSpawnArea, addSpawnArea }
-import { cellSize, svgNS, getCells, getCellIndex } from './cells.js'
+import { cellSize, svgNS, getCells, getCellIndex, getCell, endPoint } from './cells.js'
 
 const drawingArea = document.querySelector(".drawing");
 let spawnAreas = [];
@@ -20,6 +20,8 @@ class Agent {
         this.body.transform.baseVal.appendItem(xyTransform);
         drawingArea.appendChild(this.body);
         this.SpeedModifier = Math.random() * MaxSpeed + 0.7;
+        let myNumber = agents.length + 1;
+        let myCell = null;
         //We should probably delete all 'rect' from this document once done with collisions
         this.rect = document.createElementNS(svgNS, 'rect');
         this.rect.setAttribute('width', Math.floor(fattiness * Math.sqrt(2)));
@@ -37,6 +39,35 @@ class Agent {
         let xyTransform = drawingArea.createSVGTransform();
         xyTransform.setTranslate(this.x, this.y);
         this.body.transform.baseVal[0] = xyTransform;
+    }
+    updateAgentCell(){
+        let cellX = Math.floor(this.x / cellSize);
+        let cellY = Math.floor(this.y / cellSize);
+        this.notifyCell(cellX, cellY);
+    }
+    notifyCell(cellX, cellY){
+        let currentCell = getCell(cellX, cellY);
+        if (this.myCell == null){
+            this.myCell = currentCell;
+            return;
+        }
+        if (this.myCell == currentCell)
+        {
+            return;
+        }
+        
+        let me = this.myCell.agents.find(agent => agent.myNumber == this.myNumber);
+        
+        let index = this.myCell.agents.indexOf(me);
+        console.log("My old cell contains: "+this.myCell.agents.length);
+        this.myCell.agents.splice(index, 1);
+        
+        this.myCell = currentCell;
+        this.myCell.agents.push(this);
+        console.log("My new cell contains: "+this.myCell.agents.length);
+    }
+    getAgentCell(){ 
+        return this.myCell; 
     }
 }
 
@@ -100,10 +131,18 @@ function anime() {
         let y = Math.floor(agents[i].y / cellSize);
         let newX = agents[i].x + ((cells[x][y].dVector.x) * agents[i].SpeedModifier) / 3;
         let newY = agents[i].y + ((cells[x][y].dVector.y) * agents[i].SpeedModifier) / 3;
+        
+        if (getCell(x, y) == endPoint)
+        {
+            newX = endPoint.x + (cellSize/2);
+            newY = endPoint.y + (cellSize/2); 
+        }
         agents[i].setCoordinates(newX, newY);
+        agents[i].updateAgentCell();
         i++;
     }
     requestAnimationFrame(anime);
+    
 }
 
 function CheckInnerBoxColl(agent){
