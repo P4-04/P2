@@ -6,7 +6,7 @@ let spawnAreas = [];
 
 //Initializing array of agents
 let agents = [];
-let MaxSpeed = 0.5;
+let MaxSpeed = 2;
 //Agents class with relevant svg attributes
 class Agent {
     constructor(x, y, fattiness) {
@@ -116,7 +116,7 @@ function getAgentsToTestAgainst(agent){
         
     });
     
-    console.log(agentsToTest.length)
+    //console.log(agentsToTest.length)
 
     return agentsToTest;
 
@@ -148,7 +148,7 @@ function getRandomArbitrary(min, max) {
 //
 
 //Animate function, sets random position
-function anime() {
+function anime(start) {
     let i = 0, len = agents.length;
     let cells = getCells();
     while (i < len) {
@@ -161,13 +161,21 @@ function anime() {
         {
             newX = endPoint.x + (cellSize/2);
             newY = endPoint.y + (cellSize/2); 
+            return;
         }
         agents[i].setCoordinates(newX, newY);
         agents[i].updateAgentCell();
         i++;
     }
-    requestAnimationFrame(anime);
+    let end = performance.now();
+    console.log(`Execution time: ${end - start} ms`);
+    requestAnimationFrame(animateCaller);
     
+}
+
+async function animateCaller() {
+    const start = performance.now();
+    anime(start);
 }
 
 function CheckInnerBoxColl(agent){

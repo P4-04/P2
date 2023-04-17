@@ -58,9 +58,6 @@ function getNeighbors(cell, cells) {
     if (cell.x != 0) {
         neighbors[0] = cells[(cell.x / pCellSize) - 1][cell.y / pCellSize];
     }
-    else {
-
-    }
 
     if (cell.x != cells[cells.length - 1][cells[0].length - 1].x) {
         neighbors[1] = cells[(cell.x / pCellSize) + 1][cell.y / pCellSize];
