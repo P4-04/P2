@@ -6,7 +6,7 @@ let spawnAreas = [];
 
 //Initializing array of agents
 let agents = [];
-let MaxSpeed = 5;
+let MaxSpeed = 0.5;
 //Agents class with relevant svg attributes
 class Agent {
     constructor(x, y, fattiness) {
@@ -19,13 +19,13 @@ class Agent {
         xyTransform.setTranslate(this.x, this.y);
         this.body.transform.baseVal.appendItem(xyTransform);
         drawingArea.appendChild(this.body);
-        this.SpeedModifier = Math.random() * MaxSpeed + 1;
+        this.SpeedModifier = Math.random() * MaxSpeed + 0.7;
         //We should probably delete all 'rect' from this document once done with collisions
         this.rect = document.createElementNS(svgNS, 'rect');
-        this.rect.setAttribute('width', fattiness);
-        this.rect.setAttribute('height', fattiness);
-        this.rect.setAttribute('x', x-(fattiness/2));
-        this.rect.setAttribute('y', y-(fattiness/2));
+        this.rect.setAttribute('width', Math.floor(fattiness * Math.sqrt(2)));
+        this.rect.setAttribute('height', Math.floor(fattiness * Math.sqrt(2)));
+        this.rect.setAttribute('x', Math.ceil(x-(fattiness * Math.sqrt(2) / 2)));
+        this.rect.setAttribute('y', Math.ceil(y-(fattiness * Math.sqrt(2) / 2)));
         this.rect.setAttribute('stroke', "pink");
         drawingArea.appendChild(this.rect);
     }
@@ -98,8 +98,8 @@ function anime() {
     while (i < len) {
         let x = Math.floor(agents[i].x / cellSize);
         let y = Math.floor(agents[i].y / cellSize);
-        let newX = agents[i].x + (cells[x][y].dVector.x) * agents[i].SpeedModifier;
-        let newY = agents[i].y + (cells[x][y].dVector.y) * agents[i].SpeedModifier;
+        let newX = agents[i].x + ((cells[x][y].dVector.x) * agents[i].SpeedModifier) / 3;
+        let newY = agents[i].y + ((cells[x][y].dVector.y) * agents[i].SpeedModifier) / 3;
         agents[i].setCoordinates(newX, newY);
         i++;
     }
