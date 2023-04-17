@@ -1,5 +1,5 @@
 export { populate, removeAgentsFromArea, anime, getSpawnArea, addSpawnArea }
-import { cellSize, svgNS, getCells, getCellIndex, getCell, endPoint } from './cells.js'
+import { cellSize, svgNS, getCells, getCellIndex, getCell, endPoint, getNeighborCells, getAgentsInCell } from './cells.js'
 
 const drawingArea = document.querySelector(".drawing");
 let spawnAreas = [];
@@ -20,7 +20,9 @@ class Agent {
         this.body.transform.baseVal.appendItem(xyTransform);
         drawingArea.appendChild(this.body);
         this.SpeedModifier = Math.random() * MaxSpeed + 0.7;
+        //Used to make sure we identify the correct agent in notifyCell
         let myNumber = agents.length + 1;
+        //The cell this agent is currently in
         let myCell = null;
         //We should probably delete all 'rect' from this document once done with collisions
         this.rect = document.createElementNS(svgNS, 'rect');
@@ -59,12 +61,11 @@ class Agent {
         let me = this.myCell.agents.find(agent => agent.myNumber == this.myNumber);
         
         let index = this.myCell.agents.indexOf(me);
-        console.log("My old cell contains: "+this.myCell.agents.length);
         this.myCell.agents.splice(index, 1);
         
         this.myCell = currentCell;
         this.myCell.agents.push(this);
-        console.log("My new cell contains: "+this.myCell.agents.length);
+        getAgentsToTestAgainst(this);
     }
     getAgentCell(){ 
         return this.myCell; 
@@ -95,6 +96,30 @@ function populate() {
         agentsSpawned += agentsPerArea;
         populateCells(area, agentsPerArea);
     });
+}
+
+function getAgentsToTestAgainst(agent){
+    let myCellX = agent.myCell.x/cellSize;
+    let myCellY = agent.myCell.y/cellSize;
+
+    const neighbors = getNeighborCells(myCellX, myCellY);
+
+    let agentsToTest = [];
+
+    neighbors.forEach(cell => {
+
+        let cellAgents = getAgentsInCell(cell);
+
+        cellAgents.forEach(cellAgent => {
+            agentsToTest.push(cellAgent);            
+        });
+        
+    });
+    
+    console.log(agentsToTest.length)
+
+    return agentsToTest;
+
 }
 
 //Drawing calculated amount of agents in each spawn area
