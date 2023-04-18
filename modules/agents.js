@@ -6,6 +6,7 @@ let spawnAreas = [];
 
 //Initializing array of agents
 let agents = [];
+
 let MaxSpeed = 2;
 //Agents class with relevant svg attributes
 class Agent {

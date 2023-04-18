@@ -16,8 +16,8 @@ const drawingArea = document.querySelector(".drawing");
 const svgNS = "http://www.w3.org/2000/svg";
 
 //Function caller for correctly handling actions on cells
-function cellEventHandler(index) {
-    toggleCellProperties(index);
+function cellEventHandler(index, remove) {
+    toggleCellProperties(index, remove);
     drawCell(cells[index.x][index.y]);
 }
 
@@ -38,7 +38,16 @@ function getCellIndex(MouseX, MouseY) {
 /** 
  * @param {Cords} index The position of the cell to update
 */
-function toggleCellProperties(index) {
+function toggleCellProperties(index, remove) {
+    if (remove) {
+        cells[index.x][index.y].color = "white";
+        cells[index.x][index.y].isWall = false;
+        cells[index.x][index.y].isExit = false;
+        cells[index.x][index.y].mark = false;
+        cells[index.x][index.y].isSpawnPoint = false;
+        cells[index.x][index.y].value = 0;
+        return;
+    }
     if (addingExit) {
         cells[index.x][index.y].color = "green";
         cells[index.x][index.y].isExit = true;
