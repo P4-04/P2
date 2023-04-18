@@ -13,12 +13,7 @@ async function perfMeasure(cells, goal, spawn) {
     cellsArray = setArray(cells, initCellsArray);
     markCells(cells, cellsArray);
 
-    let spawnCount = 0;
-    let spawnGroups = getSpawnArea();
-    for (let i = 0; i < getSpawnArea().length; i++)
-    {
-        spawnCount = spawnCount + spawnGroups[i].length;
-    }
+    let spawnCount = getSpawnArea().length;
 
     if (hitSpawnCells != spawnCount){
         alert("Not all spawn areas can reach the end point(s)!");
