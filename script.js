@@ -162,6 +162,7 @@ startSim.addEventListener("click", function () {
 
     setEssenVariables(canvasWidth, canvasHeight, cellSize);
     perfMeasure(getCells(), endPoint, startPoint);
+    populate();
     anime();
 });
 

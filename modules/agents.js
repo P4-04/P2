@@ -21,9 +21,9 @@ class Agent {
         drawingArea.appendChild(this.body);
         this.SpeedModifier = Math.random() * MaxSpeed + 0.7;
         //Used to make sure we identify the correct agent in notifyCell
-        let myNumber = agents.length + 1;
+        this.myNumber = agents.length + 1;
         //The cell this agent is currently in
-        let myCell = null;
+        this.myCell = null;
         //We should probably delete all 'rect' from this document once done with collisions
         this.rect = document.createElementNS(svgNS, 'rect');
         this.rect.setAttribute('width', Math.floor(fattiness * Math.sqrt(2)));
@@ -41,6 +41,7 @@ class Agent {
         let xyTransform = drawingArea.createSVGTransform();
         xyTransform.setTranslate(this.x, this.y);
         this.body.transform.baseVal[0] = xyTransform;
+
     }
     updateAgentCell(){
         let cellX = Math.floor(this.x / cellSize);
@@ -69,6 +70,25 @@ class Agent {
     }
     getAgentCell(){ 
         return this.myCell; 
+    }
+    destroy(){
+        let myHTML = document.elementFromPoint(this.x, this.y);
+        myHTML.remove(); //sometimes crashes
+        
+        //remove from agent array
+        let me = agents.find(agent => agent.myNumber === this.myNumber);
+        let index = agents.indexOf(me);
+        //agents[index] == null;
+        let removed = agents.splice(index, 1);
+
+        //remove from cell (avoid collision check)
+        me = this.myCell.agents.find(agent => agent.myNumber == this.myNumber);
+        index = this.myCell.agents.indexOf(me);
+        removed = this.myCell.agents.splice(index, 1);
+        //this.myCell.agents[index] == null;
+        me = null;
+        removed = null;
+        
     }
 }
 
@@ -152,19 +172,22 @@ function anime(start) {
     let i = 0, len = agents.length;
     let cells = getCells();
     while (i < len) {
-        let x = Math.floor(agents[i].x / cellSize);
-        let y = Math.floor(agents[i].y / cellSize);
-        let newX = agents[i].x + ((cells[x][y].dVector.x) * agents[i].SpeedModifier) / 3;
-        let newY = agents[i].y + ((cells[x][y].dVector.y) * agents[i].SpeedModifier) / 3;
-        
-        if (getCell(x, y) == endPoint)
-        {
-            newX = endPoint.x + (cellSize/2);
-            newY = endPoint.y + (cellSize/2); 
-            return;
+        /*Maybe see if we can remove the null check?*/
+        if (agents[i] != null) {
+            let x = Math.floor(agents[i].x / cellSize);
+            let y = Math.floor(agents[i].y / cellSize);
+            let newX = agents[i].x + ((cells[x][y].dVector.x) * agents[i].SpeedModifier) / 3;
+            let newY = agents[i].y + ((cells[x][y].dVector.y) * agents[i].SpeedModifier) / 3;
+
+            agents[i].setCoordinates(newX, newY);
+            agents[i].updateAgentCell();
+
+            if (getCell(x, y) == endPoint) {
+                agents[i].destroy();
+            }
+
+            
         }
-        agents[i].setCoordinates(newX, newY);
-        agents[i].updateAgentCell();
         i++;
     }
     let end = performance.now();
@@ -174,6 +197,10 @@ function anime(start) {
 }
 
 async function animateCaller() {
+    
+    if (agents.length == 0){
+        return;
+    }
     const start = performance.now();
     anime(start);
 }
