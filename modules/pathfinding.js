@@ -55,6 +55,8 @@ function setEssenVariables(Width, Height, Size) {
     pCellSize = Size;   
 }
 
+function getCanvasHeight() { return pCanvasHeight; }
+function getCanvasWidth() { return pCanvasWidth; }
 
 function getNeighbors(cell, cells) {
     let neighbors = [];
@@ -297,4 +299,4 @@ function calculateVectors(cells) {
 
 
 
-export { initCellValues, setEssenVariables, sendMessage, perfMeasure };
+export { initCellValues, setEssenVariables, sendMessage, perfMeasure, getCanvasHeight, getCanvasWidth };

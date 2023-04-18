@@ -1,5 +1,6 @@
-export { populate, removeAgentsFromArea, anime, getSpawnArea, addSpawnArea }
+export { populate, removeAgentsFromArea, anime, getSpawnArea, addSpawnArea, setSizes }
 import { cellSize, svgNS, getCells, getCellIndex, getCell, endPoint, getNeighborCells, getAgentsInCell } from './cells.js'
+import { getCanvasHeight, getCanvasWidth } from './pathfinding.js'
 
 const drawingArea = document.querySelector(".drawing");
 let spawnAreas = [];
@@ -7,6 +8,14 @@ let spawnAreas = [];
 //Initializing array of agents
 let agents = [];
 let MaxSpeed = 2;
+
+let canvasWidth = 0;
+let canvasHeight = 0;
+function setSizes(Width, Height){
+    canvasWidth = Width
+    canvasHeight = Height;
+}
+
 //Agents class with relevant svg attributes
 class Agent {
     constructor(x, y, fattiness) {
@@ -24,24 +33,47 @@ class Agent {
         this.myNumber = agents.length + 1;
         //The cell this agent is currently in
         this.myCell = null;
+
         //We should probably delete all 'rect' from this document once done with collisions
-        this.rect = document.createElementNS(svgNS, 'rect');
-        this.rect.setAttribute('width', Math.floor(fattiness * Math.sqrt(2)));
-        this.rect.setAttribute('height', Math.floor(fattiness * Math.sqrt(2)));
-        this.rect.setAttribute('x', Math.ceil(x-(fattiness * Math.sqrt(2) / 2)));
-        this.rect.setAttribute('y', Math.ceil(y-(fattiness * Math.sqrt(2) / 2)));
-        this.rect.setAttribute('stroke', "pink");
-        drawingArea.appendChild(this.rect);
+        // this.rect = document.createElementNS(svgNS, 'rect');
+        // this.rect.setAttribute('width', Math.floor(fattiness * Math.sqrt(2)));
+        // this.rect.setAttribute('height', Math.floor(fattiness * Math.sqrt(2)));
+         this.squareX = Math.ceil(x-(fattiness * Math.sqrt(2) / 2));
+         this.squareY = Math.ceil(x-(fattiness * Math.sqrt(2) / 2));
+        // this.rect.setAttribute('stroke', "pink");
+
+        this.square = { 
+            x, 
+            y, 
+            width: fattiness,
+            height: fattiness,
+            topLeft: 0, 
+            topRight: 0,
+            bottomRight: 0,
+            bottomLeft: 0,
+            middle: fattiness/2
+        }
+
+       // drawingArea.appendChild(this.rect);
     }
     setCoordinates(x, y) {
         this.x = x;
         this.y = y;
-        this.rect.setAttribute('x', x-(this.fattiness/2));
-        this.rect.setAttribute('y', y-(this.fattiness/2));
+        this.squareX = Math.ceil(x-(this.fattiness * Math.sqrt(2) / 2));
+        this.squareY = Math.ceil(x-(this.fattiness * Math.sqrt(2) / 2));
+
         let xyTransform = drawingArea.createSVGTransform();
         xyTransform.setTranslate(this.x, this.y);
         this.body.transform.baseVal[0] = xyTransform;
 
+        // this.square.left = x/(canvasWidth / cellSize);
+        // this.square.top = y/(canvasHeight / cellSize);
+        // this.square.right = this.square.left + this.fattiness;
+        // this.square.bottom = this.square.top + this.fattiness;
+        this.square.topLeft = x;
+        this.square.topRight = y;
+        this.square.bottomRight = x + this.fattiness;
+        this.square.bottomLeft = y + this.fattiness;
     }
     updateAgentCell(){
         let cellX = Math.floor(this.x / cellSize);
@@ -119,27 +151,101 @@ function populate() {
 }
 
 function getAgentsToTestAgainst(agent){
-    let myCellX = agent.myCell.x/cellSize;
-    let myCellY = agent.myCell.y/cellSize;
-
-    const neighbors = getNeighborCells(myCellX, myCellY);
-
-    let agentsToTest = [];
-
-    neighbors.forEach(cell => {
-
-        let cellAgents = getAgentsInCell(cell);
-
-        cellAgents.forEach(cellAgent => {
-            agentsToTest.push(cellAgent);            
-        });
-        
-    });
     
-    //console.log(agentsToTest.length)
+    let selectionRectangle = {
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0
+    }
+    // selectionRectangle.right = agent.square.right;
+    // selectionRectangle.bottom = agent.square.bottom;
+    // selectionRectangle.top = agent.square.top;
+    // selectionRectangle.left = agent.square.left;
+    //selectBoxes(selectionRectangle);
 
-    return agentsToTest;
 
+    selectionRectangle.right = agent.x+agent.fattiness;
+    selectionRectangle.left = agent.x;
+    selectionRectangle.top = agent.y;
+    selectionRectangle.bottom = agent.y+agent.fattiness;
+
+    testCollision(getAgents(), selectionRectangle, agent);
+    // let myCellX = agent.myCell.x/cellSize;
+    // let myCellY = agent.myCell.y/cellSize;
+
+    // const neighbors = getNeighborCells(myCellX, myCellY);
+
+    // let agentsToTest = [];
+
+    // neighbors.forEach(cell => {
+
+    //     let cellAgents = getAgentsInCell(cell);
+
+    //     cellAgents.forEach(cellAgent => {
+    //         agentsToTest.push(cellAgent);            
+    //     });
+        
+    // });
+    
+    // let cellAgents = getAgentsInCell(this.myCell);
+    // cellAgents.forEach(cellAgent => {
+    //     agentsToTest.push(cellAgent);            
+    // });
+
+    // return agentsToTest;
+
+}
+
+function testCollision(inputAgents, agentRectangle, testingAgent) {
+    let collidingAgents = [];
+    inputAgents.forEach(function(agent) {
+      let box = agent.square;
+        if (agent.myNumber != testingAgent.myNumber) 
+        {
+            if (isOverlapping(agent.square, testingAgent.square)) 
+            {
+                agent.body.setAttribute('fill', 'green');
+                collidingAgents.push(agent);
+            } else {agent.body.setAttribute('fill', 'black');}
+        } 
+      
+        //agent.body.setAttribute('fill', 'green');
+        //collidingAgents.push(agent);
+      
+    });
+
+    console.log("Found: " + collidingAgents.length);
+    
+    if (collidingAgents.length != 0){
+        
+    }
+    
+
+    return collidingAgents;
+}
+
+function isOverlapping(collidingPoints, testerPoints){
+    //if top left point is within the tester
+    if (testerPoints.topLeft <= collidingPoints.bottomRight && collidingPoints.topLeft <= testerPoints.topLeft) {
+        return true;
+    } //else console.log(testerPoints.bottomRight + "," + collidingPoints.topLeft + " && " + collidingPoints.topLeft + "," + testerPoints.topLeft)
+    //if top right point is within the tester
+    if (testerPoints.bottomRight <= collidingPoints.topRight && collidingPoints.topRight <= testerPoints.topLeft) {
+        return true;
+    }
+
+    //if bottom left point is within the tester
+    if (testerPoints.bottomRight <= collidingPoints.bottomLeft && collidingPoints.bottomLeft <= testerPoints.topLeft) {
+        return true;
+    }
+    
+    //if bottom right point is within the tester
+    if (testerPoints.bottomRight <= collidingPoints.bottomRight && collidingPoints.bottomRight <= testerPoints.topLeft) {
+        return true;
+    }
+
+    return false;
 }
 
 //Drawing calculated amount of agents in each spawn area
@@ -159,6 +265,10 @@ function populateCells(area, agentsPerArea) {
 //Getting position within spawn area
 function getRandomArbitrary(min, max) {
     return Math.random() * (max - min) + min;
+}
+
+function getAgents(){
+    return agents;
 }
 
 //
