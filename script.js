@@ -386,9 +386,9 @@ drawingArea.addEventListener("mouseup", (event) => {
                     }
                 }
                 break;
-            case (finalCell.x < startingCell.x && finalCell.y < startingCell.y): // 2th quadrant
-                for (let x = finalCell.x; x <= startingCell.x; ++x) {
-                    for (let y = finalCell.y; y <= startingCell.y; ++y) {
+            case (finalCell.x > startingCell.x && finalCell.y > startingCell.y): // 2th quadrant err
+                for (let x = finalCell.x; x >= startingCell.x; --x) {
+                    for (let y = finalCell.y; y >= startingCell.y; --y) {
                         let index = { x, y };
                         spawnGroup.push(index);
                     }
@@ -402,7 +402,15 @@ drawingArea.addEventListener("mouseup", (event) => {
                     }
                 }
                 break;
-            case (finalCell.x < startingCell.x && finalCell.y < startingCell.y): // 4th quadrant
+            case (finalCell.x < startingCell.x && finalCell.y < startingCell.y): // 4th quadrant err
+                for (let x = finalCell.x; x <= startingCell.x; ++x) {
+                    for (let y = finalCell.y; y <= startingCell.y; ++y) {
+                        let index = { x, y };
+                        spawnGroup.push(index);
+                    }
+                }
+                break;
+            case (finalCell.x == startingCell.x && finalCell.y == startingCell.y): // single cells
                 for (let x = finalCell.x; x >= startingCell.x; --x) {
                     for (let y = finalCell.y; y >= startingCell.y; --y) {
                         let index = { x, y };
@@ -411,6 +419,7 @@ drawingArea.addEventListener("mouseup", (event) => {
                 }
                 break;
         }
+
         addSpawnArea(spawnGroup);
     }
 });
