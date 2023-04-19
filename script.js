@@ -21,6 +21,7 @@ const toggleAgentsSubmenu = document.querySelector("#agentsButton");
 const spawnButton = document.querySelector("#spawnButton");
 const removeButton = document.querySelector("#removeButton");
 let numAgentsInput = document.querySelector("#num-agents");
+const toggleGridsSubmenu = document.querySelector("#gridsButton");
 
 //
 //
@@ -69,6 +70,15 @@ openMenu.addEventListener("mousedown", function (event) {
     isDraggingOverlay = false;
     cursorCurrentX = event.clientX;
     cursorCurrentY = event.clientY;
+});
+
+toggleGridsSubmenu.addEventListener("click", function () {
+    let submenu = document.querySelector("#gridsSubmenu");
+    if (submenu.style.display === "none") {
+        submenu.style.display = "block";
+    } else {
+        submenu.style.display = "none";
+    }
 });
 
 document.addEventListener("mousemove", function (event) {
@@ -120,9 +130,9 @@ toggleAgentsSubmenu.addEventListener("click", function () {
     }
 });
 
-spawnButton.addEventListener("click", function () {
-    populate();
-});
+//spawnButton.addEventListener("click", function () {
+//    populate();
+//});
 
 removeButton.addEventListener("click", function () {
     let agentNumToRemove = document.querySelector("#numAgents").value;
@@ -208,6 +218,10 @@ drawingArea.addEventListener("mousedown", (event) => {
 });
 
 drawingArea.addEventListener("mousemove", (event) => {
+    if (event.buttons !== 1) {
+        isDragging = false;
+    }
+    
     if (getAddingSpawn()) {
         return;
     }
@@ -275,6 +289,57 @@ drawingArea.addEventListener("mouseup", (event) => {
     }
 });
 
+window.addEventListener("mousemove", function (event) {
+    //Checks if the primary mouse button is NOT pressed and updates the isMouseDown variable accordingly.
+    //event.buttons {1 == primary, 2 == secondary, 4 == auxiliary(middle)}
+    if (event.buttons !== 1) {
+        isMouseDown = false;
+    }
+
+    cursorNewX = cursorCurrentX - event.clientX;
+    cursorNewY = cursorCurrentY - event.clientY;
+    if ((cursorCurrentX !== cursorNewX || cursorCurrentY !== cursorNewY) && isMouseDown === true) {
+        isDraggingOverlay = true;
+        cursorCurrentX = event.clientX;
+        cursorCurrentY = event.clientY;
+        menu.style.left = (menu.offsetLeft - cursorNewX) + "px";
+        menu.style.top = (menu.offsetTop - cursorNewY) + "px";
+        openMenu.style.left = (menu.offsetLeft - cursorNewX) + "px";
+        openMenu.style.top = (menu.offsetTop - cursorNewY) + "px";
+
+        // Call the resetMenuPosition function
+        resetMenuPosition();
+    } else {
+        isDraggingOverlay = false;
+    }
+});
+
+function resetMenuPosition(){
+    const menuRect = menu.getBoundingClientRect();
+    const openMenuRect = openMenu.getBoundingClientRect();
+    const windowHeight = window.innerHeight;
+    const windowWidth = window.innerWidth;
+
+    if (menuRect.top < 0) {
+        menu.style.top = "0px";
+        openMenu.style.top = "0px";
+    }
+
+    if (menuRect.left < 0) {
+        menu.style.left = "0px";
+        openMenu.style.left = "0px";
+    }
+
+    if (menuRect.bottom > windowHeight) {
+        menu.style.top = (windowHeight - menuRect.height) + "px";
+        openMenu.style.top = (windowHeight - menuRect.height) + "px";
+    }
+
+    if (menuRect.right > windowWidth) {
+        menu.style.left = (windowWidth - menuRect.width) + "px";
+        openMenu.style.left = (windowWidth - menuRect.width) + "px";
+    }
+}
 
 //
 //
