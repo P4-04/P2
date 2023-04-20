@@ -7,7 +7,8 @@ let spawnAreas = [];
 
 //Initializing array of agents
 let agents = [];
-let MaxSpeed = 2;
+//Max speed increase: 0.2, for a realistic speed of around 1.2-1.4 metres per second
+let maxSpeedIncrease = 0.2;
 
 let canvasWidth = 0;
 let canvasHeight = 0;
@@ -28,7 +29,10 @@ class Agent {
         xyTransform.setTranslate(this.x, this.y);
         this.body.transform.baseVal.appendItem(xyTransform);
         drawingArea.appendChild(this.body);
-        this.SpeedModifier = Math.random() * MaxSpeed + 0.7;
+        this.SpeedModifier = Math.random() * maxSpeedIncrease + 1.2;
+        //Old cell for transition vector, smooting out movement
+        this.prevCell = null;
+        this.prevCellFract = null;
         //Used to make sure we identify the correct agent in notifyCell
         this.myNumber = agents.length + 1;
         //The cell this agent is currently in
@@ -39,7 +43,7 @@ class Agent {
         // this.rect.setAttribute('width', Math.floor(fattiness * Math.sqrt(2)));
         // this.rect.setAttribute('height', Math.floor(fattiness * Math.sqrt(2)));
         this.squareX = Math.ceil(x - (fattiness * Math.sqrt(2) / 2));
-        this.squareY = Math.ceil(x - (fattiness * Math.sqrt(2) / 2));
+        this.squareY = Math.ceil(y - (fattiness * Math.sqrt(2) / 2));
         // this.rect.setAttribute('stroke', "pink");
 
         this.square = {
@@ -285,6 +289,7 @@ function anime(start) {
             let y = Math.floor(agents[i].y / cellSize);
             let newX = agents[i].x + ((cells[x][y].dVector.x) * agents[i].SpeedModifier) / 3;
             let newY = agents[i].y + ((cells[x][y].dVector.y) * agents[i].SpeedModifier) / 3;
+
             if (collisionCheck(newX, newY, agents[i], cells[Math.floor(newX / cellSize)][Math.floor(newY / cellSize)])) {
                 let vectorTransformX = Math.cos(90 * (Math.PI / 180)) * cells[x][y].dVector.x - Math.sin(90 * (Math.PI / 180)) * cells[x][y].dVector.y
                 let vectorTransformY = Math.sin(90 * (Math.PI / 180)) * cells[x][y].dVector.x + Math.cos(90 * (Math.PI / 180)) * cells[x][y].dVector.y
@@ -303,6 +308,32 @@ function anime(start) {
                 newX = agents[i].x
                 newY = agents[i].y
             }
+
+            //Code for applying decreasing fractions of previous vector to current vector
+            //Makes movement in turns and corners appear more smooth
+            if (getCell(x, y).dVector.x !== getCell(Math.floor(newX / cellSize), Math.floor(newY / cellSize)).dVector.x ||
+            getCell(x, y).dVector.y !== getCell(Math.floor(newX / cellSize), Math.floor(newY / cellSize)).dVector.y) {
+                agents[i].prevCell = getCell(x, y);
+                agents[i].prevCellFract = 5;
+            }
+
+            if (agents[i].prevCell === null ||
+            agents[i].prevCell.dVector.x > 1 || agents[i].prevCell.dVector.x < (-1) ||
+            agents[i].prevCell.dVector.y > 1 || agents[i].prevCell.dVector.y < (-1)) {
+                agents[i].prevCell = null;
+                agents[i].prevCellFract = null;
+            }
+            else if (agents[i].prevCellFract !== null) {
+                console.log("Old cell info 1 " + agents[i].prevCell.dVector.x + " " + agents[i].prevCell.dVector.y + " " + agents[i].prevCellFract);
+                agents[i].prevCell.dVector.x *= agents[i].prevCellFract;
+                agents[i].prevCell.dVector.y *= agents[i].prevCellFract;
+                agents[i].prevCellFract -= 0.1;
+                console.log("Old cell info 2 " + agents[i].prevCell.dVector.x + " " + agents[i].prevCell.dVector.y + " " + agents[i].prevCellFract);
+                newX = agents[i].x + ((cells[x][y].dVector.x / (1 + agents[i].prevCellFract) + agents[i].prevCell.dVector.x) * agents[i].SpeedModifier) / 5;
+                newY = agents[i].y + ((cells[x][y].dVector.y / (1 + agents[i].prevCellFract) + agents[i].prevCell.dVector.y) * agents[i].SpeedModifier) / 5;
+                console.log("newX " + newX + " newY " + newY);
+            }
+
             agents[i].setCoordinates(newX, newY);
             agents[i].updateAgentCell();
 
@@ -315,7 +346,7 @@ function anime(start) {
         i++;
     }
     let end = performance.now();
-    console.log(`Execution time: ${end - start} ms`);
+    //console.log(`Execution time: ${end - start} ms`);
     requestAnimationFrame(animateCaller);
 
 }
@@ -342,46 +373,6 @@ async function animateCaller() {
 
 function CheckInnerBoxColl(agent) {
     agent
-}
-
-//Finding bounding circumference of given cells, used for border interference detection in collision
-function getCellPath(cell) {
-    let closedPath = [];
-    for (let i = 0; i < 4; i++) {
-        if (i === 0) {
-            let x = cell.rect.getAttribute("x");
-            let y = cell.rect.getAttribute("y");
-            closedPath.push({ x, y });
-        }
-        else if (i === 1) {
-            let x = cell.rect.getAttribute("x") + cellSize;
-            let y = cell.rect.getAttribute("y");
-            closedPath.push({ x, y });
-        }
-        else if (i === 2) {
-            let x = cell.rect.getAttribute("x") + cellSize;
-            let y = cell.rect.getAttribute("y") + cellSize;
-            closedPath.push({ x, y });
-        }
-        else if (i === 3) {
-            let x = cell.rect.getAttribute("x");
-            let y = cell.rect.getAttribute("y") + cellSize;
-            closedPath.push({ x, y });
-        }
-    }
-    return closedPath;
-}
-
-//Got from https://www.inkfood.com/collision-detection-with-svg/
-//poly is an array of points in cartesian space representing a closed path
-//pt is the point to be checked
-//if it is within the closed path, collision is detected 
-function isPointInPoly(poly, pt) {
-    for (var c = false, i = -1, l = poly.length, j = l - 1; ++i < l; j = i)
-        ((poly[i].y <= pt.y && pt.y < poly[j].y) || (poly[j].y <= pt.y && pt.y < poly[i].y))
-            && (pt.x < (poly[j].x - poly[i].x) * (pt.y - poly[i].y) / (poly[j].y - poly[i].y) + poly[i].x)
-            && (c = !c);
-    return c;
 }
 
 function removeAgentsFromArea(area, agentsToRemovePerArea, drawingArea) {
