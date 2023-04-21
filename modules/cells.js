@@ -1,4 +1,5 @@
-export { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit, svgNS, getCells, drawTxt}
+export { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, 
+    getAddingSpawn, endPoint, startPoint, prevExit, svgNS, getCells, drawTxt, getCell, getNeighborCells, getAgentsInCell}
 
 //Custom cell size
 const cellSize = 25;
@@ -15,8 +16,8 @@ const drawingArea = document.querySelector(".drawing");
 const svgNS = "http://www.w3.org/2000/svg";
 
 //Function caller for correctly handling actions on cells
-function cellEventHandler(index, remove) {
-    toggleCellProperties(index, remove);
+function cellEventHandler(index) {
+    toggleCellProperties(index);
     drawCell(cells[index.x][index.y]);
 }
 
@@ -37,16 +38,7 @@ function getCellIndex(MouseX, MouseY) {
 /** 
  * @param {Cords} index The position of the cell to update
 */
-function toggleCellProperties(index, remove) {
-    if (remove) {
-        cells[index.x][index.y].color = "white";
-        cells[index.x][index.y].isWall = false;
-        cells[index.x][index.y].isExit = false;
-        cells[index.x][index.y].mark = false;
-        cells[index.x][index.y].isSpawnPoint = false;
-        cells[index.x][index.y].value = 0;
-        return;
-    }
+function toggleCellProperties(index) {
     if (addingExit) {
         cells[index.x][index.y].color = "green";
         cells[index.x][index.y].isExit = true;
@@ -134,17 +126,14 @@ function createGrid(canvasWidth, canvasHeight) {
                 isWall: false,
                 isExit: false,
                 isSpawnPoint: false,
-                //Values for AStar
-                f: 0,
-                g: 0,
-                h: 0,
-                vh: 0,
                 //Vector field values
                 mark: false,
                 value: 0,
                 vectorX: 0,
                 vectorY: 0,
-                dVector: {x: 0, y: 0}
+                dVector: {x: 0, y: 0},
+                //Collision stuff
+                agents: []
             };
             //Push cell to cells array
             cells[x][y] = cell;
@@ -172,9 +161,61 @@ function DrawAllCells() {
 }
 
 function getCells(){ return cells; }
+/** 
+ * @param {int} x The X position of the cell to find
+ * @param {int} y The Y position of the cell to find
+ * @returns {cell} the cell we found
+*/
+function getCell(x, y){ return cells[x][y]; }
 
 function setAddingExit(isAdding) { addingExit = isAdding };
 function setAddingSpawn(isAdding) { addingSpawn = isAdding };
 
+function getNeighborCells(x,y)
+{
+    let cell = getCell(x,y);
+    let neighbors = [];
+    //Get x neighbors
+    if (cell.x != 0) {
+        neighbors[0] = cells[(cell.x / cellSize) - 1][cell.y / cellSize];
+    }
+
+    if (cell.y != 0) {
+        neighbors[2] = cells[cell.x / cellSize][(cell.y / cellSize) - 1];
+    }
+
+    if (cell.x != cells[cells.length - 1][cells[0].length - 1].x) {
+        neighbors[1] = cells[(cell.x / cellSize) + 1][cell.y / cellSize];
+    }
+
+    if (cell.y != cells[0][cells[0].length - 1].y) {
+        neighbors[3] = cells[cell.x / cellSize][(cell.y / cellSize) + 1];
+    }
+
+
+    if (neighbors[0] == undefined) {
+        neighbors.splice(0, 0)
+    }
+    if (neighbors[1] == undefined) {
+        neighbors.splice(1, 1)
+    }
+    if (neighbors[2] == undefined) {
+        neighbors.splice(2, 2)
+    }
+    if (neighbors[3] == undefined) {
+        neighbors.splice(3, 3)
+    }
+    //Visualisation of the neighbors
+    // neighbors.forEach(neig => {
+    //          neig.color = "purple";
+    //          neig.rect.setAttribute('fill', neig.color);
+    //          console.log(neig.x + " " + neig.y);
+    //      });
+    // console.log(neighbors.length);
+    return neighbors;
+}
+
 function getAddingExit() { return addingExit; };
 function getAddingSpawn() { return addingSpawn; };
+
+function getAgentsInCell(cell) { return cell.agents; };

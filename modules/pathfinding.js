@@ -19,7 +19,6 @@ async function perfMeasure(cells, goal, spawn) {
     {
         spawnCount = spawnCount + spawnGroups[i].length;
     }
-
     if (hitSpawnCells != spawnCount){
         alert("Not all spawn areas can reach the end point(s)!");
     }
@@ -56,15 +55,14 @@ function setEssenVariables(Width, Height, Size) {
     pCellSize = Size;   
 }
 
+function getCanvasHeight() { return pCanvasHeight; }
+function getCanvasWidth() { return pCanvasWidth; }
 
 function getNeighbors(cell, cells) {
     let neighbors = [];
     //Get x neighbors
     if (cell.x != 0) {
         neighbors[0] = cells[(cell.x / pCellSize) - 1][cell.y / pCellSize];
-    }
-    else {
-
     }
 
     if (cell.x != cells[cells.length - 1][cells[0].length - 1].x) {
@@ -141,11 +139,6 @@ function sendMessage(error) {
 }
 
 
-//Bug notice:
-//If for turning corners, the wall value is high, the agent will not turn the corner,
-//but instead follow a vector away fromt eh corner, essentially in the wrong (x,y) direction, 
-//depending on the direction of the wall.
-//Fix: ignore the direction given by wall / even out wall opposite, give vector direction 0 in wall axis
 let distVal = 0;
 
 //Makes an array for input in markCells
@@ -177,7 +170,7 @@ function markCells(cells, currentCell) {
             nextNeighbors.push(tempArr[3]);
         }
     }
-    distVal++;
+    distVal += 0.5;
 
     //If neighbors are present around current cells, do same procedure on cells
     if (nextNeighbors.length !== 0) {
@@ -306,4 +299,4 @@ function calculateVectors(cells) {
 
 
 
-export { initCellValues, setEssenVariables, sendMessage, perfMeasure };
+export { initCellValues, setEssenVariables, sendMessage, perfMeasure, getCanvasHeight, getCanvasWidth };
