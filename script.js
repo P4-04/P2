@@ -84,17 +84,17 @@ toggleGridsSubmenu.addEventListener("click", function () {
 });
 
 document.addEventListener("mousemove", function (event) {
-        cursorNewX = cursorCurrentX - event.clientX;
-        cursorNewY = cursorCurrentY - event.clientY;
-        if ((cursorCurrentX !== cursorNewX || cursorCurrentY !== cursorNewY) && isMouseDown === true) {
-            isDraggingOverlay = true;
-            cursorCurrentX = event.clientX;
-            cursorCurrentY = event.clientY;
-            menu.style.left = (menu.offsetLeft - cursorNewX) + "px";
-            menu.style.top = (menu.offsetTop - cursorNewY) + "px";
-            openMenu.style.left = (menu.offsetLeft - cursorNewX) + "px";
-            openMenu.style.top = (menu.offsetTop - cursorNewY) + "px";
-        }
+    cursorNewX = cursorCurrentX - event.clientX;
+    cursorNewY = cursorCurrentY - event.clientY;
+    if ((cursorCurrentX !== cursorNewX || cursorCurrentY !== cursorNewY) && isMouseDown === true) {
+        isDraggingOverlay = true;
+        cursorCurrentX = event.clientX;
+        cursorCurrentY = event.clientY;
+        menu.style.left = (menu.offsetLeft - cursorNewX) + "px";
+        menu.style.top = (menu.offsetTop - cursorNewY) + "px";
+        openMenu.style.left = (menu.offsetLeft - cursorNewX) + "px";
+        openMenu.style.top = (menu.offsetTop - cursorNewY) + "px";
+    }
 });
 
 openMenu.addEventListener("mouseup", function () {
@@ -103,7 +103,7 @@ openMenu.addEventListener("mouseup", function () {
         menuHidden = false;
         openMenu.style.visibility = "hidden";
         menu.style.visibility = "visible";
-    } 
+    }
 });
 
 // Add event to "Clear"-button
@@ -174,6 +174,7 @@ startSim.addEventListener("click", function () {
 
     setEssenVariables(canvasWidth, canvasHeight, cellSize);
     perfMeasure(getCells(), endPoint, startPoint);
+
     setSizes(canvasWidth, canvasHeight)
     populate();
 
@@ -186,6 +187,7 @@ startSim.addEventListener("click", function () {
 
 toggle.addEventListener("click", function(){
     setShowHeatMap(getShowHeatMap() ? false  : true);
+
 });
 
 
@@ -291,12 +293,78 @@ drawingArea.addEventListener("mouseup", (event) => {
         setAddingSpawn(false);
         let spawnGroup = [];
         let finalCell = getCellIndex(event.offsetX, event.offsetY);
-        for (let x = finalCell.x; x >= startingCell.x; --x) {
-            for (let y = finalCell.y; y >= startingCell.y; --y) {
+
+        switch (true) {
+            case (finalCell.x > startingCell.x && finalCell.y < startingCell.y): // 1st quadrant
+                for (let x = finalCell.x; x >= startingCell.x; --x) {
+                    for (let y = finalCell.y; y <= startingCell.y; ++y) {
+                        let index = { x, y };
+                        spawnGroup.push(index);
+                    }
+                }
+                break;
+            case (finalCell.x > startingCell.x && finalCell.y > startingCell.y): // 2th quadrant
+                for (let x = finalCell.x; x >= startingCell.x; --x) {
+                    for (let y = finalCell.y; y >= startingCell.y; --y) {
+                        let index = { x, y };
+                        spawnGroup.push(index);
+                    }
+                }
+                break;
+            case (finalCell.x < startingCell.x && finalCell.y > startingCell.y): // 3th quadrant
+                for (let x = finalCell.x; x <= startingCell.x; ++x) {
+                    for (let y = finalCell.y; y >= startingCell.y; --y) {
+                        let index = { x, y };
+                        spawnGroup.push(index);
+                    }
+                }
+                break;
+            case (finalCell.x < startingCell.x && finalCell.y < startingCell.y): // 4th quadrant
+                for (let x = finalCell.x; x <= startingCell.x; ++x) {
+                    for (let y = finalCell.y; y <= startingCell.y; ++y) {
+                        let index = { x, y };
+                        spawnGroup.push(index);
+                    }
+                }
+                break;
+            case (finalCell.x == startingCell.x && finalCell.y == startingCell.y): // single cells
+                let x = finalCell.x;
+                let y = finalCell.y;
                 let index = { x, y };
                 spawnGroup.push(index);
-            }
+                break;
+            case (finalCell.x > startingCell.x && finalCell.y == startingCell.y): // When doing a horisontal line where x gets smaller
+                for (let x = startingCell.x; x <= finalCell.x; ++x) {
+                    let y = finalCell.y;
+                    let index = { x, y };
+                    spawnGroup.push(index);
+                }
+                break;
+            case (finalCell.x < startingCell.x && finalCell.y == startingCell.y): // When doing a horisontal line where x gets larger
+                for (let x = finalCell.x; x <= startingCell.x; ++x) {
+                    let y = finalCell.y;
+                    let index = { x, y };
+                    spawnGroup.push(index);
+                }
+                break;
+            case (finalCell.x == startingCell.x && finalCell.y < startingCell.y): // When doing a vertical line where y gets smaller
+                for (let y = finalCell.y; y <= startingCell.y; ++y) {
+                    let x = finalCell.x;
+                    let index = { x, y };
+                    spawnGroup.push(index);
+                }
+
+                break;
+            case (finalCell.x == startingCell.x && startingCell.y < finalCell.y): // When doing a vertical line where y gets larger
+                for (let y = startingCell.y; y <= finalCell.y; ++y) {
+                    let x = finalCell.x;
+                    let index = { x, y };
+                    spawnGroup.push(index);
+                }
+
+                break;
         }
+
         addSpawnArea(spawnGroup);
     }
 });
