@@ -93,6 +93,8 @@ class Agent {
             return;
         }
 
+        cellsToUpdate.push(this.myCell);
+        cellsToUpdate.push(currentCell);
         let me = this.myCell.agents.find(agent => agent.myNumber == this.myNumber);
 
         let index = this.myCell.agents.indexOf(me);
@@ -277,7 +279,7 @@ function getAgents() {
 //Move agents - Animate / collision
 //
 //
-
+let cellsToUpdate = [];
 //Animate function, sets random position
 function anime(start) {
     let i = 0, len = agents.length;
@@ -388,8 +390,9 @@ async function animateCaller() {
     const start = performance.now();
     anime(start);
     if (getShowHeatMap()){
-        toggleHeat();
+        toggleHeat(cellsToUpdate);
     }
+    cellsToUpdate = [];
     return;
 }
 

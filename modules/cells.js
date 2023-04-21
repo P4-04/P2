@@ -230,34 +230,31 @@ function getCellDensity(cell) {
     return cell.highestDensity;
 }
 
-function toggleHeat() {
-    for (let x = 0; x < cells.length; x++) {
-        for (let y = 0; y < cells[0].length; y++) 
-        {
-            let density = getCellDensity(cells[x][y]);
-            if (density != 0 && cells[x][y].isWall == false && cells[x][y].isExit == false) {
-                cells[x][y].rect = document.createElementNS(svgNS, 'rect');
-                cells[x][y].rect.setAttribute('width', cells[x][y].width);
-                cells[x][y].rect.setAttribute('height', cells[x][y].height);
-                cells[x][y].rect.setAttribute('x', cells[x][y].x);
-                cells[x][y].rect.setAttribute('y', cells[x][y].y);
-                cells[x][y].rect.setAttribute('stroke', 'black');
+function toggleHeat(cellsToUpdate) {
+    cellsToUpdate.forEach(cell => {
+        let density = getCellDensity(cell);
+        if (density != 0 && cell.isWall == false && cell.isExit == false && cell.isSpawnPoint == false) {
+            cell.rect = document.createElementNS(svgNS, 'rect');
+            cell.rect.setAttribute('width', cell.width);
+            cell.rect.setAttribute('height', cell.height);
+            cell.rect.setAttribute('x', cell.x);
+            cell.rect.setAttribute('y', cell.y);
+            cell.rect.setAttribute('stroke', 'black');
 
-                const scaler = 36; //255 / 7 = 36.4, we round down, and now we have a scaler for our cells (any value over 7 is bad);
+            const scaler = 36; //255 / 7 = 36.4, we round down, and now we have a scaler for our cells (any value over 7 is bad);
 
-                let r = 255;
-                let g = 255 - ((scaler) * density);
-                let b = 255 - ((scaler) * density);
-                var col = "rgb(" + r + "," + g + "," + b + ")";
-                let myColorR = 255;
-                let myColorG = 0;
-                let myColorB = 0;
-                cells[x][y].rect.setAttribute('fill', col);
+            let r = 255;
+            let g = 255 - ((scaler) * density);
+            let b = 255 - ((scaler) * density);
+            var col = "rgb(" + r + "," + g + "," + b + ")";
+            let myColorR = 255;
+            let myColorG = 0;
+            let myColorB = 0;
+            cell.rect.setAttribute('fill', col);
 
-                drawingArea.appendChild(cells[x][y].rect);
-            }
-        }
-    }
+            drawingArea.appendChild(cell.rect);
+        }});
+
 }
 
 function getAddingExit() { return addingExit; };
@@ -266,9 +263,58 @@ function getAddingSpawn() { return addingSpawn; };
 function getAgentsInCell(cell) { return cell.agents; };
 
 
-function setShowHeatMap(shouldDisplay)
-{ 
-    showHeatMap = shouldDisplay; 
+function setShowHeatMap(shouldDisplay) {
+    showHeatMap = shouldDisplay;
+    if(!showHeatMap)
+    {
+        for (let x = 0; x < cells.length; x++) {
+            for (let y = 0; y < cells[0].length; y++) {
+                let density = getCellDensity(cells[x][y]);
+                if (density != 0 && cells[x][y].isWall == false && cells[x][y].isExit == false && cells[x][y].isSpawnPoint == false) {
+                    cells[x][y].rect = document.createElementNS(svgNS, 'rect');
+                    cells[x][y].rect.setAttribute('width', cells[x][y].width);
+                    cells[x][y].rect.setAttribute('height', cells[x][y].height);
+                    cells[x][y].rect.setAttribute('x', cells[x][y].x);
+                    cells[x][y].rect.setAttribute('y', cells[x][y].y);
+                    cells[x][y].rect.setAttribute('stroke', 'black');
     
+                    cells[x][y].rect.setAttribute('fill', "white");
+    
+                    drawingArea.appendChild(cells[x][y].rect);
+                }
+            }
+        }
+    }
+    
+    if(showHeatMap)
+    {
+        for (let x = 0; x < cells.length; x++) {
+            for (let y = 0; y < cells[0].length; y++) {
+                let density = getCellDensity(cells[x][y]);
+                if (density != 0 && cells[x][y].isWall == false && cells[x][y].isExit == false && cells[x][y].isSpawnPoint == false) {
+                    cells[x][y].rect = document.createElementNS(svgNS, 'rect');
+                    cells[x][y].rect.setAttribute('width', cells[x][y].width);
+                    cells[x][y].rect.setAttribute('height', cells[x][y].height);
+                    cells[x][y].rect.setAttribute('x', cells[x][y].x);
+                    cells[x][y].rect.setAttribute('y', cells[x][y].y);
+                    cells[x][y].rect.setAttribute('stroke', 'black');
+        
+                    const scaler = 36; //255 / 7 = 36.4, we round down, and now we have a scaler for our cells (any value over 7 is bad);
+        
+                    let r = 255;
+                    let g = 255 - ((scaler) * density);
+                    let b = 255 - ((scaler) * density);
+                    var col = "rgb(" + r + "," + g + "," + b + ")";
+                    let myColorR = 255;
+                    let myColorG = 0;
+                    let myColorB = 0;
+                    cells[x][y].rect.setAttribute('fill', col);
+        
+                    drawingArea.appendChild(cells[x][y].rect);
+            }
+        }
+    }
+
+    }
 }
-function getShowHeatMap(){ return showHeatMap; }
+function getShowHeatMap() { return showHeatMap; }
