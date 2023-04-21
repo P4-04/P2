@@ -1,5 +1,5 @@
 export { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, 
-    getAddingSpawn, endPoint, startPoint, prevExit, svgNS, getCells, drawTxt, getCell, getNeighborCells, getAgentsInCell}
+    getAddingSpawn, endPoint, startPoint, prevExit, svgNS, getCells, drawTxt, getCell, getNeighborCells, getAgentsInCell, drawVectors}
 
 //Custom cell size
 const cellSize = 25;
@@ -219,3 +219,18 @@ function getAddingExit() { return addingExit; };
 function getAddingSpawn() { return addingSpawn; };
 
 function getAgentsInCell(cell) { return cell.agents; };
+
+
+//Draw vectors
+function drawVectors(cell, value) {
+    let numbering = document.createElementNS(svgNS, "text")
+    numbering.setAttribute('x', cell.x+12)
+    numbering.setAttribute('y', cell.y+17)
+    numbering.classList.add('svgText');
+    if (cell.isWall){
+        numbering.setAttribute('fill', "white");
+    }
+    //numbering.textContent = Math.round(value);
+    numbering.textContent = value;
+    drawingArea.appendChild(numbering)
+}

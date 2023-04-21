@@ -182,7 +182,7 @@ function markCells(cells, currentCell) {
 //Draws text on cell
 function markCellsController(cells, currentCell) {
     cells[currentCell.x / pCellSize][currentCell.y / pCellSize].value = distVal;
-    drawTxt(cells[currentCell.x / pCellSize][currentCell.y / pCellSize], distVal);
+    //drawTxt(cells[currentCell.x / pCellSize][currentCell.y / pCellSize], distVal);
     
     let cell = cells[currentCell.x / pCellSize][currentCell.y / pCellSize]
 
@@ -293,10 +293,35 @@ function calculateVectors(cells) {
                 console.log("vectors" + cell.dVector.x + " " + cell.dVector.y);
                 console.log("current cell info " + currentCellIndex.x + " " + currentCellIndex.y);
             }
+
+            // if (cell.dVector.x === 1) {
+            //     if (cell.dVector.y === 1) {
+            //         drawVectors(cell, "\\")
+            //     }
+            //     else if (cell.dVector.y === 0) {
+            //         drawVectors(cell, "-")
+            //     }
+            //     else if (cell.dVector.y === (-1)) {
+            //         drawVectors(cell, "/")
+            //     }
+            // }
+            // else if (cell.dVector.x === 0) {
+            //     drawVectors(cell, "|")
+            // }
+            // else if (cell.dVector.x === (-1)) {
+            //     if (cell.dVector.y === 1) {
+            //         drawVectors(cell, "/")
+            //     }
+            //     else if (cell.dVector.y === 0) {
+            //         drawVectors(cell, "-")
+            //     }
+            //     else if (cell.dVector.y === (-1)) {
+            //         drawVectors(cell, "\\")
+            //     }
+            // }
         }
     });
 }
-
 
 
 export { initCellValues, setEssenVariables, sendMessage, perfMeasure, getCanvasHeight, getCanvasWidth };

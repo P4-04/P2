@@ -290,6 +290,8 @@ function anime(start) {
             let newX = agents[i].x + ((cells[x][y].dVector.x) * agents[i].SpeedModifier) / 3;
             let newY = agents[i].y + ((cells[x][y].dVector.y) * agents[i].SpeedModifier) / 3;
 
+            //Vector rotation for checking collision on current vector, 90deg counterclockwise, and 90deg clockwise
+            //Counterclockwise vector rotation
             if (collisionCheck(newX, newY, agents[i], cells[Math.floor(newX / cellSize)][Math.floor(newY / cellSize)])) {
                 let vectorTransformX = Math.cos(90 * (Math.PI / 180)) * cells[x][y].dVector.x - Math.sin(90 * (Math.PI / 180)) * cells[x][y].dVector.y
                 let vectorTransformY = Math.sin(90 * (Math.PI / 180)) * cells[x][y].dVector.x + Math.cos(90 * (Math.PI / 180)) * cells[x][y].dVector.y
@@ -297,16 +299,17 @@ function anime(start) {
                 newX = agents[i].x + (vectorTransformX * agents[i].SpeedModifier) / 3;
                 newY = agents[i].y + (vectorTransformY * agents[i].SpeedModifier) / 3;
             }
+            //Clockwise rotation
             if (collisionCheck(newX, newY, agents[i], cells[Math.floor(newX / cellSize)][Math.floor(newY / cellSize)])) {
-                let vectorTransformX = Math.cos(90 * (Math.PI / 180)) * cells[x][y].dVector.x + Math.sin(90 * (Math.PI / 180)) * cells[x][y].dVector.y
-                let vectorTransformY = -Math.sin(90 * (Math.PI / 180)) * cells[x][y].dVector.x + Math.cos(90 * (Math.PI / 180)) * cells[x][y].dVector.y
+                let vectorTransformX = Math.cos(180 * (Math.PI / 180)) * cells[x][y].dVector.x + Math.sin(180 * (Math.PI / 180)) * cells[x][y].dVector.y
+                let vectorTransformY = -Math.sin(180 * (Math.PI / 180)) * cells[x][y].dVector.x + Math.cos(180 * (Math.PI / 180)) * cells[x][y].dVector.y
 
                 newX = agents[i].x + (vectorTransformX * agents[i].SpeedModifier) / 3;
                 newY = agents[i].y + (vectorTransformY * agents[i].SpeedModifier) / 3;
             }
             if (collisionCheck(newX, newY, agents[i], cells[Math.floor(newX / cellSize)][Math.floor(newY / cellSize)])) {
-                newX = agents[i].x
-                newY = agents[i].y
+                //newX = agents[i].x
+                //newY = agents[i].y
             }
 
             //Code for applying decreasing fractions of previous vector to current vector
@@ -314,7 +317,7 @@ function anime(start) {
             if (getCell(x, y).dVector.x !== getCell(Math.floor(newX / cellSize), Math.floor(newY / cellSize)).dVector.x ||
             getCell(x, y).dVector.y !== getCell(Math.floor(newX / cellSize), Math.floor(newY / cellSize)).dVector.y) {
                 agents[i].prevCell = getCell(x, y);
-                agents[i].prevCellFract = 5;
+                agents[i].prevCellFract = 3;
             }
 
             if (agents[i].prevCell === null ||
