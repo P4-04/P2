@@ -1,10 +1,9 @@
-export { populate, removeAgentsFromArea, anime, getSpawnArea, addSpawnArea, setSizes }
-import { cellSize, svgNS, getCells, getCellIndex, getCell, endPoint, getNeighborCells, getAgentsInCell } from './cells.js'
+export { populate, removeAgentsFromArea, animateCaller, getSpawnArea, addSpawnArea, setSizes }
+import { cellSize, svgNS, getCells, getCellIndex, getCell, endPoint, getNeighborCells, getAgentsInCell, calcCellDensity, toggleHeat, getShowHeatMap } from './cells.js'
 import { getCanvasHeight, getCanvasWidth } from './pathfinding.js'
 
 const drawingArea = document.querySelector(".drawing");
 let spawnAreas = [];
-
 //Initializing array of agents
 let agents = [];
 //Max speed increase: 0.2, for a realistic speed of around 1.2-1.4 metres per second
@@ -101,7 +100,8 @@ class Agent {
 
         this.myCell = currentCell;
         this.myCell.agents.push(this);
-        getAgentsToTestAgainst(this);
+
+        calcCellDensity(this.myCell);
     }
     getAgentCell() {
         return this.myCell;
@@ -307,11 +307,24 @@ function anime(start) {
                 newX = agents[i].x + (vectorTransformX * agents[i].SpeedModifier) / 3;
                 newY = agents[i].y + (vectorTransformY * agents[i].SpeedModifier) / 3;
             }
+
             if (collisionCheck(newX, newY, agents[i], cells[Math.floor(newX / cellSize)][Math.floor(newY / cellSize)])) {
                 //newX = agents[i].x
                 //newY = agents[i].y
             }
+            
+            if (collisionCheck(newX, newY, agents[i], cells[Math.floor(newX / cellSize)][Math.floor(newY / cellSize)])) {
+                newX = agents[i].x
+                newY = agents[i].y
+            }
+            if (newX < 0){
+                newX = 0;
+            }
 
+
+            // if (newY < 0){
+            //     newY = 0;
+            // }
             //Code for applying decreasing fractions of previous vector to current vector
             //Makes movement in turns and corners appear more smooth
             if (getCell(x, y).dVector.x !== getCell(Math.floor(newX / cellSize), Math.floor(newY / cellSize)).dVector.x ||
@@ -337,6 +350,7 @@ function anime(start) {
                 console.log("newX " + newX + " newY " + newY);
             }
 
+            
             agents[i].setCoordinates(newX, newY);
             agents[i].updateAgentCell();
 
@@ -349,8 +363,9 @@ function anime(start) {
         i++;
     }
     let end = performance.now();
-    //console.log(`Execution time: ${end - start} ms`);
-    requestAnimationFrame(animateCaller);
+
+    console.log(`Execution time: ${end - start} ms`);
+    if (agents.length != 0){ requestAnimationFrame(animateCaller); } else { toggleHeat();}
 
 }
 
@@ -372,6 +387,10 @@ async function animateCaller() {
     }
     const start = performance.now();
     anime(start);
+    if (getShowHeatMap()){
+        toggleHeat();
+    }
+    return;
 }
 
 function CheckInnerBoxColl(agent) {

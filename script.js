@@ -1,7 +1,7 @@
 import { initCellValues, setEssenVariables, perfMeasure } from './modules/pathfinding.js';
-import { addSpawnArea, getSpawnArea, populate, removeAgentsFromArea, anime, setSizes } from './modules/agents.js';
+import { addSpawnArea, getSpawnArea, populate, removeAgentsFromArea, animateCaller, setSizes } from './modules/agents.js';
 import { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, 
-    getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit, getCells } from './modules/cells.js';
+    getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit, getCells, toggleHeat, setShowHeatMap, getShowHeatMap } from './modules/cells.js';
 
 
 //Initialize DOM elements
@@ -11,6 +11,8 @@ const startSim = document.querySelector("#start");
 const numAgents = document.querySelector("#numAgents");
 const menu = document.querySelector(".menu");
 const drawingArea = document.querySelector(".drawing");
+
+const toggle = document.querySelector("#toggleDisplay");
 
 const popButton = document.querySelector("#populate");
 const clearButton = document.querySelector("#clear");
@@ -174,8 +176,18 @@ startSim.addEventListener("click", function () {
     perfMeasure(getCells(), endPoint, startPoint);
     setSizes(canvasWidth, canvasHeight)
     populate();
-    anime();
+
+    //toggleHeat();  
+    animateCaller()
+
+    //toggleHeat();
 });
+
+
+toggle.addEventListener("click", function(){
+    setShowHeatMap(getShowHeatMap() ? false  : true);
+});
+
 
 //
 //

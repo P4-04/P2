@@ -1,8 +1,12 @@
-export { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, 
-    getAddingSpawn, endPoint, startPoint, prevExit, svgNS, getCells, drawTxt, getCell, getNeighborCells, getAgentsInCell, drawVectors}
-
+export {
+    createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit,
+    getAddingSpawn, endPoint, startPoint, prevExit, svgNS, getCells, drawTxt, getCell, getNeighborCells, getAgentsInCell, calcCellDensity, getCellDensity, toggleHeat,
+    setShowHeatMap, getShowHeatMap
+}
+import { animateCaller } from "./agents.js";
 //Custom cell size
 const cellSize = 25;
+let showHeatMap = false;
 //Initialize 2d array for cells
 let cells = [[]];
 //Initialization of variables needed for adding spawn / exit cells
@@ -101,9 +105,9 @@ function drawCell(cell) {
 function drawTxt(cell, value) {
     let numbering = document.createElementNS(svgNS, "text")
     numbering.setAttribute('x', cell.x)
-    numbering.setAttribute('y', cell.y+17)
+    numbering.setAttribute('y', cell.y + 17)
     numbering.classList.add('svgText');
-    if (cell.isWall){
+    if (cell.isWall) {
         numbering.setAttribute('fill', "white");
     }
     numbering.textContent = Math.round(value);
@@ -131,9 +135,10 @@ function createGrid(canvasWidth, canvasHeight) {
                 value: 0,
                 vectorX: 0,
                 vectorY: 0,
-                dVector: {x: 0, y: 0},
+                dVector: { x: 0, y: 0 },
                 //Collision stuff
-                agents: []
+                agents: [],
+                highestDensity: 0
             };
             //Push cell to cells array
             cells[x][y] = cell;
@@ -160,20 +165,19 @@ function DrawAllCells() {
     }
 }
 
-function getCells(){ return cells; }
+function getCells() { return cells; }
 /** 
  * @param {int} x The X position of the cell to find
  * @param {int} y The Y position of the cell to find
  * @returns {cell} the cell we found
 */
-function getCell(x, y){ return cells[x][y]; }
+function getCell(x, y) { return cells[x][y]; }
 
 function setAddingExit(isAdding) { addingExit = isAdding };
 function setAddingSpawn(isAdding) { addingSpawn = isAdding };
 
-function getNeighborCells(x,y)
-{
-    let cell = getCell(x,y);
+function getNeighborCells(x, y) {
+    let cell = getCell(x, y);
     let neighbors = [];
     //Get x neighbors
     if (cell.x != 0) {
@@ -215,22 +219,56 @@ function getNeighborCells(x,y)
     return neighbors;
 }
 
+function calcCellDensity(cell) {
+    let curentDensity = cell.agents.length;
+    if (cell.highestDensity < curentDensity) {
+        cell.highestDensity = curentDensity;
+    }
+}
+
+function getCellDensity(cell) {
+    return cell.highestDensity;
+}
+
+function toggleHeat() {
+    for (let x = 0; x < cells.length; x++) {
+        for (let y = 0; y < cells[0].length; y++) 
+        {
+            let density = getCellDensity(cells[x][y]);
+            if (density != 0 && cells[x][y].isWall == false && cells[x][y].isExit == false) {
+                cells[x][y].rect = document.createElementNS(svgNS, 'rect');
+                cells[x][y].rect.setAttribute('width', cells[x][y].width);
+                cells[x][y].rect.setAttribute('height', cells[x][y].height);
+                cells[x][y].rect.setAttribute('x', cells[x][y].x);
+                cells[x][y].rect.setAttribute('y', cells[x][y].y);
+                cells[x][y].rect.setAttribute('stroke', 'black');
+
+                const scaler = 36; //255 / 7 = 36.4, we round down, and now we have a scaler for our cells (any value over 7 is bad);
+
+                let r = 255;
+                let g = 255 - ((scaler) * density);
+                let b = 255 - ((scaler) * density);
+                var col = "rgb(" + r + "," + g + "," + b + ")";
+                let myColorR = 255;
+                let myColorG = 0;
+                let myColorB = 0;
+                cells[x][y].rect.setAttribute('fill', col);
+
+                drawingArea.appendChild(cells[x][y].rect);
+            }
+        }
+    }
+}
+
 function getAddingExit() { return addingExit; };
 function getAddingSpawn() { return addingSpawn; };
 
 function getAgentsInCell(cell) { return cell.agents; };
 
 
-//Draw vectors
-function drawVectors(cell, value) {
-    let numbering = document.createElementNS(svgNS, "text")
-    numbering.setAttribute('x', cell.x+12)
-    numbering.setAttribute('y', cell.y+17)
-    numbering.classList.add('svgText');
-    if (cell.isWall){
-        numbering.setAttribute('fill', "white");
-    }
-    //numbering.textContent = Math.round(value);
-    numbering.textContent = value;
-    drawingArea.appendChild(numbering)
+function setShowHeatMap(shouldDisplay)
+{ 
+    showHeatMap = shouldDisplay; 
+    
 }
+function getShowHeatMap(){ return showHeatMap; }
