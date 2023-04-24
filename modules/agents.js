@@ -28,7 +28,7 @@ class Agent {
         let xyTransform = drawingArea.createSVGTransform();
         xyTransform.setTranslate(this.x, this.y);
         this.body.transform.baseVal.appendItem(xyTransform);
-        
+
         drawingArea.appendChild(this.body);
         
         this.SpeedModifier = Math.random() * maxSpeedIncrease + 1.2;
@@ -375,7 +375,7 @@ function anime(start) {
     let end = performance.now();
 
     //console.log(`Execution time: ${end - start} ms`);
-    if (agents.length != 0){ requestAnimationFrame(animateCaller); } else { toggleHeat();}
+    if (agents.length != 0){ requestAnimationFrame(animateCaller); }
 
 }
 
