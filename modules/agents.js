@@ -309,11 +309,6 @@ function anime(start) {
                 newX = agents[i].x + (vectorTransformX * agents[i].SpeedModifier) / 3;
                 newY = agents[i].y + (vectorTransformY * agents[i].SpeedModifier) / 3;
             }
-
-            if (collisionCheck(newX, newY, agents[i], cells[Math.floor(newX / cellSize)][Math.floor(newY / cellSize)])) {
-                //newX = agents[i].x
-                //newY = agents[i].y
-            }
             
             if (collisionCheck(newX, newY, agents[i], cells[Math.floor(newX / cellSize)][Math.floor(newY / cellSize)])) {
                 newX = agents[i].x
@@ -322,7 +317,6 @@ function anime(start) {
             if (newX < 0){
                 newX = 0;
             }
-
 
             // if (newY < 0){
             //     newY = 0;
