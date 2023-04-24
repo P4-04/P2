@@ -1,6 +1,7 @@
 import { initCellValues, setEssenVariables, perfMeasure } from './modules/pathfinding.js';
-import { addSpawnArea, getSpawnArea, populate, removeAgentsFromArea, anime } from './modules/agents.js';
-import { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit, getCells } from './modules/cells.js';
+import { addSpawnArea, getSpawnArea, populate, removeAgentsFromArea, animateCaller, setSizes } from './modules/agents.js';
+import { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, 
+    getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit, getCells, toggleHeat, setShowHeatMap, getShowHeatMap } from './modules/cells.js';
 
 
 //Initialize DOM elements
@@ -11,6 +12,8 @@ const numAgents = document.querySelector("#numAgents");
 const menu = document.querySelector(".menu");
 const drawingArea = document.querySelector(".drawing");
 
+const toggle = document.querySelector("#toggleDisplay");
+
 const popButton = document.querySelector("#populate");
 const clearButton = document.querySelector("#clear");
 const addExitButton = document.querySelector("#addExit");
@@ -20,6 +23,7 @@ const toggleAgentsSubmenu = document.querySelector("#agentsButton");
 const spawnButton = document.querySelector("#spawnButton");
 const removeButton = document.querySelector("#removeButton");
 let numAgentsInput = document.querySelector("#num-agents");
+const toggleGridsSubmenu = document.querySelector("#gridsButton");
 
 //
 //
@@ -68,6 +72,15 @@ openMenu.addEventListener("mousedown", function (event) {
     isDraggingOverlay = false;
     cursorCurrentX = event.clientX;
     cursorCurrentY = event.clientY;
+});
+
+toggleGridsSubmenu.addEventListener("click", function () {
+    let submenu = document.querySelector("#gridsSubmenu");
+    if (submenu.style.display === "none") {
+        submenu.style.display = "block";
+    } else {
+        submenu.style.display = "none";
+    }
 });
 
 document.addEventListener("mousemove", function (event) {
@@ -119,9 +132,9 @@ toggleAgentsSubmenu.addEventListener("click", function () {
     }
 });
 
-spawnButton.addEventListener("click", function () {
-    populate();
-});
+//spawnButton.addEventListener("click", function () {
+//    populate();
+//});
 
 removeButton.addEventListener("click", function () {
     let agentNumToRemove = document.querySelector("#numAgents").value;
@@ -162,8 +175,21 @@ startSim.addEventListener("click", function () {
     setEssenVariables(canvasWidth, canvasHeight, cellSize);
     perfMeasure(getCells(), endPoint, startPoint);
 
-    anime();
+    setSizes(canvasWidth, canvasHeight)
+    populate();
+
+    //toggleHeat();  
+    animateCaller()
+
+    //toggleHeat();
 });
+
+
+toggle.addEventListener("click", function(){
+    setShowHeatMap(getShowHeatMap() ? false  : true);
+
+});
+
 
 //
 //
@@ -206,6 +232,10 @@ drawingArea.addEventListener("mousedown", (event) => {
 });
 
 drawingArea.addEventListener("mousemove", (event) => {
+    if (event.buttons !== 1) {
+        isDragging = false;
+    }
+    
     if (getAddingSpawn()) {
         return;
     }
@@ -246,125 +276,11 @@ drawingArea.addEventListener("mousemove", (event) => {
     if (getAddingSpawn() && isDragging) {
         let nextIndex = getCellIndex(event.offsetX, event.offsetY);
         if (prevIndex.x != nextIndex.x || prevIndex.y != nextIndex.y) {
-            switch (true) {
-                case (nextIndex.x >= startingCell.x && nextIndex.y <= startingCell.y): // first quadrant 
-                    if (nextIndex.x == startingCell.x || nextIndex.y == startingCell.y) {
-                        let x = prevIndex.x
-                        for (let y = prevIndex.y; y <= startingCell.y; ++y) {
-                            let index = { x, y };
-                            cellEventHandler(index, "remove");
-                        }
-                        let y = prevIndex.y;
-                        for (let x = prevIndex.x; x >= startingCell.x; --x) {
-                            let index = { x, y };
-                            cellEventHandler(index, "remove");
-                        }
-                    }
-                    if (nextIndex.x < prevIndex.x) {
-                        let x = prevIndex.x;
-                        for (let y = prevIndex.y; y <= startingCell.y; ++y) {
-                            let index = { x, y };
-                            cellEventHandler(index, "remove");
-                        }
-                    }
-                    if (nextIndex.y > prevIndex.y) {
-                        let y = prevIndex.y;
-                        for (let x = prevIndex.x; x >= startingCell.x; --x) {
-                            let index = { x, y };
-                            cellEventHandler(index, "remove");
-                        }
-                    } else {
-                        for (let x = nextIndex.x; x >= startingCell.x; --x) {
-                            for (let y = nextIndex.y; y <= startingCell.y; ++y) {
-                                let index = { x, y };
-                                cellEventHandler(index);
-                            }
-                        }
-                    }
-                    break;
-                case (nextIndex.x <= startingCell.x && nextIndex.y <= startingCell.y): // second quadrant
-                    if (nextIndex.y == startingCell.y) {
-                        let y = prevIndex.y;
-                        for (let x = prevIndex.x; x <= startingCell.x; ++x) {
-                            let index = { x, y };
-                            cellEventHandler(index, "remove");
-                        }
-                    }
-                    if (nextIndex.x > prevIndex.x) {
-                        let x = prevIndex.x;
-                        for (let y = prevIndex.y; y <= startingCell.y; ++y) {
-                            let index = { x, y };
-                            cellEventHandler(index, "remove");
-                        }
-                    }
-                    if (nextIndex.y > prevIndex.y) {
-                        let y = prevIndex.y;
-                        for (let x = prevIndex.x; x <= startingCell.x; ++x) {
-                            let index = { x, y };
-                            cellEventHandler(index, "remove");
-                        }
-                    } else {
-                        for (let x = nextIndex.x; x <= startingCell.x; ++x) {
-                            for (let y = nextIndex.y; y <= startingCell.y; ++y) {
-                                let index = { x, y };
-                                cellEventHandler(index);
-                            }
-                        }
-                    }
-                    break;
-                case (nextIndex.x <= startingCell.x && nextIndex.y >= startingCell.y): // 3th quadrant
-                    if (nextIndex.x == startingCell.x) {
-                        let x = prevIndex.x
-                        for (let y = prevIndex.y; y >= startingCell.y; --y) {
-                            let index = { x, y };
-                            cellEventHandler(index, "remove");
-                        }
-                    }
-                    if (nextIndex.x > prevIndex.x) {
-                        let x = prevIndex.x;
-                        for (let y = prevIndex.y; y >= startingCell.y; --y) {
-                            let index = { x, y };
-                            cellEventHandler(index, "remove");
-                        }
-                    }
-                    if (nextIndex.y < prevIndex.y) {
-                        let y = prevIndex.y;
-                        for (let x = prevIndex.x; x <= startingCell.x; ++x) {
-                            let index = { x, y };
-                            cellEventHandler(index, "remove");
-                        }
-                    } else {
-                        for (let x = nextIndex.x; x <= startingCell.x; ++x) {
-                            for (let y = nextIndex.y; y >= startingCell.y; --y) {
-                                let index = { x, y };
-                                cellEventHandler(index);
-                            }
-                        }
-                    }
-                    break;
-                case (nextIndex.x >= startingCell.x && nextIndex.y >= startingCell.y): // 4th quadrant
-                    if (nextIndex.x < prevIndex.x) {
-                        let x = prevIndex.x;
-                        for (let y = prevIndex.y; y >= startingCell.y; --y) {
-                            let index = { x, y };
-                            cellEventHandler(index, "remove");
-                        }
-                    }
-                    if (nextIndex.y < prevIndex.y) {
-                        let y = prevIndex.y;
-                        for (let x = prevIndex.x; x >= startingCell.x; --x) {
-                            let index = { x, y };
-                            cellEventHandler(index, "remove");
-                        }
-                    } else {
-                        for (let x = nextIndex.x; x >= startingCell.x; --x) {
-                            for (let y = nextIndex.y; y >= startingCell.y; --y) {
-                                let index = { x, y };
-                                cellEventHandler(index);
-                            }
-                        }
-                    }
-                    break;
+            for (let x = nextIndex.x; x >= startingCell.x; --x) {
+                for (let y = nextIndex.y; y >= startingCell.y; --y) {
+                    let index = { x, y };
+                    cellEventHandler(index);
+                }
             }
             prevIndex = nextIndex;
         }
@@ -377,6 +293,7 @@ drawingArea.addEventListener("mouseup", (event) => {
         setAddingSpawn(false);
         let spawnGroup = [];
         let finalCell = getCellIndex(event.offsetX, event.offsetY);
+
         switch (true) {
             case (finalCell.x > startingCell.x && finalCell.y < startingCell.y): // 1st quadrant
                 for (let x = finalCell.x; x >= startingCell.x; --x) {
@@ -452,6 +369,57 @@ drawingArea.addEventListener("mouseup", (event) => {
     }
 });
 
+window.addEventListener("mousemove", function (event) {
+    //Checks if the primary mouse button is NOT pressed and updates the isMouseDown variable accordingly.
+    //event.buttons {1 == primary, 2 == secondary, 4 == auxiliary(middle)}
+    if (event.buttons !== 1) {
+        isMouseDown = false;
+    }
+
+    cursorNewX = cursorCurrentX - event.clientX;
+    cursorNewY = cursorCurrentY - event.clientY;
+    if ((cursorCurrentX !== cursorNewX || cursorCurrentY !== cursorNewY) && isMouseDown === true) {
+        isDraggingOverlay = true;
+        cursorCurrentX = event.clientX;
+        cursorCurrentY = event.clientY;
+        menu.style.left = (menu.offsetLeft - cursorNewX) + "px";
+        menu.style.top = (menu.offsetTop - cursorNewY) + "px";
+        openMenu.style.left = (menu.offsetLeft - cursorNewX) + "px";
+        openMenu.style.top = (menu.offsetTop - cursorNewY) + "px";
+
+        // Call the resetMenuPosition function
+        resetMenuPosition();
+    } else {
+        isDraggingOverlay = false;
+    }
+});
+
+function resetMenuPosition(){
+    const menuRect = menu.getBoundingClientRect();
+    const openMenuRect = openMenu.getBoundingClientRect();
+    const windowHeight = window.innerHeight;
+    const windowWidth = window.innerWidth;
+
+    if (menuRect.top < 0) {
+        menu.style.top = "0px";
+        openMenu.style.top = "0px";
+    }
+
+    if (menuRect.left < 0) {
+        menu.style.left = "0px";
+        openMenu.style.left = "0px";
+    }
+
+    if (menuRect.bottom > windowHeight) {
+        menu.style.top = (windowHeight - menuRect.height) + "px";
+        openMenu.style.top = (windowHeight - menuRect.height) + "px";
+    }
+
+    if (menuRect.right > windowWidth) {
+        menu.style.left = (windowWidth - menuRect.width) + "px";
+        openMenu.style.left = (windowWidth - menuRect.width) + "px";
+    }
+}
 
 //
 //
