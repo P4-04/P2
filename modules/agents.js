@@ -110,8 +110,8 @@ class Agent {
         return this.myCell;
     }
     destroy() {
-        let myHTML = document.elementFromPoint(this.x, this.y);
-        myHTML.remove(); //sometimes crashes
+        //let myHTML = document.elementFromPoint(this.x, this.y);
+        //myHTML.remove(); //sometimes crashes
 
         //remove from agent array
         let me = agents.find(agent => agent.myNumber === this.myNumber);
@@ -348,6 +348,7 @@ function anime(start) {
 
             endPoint.forEach(endPoint => {
                 if (getCell(x, y) === endPoint) {
+                    agents[i].body.setAttribute('fill-opacity', '0');
                     agents[i].destroy();
                 }
             });
