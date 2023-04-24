@@ -24,10 +24,13 @@ class Agent {
         this.fattiness = fattiness;
         this.body = document.createElementNS(svgNS, 'circle');
         this.body.setAttribute('r', this.fattiness);
+
         let xyTransform = drawingArea.createSVGTransform();
         xyTransform.setTranslate(this.x, this.y);
         this.body.transform.baseVal.appendItem(xyTransform);
+        
         drawingArea.appendChild(this.body);
+        
         this.SpeedModifier = Math.random() * maxSpeedIncrease + 1.2;
         //Old cell for transition vector, smooting out movement
         this.prevCell = null;
@@ -65,10 +68,17 @@ class Agent {
         this.squareX = Math.ceil(x - (this.fattiness * Math.sqrt(2) / 2));
         this.squareY = Math.ceil(x - (this.fattiness * Math.sqrt(2) / 2));
 
-        let xyTransform = drawingArea.createSVGTransform();
-        xyTransform.setTranslate(this.x, this.y);
-        this.body.transform.baseVal[0] = xyTransform;
-
+       
+            let xyTransform = drawingArea.createSVGTransform();
+            xyTransform.setTranslate(this.x, this.y);
+        if (!getShowHeatMap()){
+            this.body.transform.baseVal[0] = xyTransform;
+            this.body.setAttribute('fill-opacity', '100')
+        } else 
+        { 
+            this.body.setAttribute('fill-opacity', '0');
+        }
+        
         // this.square.left = x/(canvasWidth / cellSize);
         // this.square.top = y/(canvasHeight / cellSize);
         // this.square.right = this.square.left + this.fattiness;
@@ -93,8 +103,11 @@ class Agent {
             return;
         }
 
-        cellsToUpdate.push(this.myCell);
-        cellsToUpdate.push(currentCell);
+        console.log(getShowHeatMap());
+        if (getShowHeatMap()){
+            cellsToUpdate.push(this.myCell);
+            cellsToUpdate.push(currentCell);
+        }
         let me = this.myCell.agents.find(agent => agent.myNumber == this.myNumber);
 
         let index = this.myCell.agents.indexOf(me);
@@ -109,8 +122,8 @@ class Agent {
         return this.myCell;
     }
     destroy() {
-        let myHTML = document.elementFromPoint(this.x, this.y);
-        myHTML.remove(); //sometimes crashes
+        //let myHTML = document.elementFromPoint(this.x, this.y);
+        //myHTML.remove(); //sometimes crashes
 
         //remove from agent array
         let me = agents.find(agent => agent.myNumber === this.myNumber);
@@ -303,8 +316,8 @@ function anime(start) {
             }
             //Clockwise rotation
             if (collisionCheck(newX, newY, agents[i], cells[Math.floor(newX / cellSize)][Math.floor(newY / cellSize)])) {
-                let vectorTransformX = Math.cos(180 * (Math.PI / 180)) * cells[x][y].dVector.x + Math.sin(180 * (Math.PI / 180)) * cells[x][y].dVector.y
-                let vectorTransformY = -Math.sin(180 * (Math.PI / 180)) * cells[x][y].dVector.x + Math.cos(180 * (Math.PI / 180)) * cells[x][y].dVector.y
+                let vectorTransformX = Math.cos(90 * (Math.PI / 180)) * cells[x][y].dVector.x + Math.sin(90 * (Math.PI / 180)) * cells[x][y].dVector.y
+                let vectorTransformY = -Math.sin(90 * (Math.PI / 180)) * cells[x][y].dVector.x + Math.cos(90 * (Math.PI / 180)) * cells[x][y].dVector.y
 
                 newX = agents[i].x + (vectorTransformX * agents[i].SpeedModifier) / 3;
                 newY = agents[i].y + (vectorTransformY * agents[i].SpeedModifier) / 3;
@@ -388,8 +401,9 @@ async function animateCaller() {
         return;
     }
     const start = performance.now();
+    
     anime(start);
-    if (getShowHeatMap()){
+    if (getShowHeatMap){
         toggleHeat(cellsToUpdate);
     }
     cellsToUpdate = [];
