@@ -243,4 +243,4 @@ function calculateVectors(cells) {
 
 
 
-export { initCellValues, setEssenVariables, perfMeasure, getCanvasHeight, getCanvasWidth };
+export { setEssenVariables, perfMeasure, getCanvasHeight, getCanvasWidth };
