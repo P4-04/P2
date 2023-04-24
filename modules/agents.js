@@ -1,10 +1,10 @@
-export { populate, removeAgentsFromArea, anime, getSpawnArea, addSpawnArea, setSizes, setSpawnAreas }
-import { cellSize, svgNS, getCells, getCellIndex, getCell, endPoint, getNeighborCells, getAgentsInCell } from './cells.js'
+export { populate, removeAgentsFromArea, animateCaller, getSpawnArea, addSpawnArea, setSizes, setSpawnAreas }
+import { cellSize, svgNS, getCells, getCellIndex, getCell, endPoint, getNeighborCells, getAgentsInCell, calcCellDensity, toggleHeat, getShowHeatMap } from './cells.js'
+
 import { getCanvasHeight, getCanvasWidth } from './pathfinding.js'
 
 const drawingArea = document.querySelector(".drawing");
 let spawnAreas = [];
-
 //Initializing array of agents
 let agents = [];
 //Max speed increase: 0.2, for a realistic speed of around 1.2-1.4 metres per second
@@ -94,6 +94,8 @@ class Agent {
             return;
         }
 
+        cellsToUpdate.push(this.myCell);
+        cellsToUpdate.push(currentCell);
         let me = this.myCell.agents.find(agent => agent.myNumber == this.myNumber);
 
         let index = this.myCell.agents.indexOf(me);
@@ -101,7 +103,8 @@ class Agent {
 
         this.myCell = currentCell;
         this.myCell.agents.push(this);
-        getAgentsToTestAgainst(this);
+
+        calcCellDensity(this.myCell);
     }
     getAgentCell() {
         return this.myCell;
@@ -277,7 +280,7 @@ function getAgents() {
 //Move agents - Animate / collision
 //
 //
-
+let cellsToUpdate = [];
 //Animate function, sets random position
 function anime(start) {
     let i = 0, len = agents.length;
@@ -290,6 +293,28 @@ function anime(start) {
             let newX = agents[i].x + ((cells[x][y].dVector.x) * agents[i].SpeedModifier) / 3;
             let newY = agents[i].y + ((cells[x][y].dVector.y) * agents[i].SpeedModifier) / 3;
 
+            //Code for applying decreasing fractions of previous vector to current vector
+            //Makes movement in turns and corners appear more smooth
+            if (getCell(x, y).dVector.x !== getCell(Math.floor(newX / cellSize), Math.floor(newY / cellSize)).dVector.x ||
+            getCell(x, y).dVector.y !== getCell(Math.floor(newX / cellSize), Math.floor(newY / cellSize)).dVector.y) {
+                agents[i].prevCell = getCell(x, y);
+                agents[i].prevCellFract = 50;
+            }
+
+            if (agents[i].prevCellFract <= 5) {
+                agents[i].prevCell = null;
+                agents[i].prevCellFract = null;
+            }
+            else if (agents[i].prevCellFract !== null) {
+                let prevVectorX = agents[i].prevCell.dVector.x * agents[i].prevCellFract;
+                let prevVectorY = agents[i].prevCell.dVector.y * agents[i].prevCellFract;
+                newX = agents[i].x + ((cells[x][y].dVector.x / (agents[i].prevCellFract) + (prevVectorX / agents[i].prevCellFract)) * agents[i].SpeedModifier) / 7;
+                newY = agents[i].y + ((cells[x][y].dVector.y / (agents[i].prevCellFract) + (prevVectorY / agents[i].prevCellFract)) * agents[i].SpeedModifier) / 7;
+                agents[i].prevCellFract -= 1;
+            }
+
+            //Vector rotation for checking collision on current vector, 90deg counterclockwise, and 90deg clockwise
+            //Counterclockwise vector rotation
             if (collisionCheck(newX, newY, agents[i], cells[Math.floor(newX / cellSize)][Math.floor(newY / cellSize)])) {
                 let vectorTransformX = Math.cos(90 * (Math.PI / 180)) * cells[x][y].dVector.x - Math.sin(90 * (Math.PI / 180)) * cells[x][y].dVector.y
                 let vectorTransformY = Math.sin(90 * (Math.PI / 180)) * cells[x][y].dVector.x + Math.cos(90 * (Math.PI / 180)) * cells[x][y].dVector.y
@@ -297,6 +322,7 @@ function anime(start) {
                 newX = agents[i].x + (vectorTransformX * agents[i].SpeedModifier) / 3;
                 newY = agents[i].y + (vectorTransformY * agents[i].SpeedModifier) / 3;
             }
+            //Clockwise rotation
             if (collisionCheck(newX, newY, agents[i], cells[Math.floor(newX / cellSize)][Math.floor(newY / cellSize)])) {
                 let vectorTransformX = Math.cos(90 * (Math.PI / 180)) * cells[x][y].dVector.x + Math.sin(90 * (Math.PI / 180)) * cells[x][y].dVector.y
                 let vectorTransformY = -Math.sin(90 * (Math.PI / 180)) * cells[x][y].dVector.x + Math.cos(90 * (Math.PI / 180)) * cells[x][y].dVector.y
@@ -304,35 +330,18 @@ function anime(start) {
                 newX = agents[i].x + (vectorTransformX * agents[i].SpeedModifier) / 3;
                 newY = agents[i].y + (vectorTransformY * agents[i].SpeedModifier) / 3;
             }
+            
             if (collisionCheck(newX, newY, agents[i], cells[Math.floor(newX / cellSize)][Math.floor(newY / cellSize)])) {
                 newX = agents[i].x
                 newY = agents[i].y
             }
-
-            //Code for applying decreasing fractions of previous vector to current vector
-            //Makes movement in turns and corners appear more smooth
-            if (getCell(x, y).dVector.x !== getCell(Math.floor(newX / cellSize), Math.floor(newY / cellSize)).dVector.x ||
-            getCell(x, y).dVector.y !== getCell(Math.floor(newX / cellSize), Math.floor(newY / cellSize)).dVector.y) {
-                agents[i].prevCell = getCell(x, y);
-                agents[i].prevCellFract = 5;
+            if (newX < 0){
+                newX = 0;
             }
 
-            if (agents[i].prevCell === null ||
-            agents[i].prevCell.dVector.x > 1 || agents[i].prevCell.dVector.x < (-1) ||
-            agents[i].prevCell.dVector.y > 1 || agents[i].prevCell.dVector.y < (-1)) {
-                agents[i].prevCell = null;
-                agents[i].prevCellFract = null;
-            }
-            else if (agents[i].prevCellFract !== null) {
-                console.log("Old cell info 1 " + agents[i].prevCell.dVector.x + " " + agents[i].prevCell.dVector.y + " " + agents[i].prevCellFract);
-                agents[i].prevCell.dVector.x *= agents[i].prevCellFract;
-                agents[i].prevCell.dVector.y *= agents[i].prevCellFract;
-                agents[i].prevCellFract -= 0.1;
-                console.log("Old cell info 2 " + agents[i].prevCell.dVector.x + " " + agents[i].prevCell.dVector.y + " " + agents[i].prevCellFract);
-                newX = agents[i].x + ((cells[x][y].dVector.x / (1 + agents[i].prevCellFract) + agents[i].prevCell.dVector.x) * agents[i].SpeedModifier) / 5;
-                newY = agents[i].y + ((cells[x][y].dVector.y / (1 + agents[i].prevCellFract) + agents[i].prevCell.dVector.y) * agents[i].SpeedModifier) / 5;
-                console.log("newX " + newX + " newY " + newY);
-            }
+            // if (newY < 0){
+            //     newY = 0;
+            // }
 
             agents[i].setCoordinates(newX, newY);
             agents[i].updateAgentCell();
@@ -346,8 +355,9 @@ function anime(start) {
         i++;
     }
     let end = performance.now();
+
     //console.log(`Execution time: ${end - start} ms`);
-    requestAnimationFrame(animateCaller);
+    if (agents.length != 0){ requestAnimationFrame(animateCaller); } else { toggleHeat();}
 
 }
 
@@ -369,6 +379,11 @@ async function animateCaller() {
     }
     const start = performance.now();
     anime(start);
+    if (getShowHeatMap()){
+        toggleHeat(cellsToUpdate);
+    }
+    cellsToUpdate = [];
+    return;
 }
 
 function CheckInnerBoxColl(agent) {

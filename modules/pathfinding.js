@@ -6,12 +6,12 @@ async function perfMeasure(cells, goal, spawn) {
 
     //initCellValues(board, endPoint, startPoint);
 
-    let initCellsArray = [];
-    initCellsArray[0] = goal;
-    let cellsArray = [];
+    // let initCellsArray = [];
+    // initCellsArray[0] = goal;
+    // let cellsArray = [];
 
-    cellsArray = setArray(cells, initCellsArray);
-    markCells(cells, cellsArray);
+    //cellsArray = setArray(cells, initCellsArray);
+    markCells(cells, goal);
 
     let spawnCount = 0;
     let spawnGroups = getSpawnArea();
@@ -40,7 +40,7 @@ async function initCellValues(cells, goal, startpoint) {
             cells[x][y].f = cells[x][y].h / cellSize;
             //cells[x][y].f = Math.max((cells[x][y].g - Math.min(0))/Math.max(10)-Math.min(0)*10)
             /* Uncomment if you need to see the value of the cells*/
-            drawTxt(cells[x][y], cells[x][y].f);
+            //drawTxt(cells[x][y], cells[x][y].f);
         }
     }
 }
@@ -153,7 +153,7 @@ function setArray(cells, cellsArray) {
 //Recursive function for marking arrau of cells and counting distance
 function markCells(cells, currentCell) {
     let nextNeighbors = [];
-    let tempArr = [];
+    let NeighborArr = [];
 
     for (let i = 0; i < currentCell.length; i++) {
         //Update cell if not already marked as updated or wall
@@ -161,13 +161,13 @@ function markCells(cells, currentCell) {
         if (currentCell[i] != undefined && currentCell[i].mark === false) {
             markCellsController(cells, currentCell[i]);
 
-            tempArr = getNeighbors2(cells, currentCell[i]);
+            NeighborArr = getNeighbors2(cells, currentCell[i]);
 
             //A maximum of 4 neighbors can be found for each cell
-            nextNeighbors.push(tempArr[0]);
-            nextNeighbors.push(tempArr[1]);
-            nextNeighbors.push(tempArr[2]);
-            nextNeighbors.push(tempArr[3]);
+            nextNeighbors.push(NeighborArr[0]);
+            nextNeighbors.push(NeighborArr[1]);
+            nextNeighbors.push(NeighborArr[2]);
+            nextNeighbors.push(NeighborArr[3]);
         }
     }
     distVal += 0.5;
@@ -182,7 +182,7 @@ function markCells(cells, currentCell) {
 //Draws text on cell
 function markCellsController(cells, currentCell) {
     cells[currentCell.x / pCellSize][currentCell.y / pCellSize].value = distVal;
-    drawTxt(cells[currentCell.x / pCellSize][currentCell.y / pCellSize], distVal);
+    //drawTxt(cells[currentCell.x / pCellSize][currentCell.y / pCellSize], distVal);
     
     let cell = cells[currentCell.x / pCellSize][currentCell.y / pCellSize]
 
