@@ -303,8 +303,8 @@ function anime(start) {
             }
             //Clockwise rotation
             if (collisionCheck(newX, newY, agents[i], cells[Math.floor(newX / cellSize)][Math.floor(newY / cellSize)])) {
-                let vectorTransformX = Math.cos(180 * (Math.PI / 180)) * cells[x][y].dVector.x + Math.sin(180 * (Math.PI / 180)) * cells[x][y].dVector.y
-                let vectorTransformY = -Math.sin(180 * (Math.PI / 180)) * cells[x][y].dVector.x + Math.cos(180 * (Math.PI / 180)) * cells[x][y].dVector.y
+                let vectorTransformX = Math.cos(90 * (Math.PI / 180)) * cells[x][y].dVector.x + Math.sin(90 * (Math.PI / 180)) * cells[x][y].dVector.y
+                let vectorTransformY = -Math.sin(90 * (Math.PI / 180)) * cells[x][y].dVector.x + Math.cos(90 * (Math.PI / 180)) * cells[x][y].dVector.y
 
                 newX = agents[i].x + (vectorTransformX * agents[i].SpeedModifier) / 3;
                 newY = agents[i].y + (vectorTransformY * agents[i].SpeedModifier) / 3;
