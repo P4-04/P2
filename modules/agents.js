@@ -361,6 +361,7 @@ function anime(start) {
 
             endPoint.forEach(endPoint => {
                 if (getCell(x, y) === endPoint) {
+                    agents[i].body.setAttribute('fill-opacity', '0');
                     agents[i].destroy();
                 }
             });
