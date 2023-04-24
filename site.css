@@ -63,6 +63,7 @@ h2 {
     align-items: flex-start;
     width: fit-content;
     height: fit-content;
+    user-select: none;
 
     /* updated background color and box shadow */
     background-color: rgb(47, 47, 47);
