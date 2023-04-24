@@ -346,9 +346,14 @@ function anime(start) {
             agents[i].setCoordinates(newX, newY);
             agents[i].updateAgentCell();
 
-            if (getCell(x, y) == endPoint) {
-                agents[i].destroy();
-            }
+            endPoint.forEach(endPoint => {
+                if (getCell(x, y) === endPoint) {
+                    agents[i].destroy();
+                }
+            });
+            // if (getCell(x, y) == endPoint) {
+            //     agents[i].destroy();
+            // }
 
 
         }
