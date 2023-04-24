@@ -24,6 +24,11 @@ h2 {
     color: #333;
 }
 
+.heatCells{
+    fill-opacity: 1;
+    stroke-opacity: 1;
+}
+
 .container {
     display: flex;
     flex-wrap: wrap;
