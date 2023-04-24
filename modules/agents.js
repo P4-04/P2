@@ -123,9 +123,8 @@ class Agent {
         return this.myCell;
     }
     destroy() {
-        //let myHTML = document.elementFromPoint(this.x, this.y);
-        //myHTML.remove(); //sometimes crashes
-
+        //destroy agent body
+        this.body.remove();
         //remove from agent array
         let me = agents.find(agent => agent.myNumber === this.myNumber);
         let index = agents.indexOf(me);
@@ -167,102 +166,6 @@ function populate() {
         agentsSpawned += agentsPerArea;
         populateCells(area, agentsPerArea);
     });
-}
-
-function getAgentsToTestAgainst(agent) {
-
-    let selectionRectangle = {
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0
-    }
-    // selectionRectangle.right = agent.square.right;
-    // selectionRectangle.bottom = agent.square.bottom;
-    // selectionRectangle.top = agent.square.top;
-    // selectionRectangle.left = agent.square.left;
-    //selectBoxes(selectionRectangle);
-
-
-    selectionRectangle.right = agent.x + agent.fattiness;
-    selectionRectangle.left = agent.x;
-    selectionRectangle.top = agent.y;
-    selectionRectangle.bottom = agent.y + agent.fattiness;
-
-    testCollision(getAgents(), selectionRectangle, agent);
-    // let myCellX = agent.myCell.x/cellSize;
-    // let myCellY = agent.myCell.y/cellSize;
-
-    // const neighbors = getNeighborCells(myCellX, myCellY);
-
-    // let agentsToTest = [];
-
-    // neighbors.forEach(cell => {
-
-    //     let cellAgents = getAgentsInCell(cell);
-
-    //     cellAgents.forEach(cellAgent => {
-    //         agentsToTest.push(cellAgent);            
-    //     });
-
-    // });
-
-    // let cellAgents = getAgentsInCell(this.myCell);
-    // cellAgents.forEach(cellAgent => {
-    //     agentsToTest.push(cellAgent);            
-    // });
-
-    // return agentsToTest;
-
-}
-
-function testCollision(inputAgents, agentRectangle, testingAgent) {
-    let collidingAgents = [];
-    inputAgents.forEach(function (agent) {
-        let box = agent.square;
-        if (agent.myNumber != testingAgent.myNumber) {
-            if (isOverlapping(agent.square, testingAgent.square)) {
-                agent.body.setAttribute('fill', 'green');
-                collidingAgents.push(agent);
-            } else { agent.body.setAttribute('fill', 'black'); }
-        }
-
-        //agent.body.setAttribute('fill', 'green');
-        //collidingAgents.push(agent);
-
-    });
-
-    console.log("Found: " + collidingAgents.length);
-
-    if (collidingAgents.length != 0) {
-
-    }
-
-
-    return collidingAgents;
-}
-
-function isOverlapping(collidingPoints, testerPoints) {
-    //if top left point is within the tester
-    if (testerPoints.topLeft <= collidingPoints.bottomRight && collidingPoints.topLeft <= testerPoints.topLeft) {
-        return true;
-    } //else console.log(testerPoints.bottomRight + "," + collidingPoints.topLeft + " && " + collidingPoints.topLeft + "," + testerPoints.topLeft)
-    //if top right point is within the tester
-    if (testerPoints.bottomRight <= collidingPoints.topRight && collidingPoints.topRight <= testerPoints.topLeft) {
-        return true;
-    }
-
-    //if bottom left point is within the tester
-    if (testerPoints.bottomRight <= collidingPoints.bottomLeft && collidingPoints.bottomLeft <= testerPoints.topLeft) {
-        return true;
-    }
-
-    //if bottom right point is within the tester
-    if (testerPoints.bottomRight <= collidingPoints.bottomRight && collidingPoints.bottomRight <= testerPoints.topLeft) {
-        return true;
-    }
-
-    return false;
 }
 
 //Drawing calculated amount of agents in each spawn area
@@ -361,7 +264,6 @@ function anime(start) {
 
             endPoint.forEach(endPoint => {
                 if (getCell(x, y) === endPoint) {
-                    agents[i].body.setAttribute('fill-opacity', '0');
                     agents[i].destroy();
                 }
             });
@@ -375,7 +277,7 @@ function anime(start) {
     }
     let end = performance.now();
 
-    //console.log(`Execution time: ${end - start} ms`);
+    console.log(`Execution time: ${end - start} ms`);
     if (agents.length != 0){ requestAnimationFrame(animateCaller); }
 
 }
@@ -404,10 +306,6 @@ async function animateCaller() {
     }
     cellsToUpdate = [];
     return;
-}
-
-function CheckInnerBoxColl(agent) {
-    agent
 }
 
 function removeAgentsFromArea(area, agentsToRemovePerArea, drawingArea) {
