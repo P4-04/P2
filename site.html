@@ -12,6 +12,19 @@
         <button id="agentsButton">Agents</button>
         <button id="gridsButton">Grid</button>
         <button id="toggleDisplay">Toggle</button>
+        <button id="toggleSaveSubmenu">Save design</button>
+        <div class="Submenu" id="saveSubmenu" style="display: none">
+            <label for="designName">Name</label>
+            <input type="text" id="designName">
+            <button id="saveButton">Save</button>
+            <label id="warningLabel" style="display: none">Incorrect name!</label>
+        </div>
+        <button id="toggleLoadSubmenu">Load design</button>
+        <div class="Submenu" id="loadSubmenu" style="display: none">
+            <select id="showDesignsDropdownButton"></select>
+            <button id="loadSelected">Load selected</button>
+            <button id="removeSelected">Remove selected</button>
+        </div>
         <button id="close">Close Menu</button>
         <div class="Submenu" id="agentsSubmenu" style="display: none">
             <label for="numAgents">Number of Agents:</label>

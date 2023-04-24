@@ -1,9 +1,10 @@
 export {
     createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit,
     getAddingSpawn, endPoint, startPoint, prevExit, svgNS, getCells, drawTxt, getCell, getNeighborCells, getAgentsInCell, calcCellDensity, getCellDensity, toggleHeat,
-    setShowHeatMap, getShowHeatMap
+    setShowHeatMap, getShowHeatMap, setCells, DrawAllCells
 }
 import { animateCaller } from "./agents.js";
+
 //Custom cell size
 const cellSize = 25;
 let showHeatMap = false;
@@ -158,14 +159,39 @@ function DrawAllCells() {
             cells[x][y].rect.setAttribute('height', cells[x][y].height);
             cells[x][y].rect.setAttribute('x', cells[x][y].x);
             cells[x][y].rect.setAttribute('y', cells[x][y].y);
+            if (cells[x][y].isWall == true){
+                cells[x][y].rect.setAttribute('fill', 'black');
+            }
+            else if (cells[x][y].isSpawnPoint == true){
+                cells[x][y].rect.setAttribute('fill', 'blue');
+            }
+            else if (cells[x][y].isExit == true){
+                cells[x][y].rect.setAttribute('fill', 'green');
+            }
+            else {
+                cells[x][y].rect.setAttribute('fill', 'white');
+            }
             cells[x][y].rect.setAttribute('stroke', 'black');
-            cells[x][y].rect.setAttribute('fill', 'white');
             drawingArea.appendChild(cells[x][y].rect);
         }
     }
 }
 
+function setCells(newCells){
+    clearCanvas();
+    createGrid();
+    for (let x = 0; x < cells.length; x++) {
+        for (let y = 0; y < cells[0].length; y++) {
+            if (x < newCells.length && y < newCells[0].length){
+                cells[x][y] = newCells[x][y];
+            }
+        }
+    }
+    DrawAllCells();
+}
+
 function getCells() { return cells; }
+
 /** 
  * @param {int} x The X position of the cell to find
  * @param {int} y The Y position of the cell to find

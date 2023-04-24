@@ -1,7 +1,8 @@
 import { initCellValues, setEssenVariables, perfMeasure } from './modules/pathfinding.js';
 import { addSpawnArea, getSpawnArea, populate, removeAgentsFromArea, animateCaller, setSizes } from './modules/agents.js';
-import { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, 
-    getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit, getCells, toggleHeat, setShowHeatMap, getShowHeatMap } from './modules/cells.js';
+import { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit, getCells, setCells, DrawAllCells, toggleHeat, setShowHeatMap, getShowHeatMap } from './modules/cells.js';
+import { getAllDesignNames, saveDesign, loadDesign } from './modules/designmanager.js';
+
 
 
 //Initialize DOM elements
@@ -9,6 +10,12 @@ const closeMenu = document.querySelector("#close");
 const openMenu = document.querySelector("#open");
 const startSim = document.querySelector("#start");
 const numAgents = document.querySelector("#numAgents");
+const toggleDesignsSubmenu = document.querySelector("#toggleLoadSubmenu");
+const loadSelectedButton = document.querySelector("#loadSelected")
+const showDesignsDropdown = document.querySelector("#showDesignsDropdownButton")
+const toggleSaveSubmenu = document.querySelector("#toggleSaveSubmenu");
+const saveButton = document.querySelector("#saveButton")
+
 const menu = document.querySelector(".menu");
 const drawingArea = document.querySelector(".drawing");
 
@@ -20,6 +27,7 @@ const addExitButton = document.querySelector("#addExit");
 const addSpawnButton = document.querySelector("#addSpawn");
 
 const toggleAgentsSubmenu = document.querySelector("#agentsButton");
+// const loadSubmenu = document.querySelector("#loadSubmenu")
 const spawnButton = document.querySelector("#spawnButton");
 const removeButton = document.querySelector("#removeButton");
 let numAgentsInput = document.querySelector("#num-agents");
@@ -132,9 +140,63 @@ toggleAgentsSubmenu.addEventListener("click", function () {
     }
 });
 
+
+
+toggleDesignsSubmenu.addEventListener("click", function() {
+    let submenu = document.querySelector("#loadSubmenu");
+    if (submenu.style.display === "none") {
+        submenu.style.display = "block";
+        let designs = getAllDesignNames();
+        for (let designName of designs) {
+            let design = document.createElement("option");
+            design.setAttribute("value", designName)
+            design.innerText = `${designName}`
+            showDesignsDropdown.appendChild(design)
+        }
+    } else {
+        submenu.style.display = "none";
+        showDesignsDropdown.length = 0; // Removes all options from the dropdown
+    }
+})
+
+loadSelectedButton.addEventListener("click", function () {
+    loadDesign(showDesignsDropdown.value);
+})
+
+showDesignsDropdown.addEventListener("click", async function () {
+    // designsDropdown.classList.toggle("show");
+    // if (designsDropdown.classList.contains("show")){
+    
+})
 //spawnButton.addEventListener("click", function () {
 //    populate();
 //});
+
+toggleSaveSubmenu.addEventListener("click", function () {
+    let submenu = document.querySelector("#saveSubmenu");
+    if (submenu.style.display === "none") {
+        submenu.style.display = "block";
+    } else {
+        submenu.style.display = "none";
+    }
+})
+
+saveButton.addEventListener("click", function () {
+    let designName = document.querySelector("#designName").value;
+    let warningLabel = document.querySelector("#warningLabel");
+
+    if (designName.length > 0) {
+        warningLabel.style.display = "none";
+        saveDesign(getCells(), getSpawnArea(), designName);
+    }
+    else {
+        warningLabel.style.display = "block";
+    }
+})
+
+// loadDesignButton.addEventListener("click", function () {
+//     deserializeGrid(serializeGrid(getCells()))
+// })
 
 removeButton.addEventListener("click", function () {
     let agentNumToRemove = document.querySelector("#numAgents").value;
