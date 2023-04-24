@@ -7,7 +7,7 @@ import { animateCaller } from "./agents.js";
 
 //Custom cell size
 const cellSize = 25;
-let showHeatMap = false;
+let showHeatMap = true;
 //Initialize 2d array for cells
 let cells = [[]];
 //Initialization of variables needed for adding spawn / exit cells
@@ -266,6 +266,8 @@ function toggleHeat(cellsToUpdate) {
             cell.rect.setAttribute('x', cell.x);
             cell.rect.setAttribute('y', cell.y);
             cell.rect.setAttribute('stroke', 'black');
+            
+            //cell.rect.classList.toggle("cellClass");
 
             const scaler = 36; //255 / 7 = 36.4, we round down, and now we have a scaler for our cells (any value over 7 is bad);
 
@@ -273,11 +275,9 @@ function toggleHeat(cellsToUpdate) {
             let g = 255 - ((scaler) * density);
             let b = 255 - ((scaler) * density);
             var col = "rgb(" + r + "," + g + "," + b + ")";
-            let myColorR = 255;
-            let myColorG = 0;
-            let myColorB = 0;
+            
             cell.rect.setAttribute('fill', col);
-
+            cell.rect.setAttribute('class', "heatCells");
             drawingArea.appendChild(cell.rect);
         }});
 
@@ -293,22 +293,11 @@ function setShowHeatMap(shouldDisplay) {
     showHeatMap = shouldDisplay;
     if(!showHeatMap)
     {
-        for (let x = 0; x < cells.length; x++) {
-            for (let y = 0; y < cells[0].length; y++) {
-                let density = getCellDensity(cells[x][y]);
-                if (density != 0 && cells[x][y].isWall == false && cells[x][y].isExit == false && cells[x][y].isSpawnPoint == false) {
-                    cells[x][y].rect = document.createElementNS(svgNS, 'rect');
-                    cells[x][y].rect.setAttribute('width', cells[x][y].width);
-                    cells[x][y].rect.setAttribute('height', cells[x][y].height);
-                    cells[x][y].rect.setAttribute('x', cells[x][y].x);
-                    cells[x][y].rect.setAttribute('y', cells[x][y].y);
-                    cells[x][y].rect.setAttribute('stroke', 'black');
-    
-                    cells[x][y].rect.setAttribute('fill', "white");
-    
-                    drawingArea.appendChild(cells[x][y].rect);
-                }
-            }
+        let heatedCells = [];
+        heatedCells = document.getElementsByClassName("heatCells");
+        
+        while(heatedCells.length != 0 ){
+            heatedCells[0].remove();
         }
     }
     
@@ -324,7 +313,7 @@ function setShowHeatMap(shouldDisplay) {
                     cells[x][y].rect.setAttribute('x', cells[x][y].x);
                     cells[x][y].rect.setAttribute('y', cells[x][y].y);
                     cells[x][y].rect.setAttribute('stroke', 'black');
-        
+                    cells[x][y].rect.setAttribute('class', "heatCells");
                     const scaler = 36; //255 / 7 = 36.4, we round down, and now we have a scaler for our cells (any value over 7 is bad);
         
                     let r = 255;
