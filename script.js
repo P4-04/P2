@@ -1,7 +1,7 @@
 import { initCellValues, setEssenVariables, perfMeasure } from './modules/pathfinding.js';
 import { addSpawnArea, getSpawnArea, populate, removeAgentsFromArea, animateCaller, setSizes } from './modules/agents.js';
 import { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit, getCells, setCells, DrawAllCells, toggleHeat, setShowHeatMap, getShowHeatMap } from './modules/cells.js';
-import { getAllDesignNames, saveDesign, loadDesign } from './modules/designmanager.js';
+import { getAllDesignNames, saveDesign, loadDesign, removeDesign } from './modules/designmanager.js';
 
 
 
@@ -30,7 +30,8 @@ const toggleAgentsSubmenu = document.querySelector("#agentsButton");
 // const loadSubmenu = document.querySelector("#loadSubmenu")
 const spawnButton = document.querySelector("#spawnButton");
 const removeButton = document.querySelector("#removeButton");
-let numAgentsInput = document.querySelector("#num-agents");
+const removeSelected = document.querySelector("#removeSelected") 
+const numAgentsInput = document.querySelector("#num-agents");
 const toggleGridsSubmenu = document.querySelector("#gridsButton");
 
 //
@@ -140,27 +141,41 @@ toggleAgentsSubmenu.addEventListener("click", function () {
     }
 });
 
-
+function refreshDesignsDropdown() {
+    showDesignsDropdown.length = 0;
+    let designs = getAllDesignNames();
+    for (let designName of designs) {
+        let design = document.createElement("option");
+        design.setAttribute("value", designName)
+        design.innerText = `${designName}`
+        showDesignsDropdown.appendChild(design)
+    }
+}
 
 toggleDesignsSubmenu.addEventListener("click", function() {
     let submenu = document.querySelector("#loadSubmenu");
     if (submenu.style.display === "none") {
+        refreshDesignsDropdown();
         submenu.style.display = "block";
-        let designs = getAllDesignNames();
-        for (let designName of designs) {
-            let design = document.createElement("option");
-            design.setAttribute("value", designName)
-            design.innerText = `${designName}`
-            showDesignsDropdown.appendChild(design)
-        }
+        // let designs = getAllDesignNames();
+        // for (let designName of designs) {
+        //     let design = document.createElement("option");
+        //     design.setAttribute("value", designName)
+        //     design.innerText = `${designName}`
+        //     showDesignsDropdown.appendChild(design)
+        // }
     } else {
         submenu.style.display = "none";
-        showDesignsDropdown.length = 0; // Removes all options from the dropdown
+        showDesignsDropdown.length = 0;
     }
 })
 
 loadSelectedButton.addEventListener("click", function () {
     loadDesign(showDesignsDropdown.value);
+})
+removeSelected.addEventListener("click", function () {
+    removeDesign(showDesignsDropdown.value);
+    refreshDesignsDropdown();
 })
 
 showDesignsDropdown.addEventListener("click", async function () {
