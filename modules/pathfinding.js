@@ -6,12 +6,12 @@ async function perfMeasure(cells, goal, spawn) {
 
     //initCellValues(board, endPoint, startPoint);
 
-    let initCellsArray = [];
-    initCellsArray[0] = goal;
-    let cellsArray = [];
+    // let initCellsArray = [];
+    // initCellsArray[0] = goal;
+    // let cellsArray = [];
 
-    cellsArray = setArray(cells, initCellsArray);
-    markCells(cells, cellsArray);
+    //cellsArray = setArray(cells, initCellsArray);
+    markCells(cells, goal);
 
     let spawnCount = 0;
     let spawnGroups = getSpawnArea();

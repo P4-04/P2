@@ -13,7 +13,7 @@ let cells = [[]];
 let prevExit = null;
 let addingExit = false;
 let addingSpawn = false;
-let endPoint = null
+let endPoint = [];
 let startPoint = null
 
 const drawingArea = document.querySelector(".drawing");
@@ -49,15 +49,15 @@ function toggleCellProperties(index) {
         cells[index.x][index.y].isSpawnPoint = false;
         cells[index.x][index.y].isWall = false;
 
-        endPoint = cells[index.x][index.y];
+        endPoint.push(cells[index.x][index.y]);
 
-        if (prevExit) {
-            prevExit.color = "white";
-            prevExit.isExit = false;
-            prevExit = cells[index.x][index.y];
-        } else {
-            prevExit = cells[index.x][index.y];
-        }
+        // if (prevExit) {
+        //     prevExit.color = "white";
+        //     prevExit.isExit = false;
+        //     prevExit = cells[index.x][index.y];
+        // } else {
+        //     prevExit = cells[index.x][index.y];
+        // }
         addingExit = false;
     } else if (addingSpawn) {
         cells[index.x][index.y].color = "blue";
