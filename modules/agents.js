@@ -1,5 +1,5 @@
-export { populate, removeAgentsFromArea, animateCaller, getSpawnArea, addSpawnArea, setSizes, setSpawnAreas }
-import { cellSize, svgNS, getCells, getCellIndex, getCell, endPoint, getNeighborCells, getAgentsInCell, calcCellDensity, toggleHeat, getShowHeatMap } from './cells.js'
+export { populate, removeAgentsFromArea, animateCaller, getSpawnArea, addSpawnArea, setSizes, setSpawnAreas, getAgents }
+import { cellSize, svgNS, getCells, getCellIndex, getCell, endPoint, getNeighborCells, getAgentsInCell, calcCellDensity, toggleHeat, getShowHeatMap, setBlockMouse } from './cells.js'
 
 import { getCanvasHeight, getCanvasWidth } from './pathfinding.js'
 
@@ -104,7 +104,6 @@ class Agent {
             return;
         }
 
-        console.log(getShowHeatMap());
         if (getShowHeatMap()){
             cellsToUpdate.push(this.myCell);
             cellsToUpdate.push(currentCell);
@@ -138,6 +137,10 @@ class Agent {
         //this.myCell.agents[index] == null;
         me = null;
         removed = null;
+
+        if (agents.length == 0){
+            setBlockMouse(false);
+        }
 
     }
 }

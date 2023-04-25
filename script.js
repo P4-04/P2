@@ -1,6 +1,7 @@
 import { setEssenVariables, perfMeasure } from './modules/pathfinding.js';
-import { addSpawnArea, getSpawnArea, populate, removeAgentsFromArea, animateCaller, setSizes } from './modules/agents.js';
-import { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit, getCells, setCells, DrawAllCells, toggleHeat, setShowHeatMap, getShowHeatMap } from './modules/cells.js';
+import { addSpawnArea, getSpawnArea, populate, removeAgentsFromArea, animateCaller, setSizes, getAgents } from './modules/agents.js';
+import { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit, getCells, setCells, DrawAllCells, toggleHeat, 
+    setShowHeatMap, getShowHeatMap, setBlockMouse, getBlockMouse } from './modules/cells.js';
 import { getAllDesignNames, saveDesign, loadDesign, removeDesign } from './modules/designmanager.js';
 
 
@@ -9,6 +10,7 @@ import { getAllDesignNames, saveDesign, loadDesign, removeDesign } from './modul
 const closeMenu = document.querySelector("#close");
 const openMenu = document.querySelector("#open");
 const startSim = document.querySelector("#start");
+const stopSim = document.querySelector("#stop");
 const numAgents = document.querySelector("#numAgents");
 const toggleDesignsSubmenu = document.querySelector("#toggleLoadSubmenu");
 const loadSelectedButton = document.querySelector("#loadSelected")
@@ -255,6 +257,7 @@ startSim.addEventListener("click", function () {
 
     setSizes(canvasWidth, canvasHeight)
     populate();
+    setBlockMouse(true);
 
     //toggleHeat();  
     animateCaller()
@@ -262,6 +265,13 @@ startSim.addEventListener("click", function () {
     //toggleHeat();
 });
 
+stopSim.addEventListener("click", function () {
+
+    let agents = getAgents();
+    agents.forEach(agent => {
+        agent.destroy();
+    });
+});
 
 toggle.addEventListener("click", function () {
     setShowHeatMap(getShowHeatMap() ? false : true);
@@ -303,6 +313,7 @@ drawingArea.addEventListener("mousedown", (event) => {
     if (getAddingSpawn()) {
         return;
     }
+
     isDragging = true;
     menu.style.visibility = "hidden";
     prevIndex = getCellIndex(event.clientX, event.clientY);
@@ -317,6 +328,7 @@ drawingArea.addEventListener("mousemove", (event) => {
     if (getAddingSpawn()) {
         return;
     }
+
     if (isDragging == true) {
         nextIndex = getCellIndex(event.clientX, event.clientY);
         if (prevIndex.x !== nextIndex.x || prevIndex.y !== nextIndex.y) {
@@ -330,6 +342,7 @@ drawingArea.addEventListener("mouseup", () => {
     if (getAddingSpawn()) {
         return;
     }
+
     isDragging = false;
     setAddingSpawn(false);
     prevIndex = null;
@@ -342,6 +355,7 @@ drawingArea.addEventListener("mouseup", () => {
 let startingCell;
 
 drawingArea.addEventListener("mousedown", (event) => {
+
     if (getAddingSpawn()) {
         isDragging = true;
         startingCell = getCellIndex(event.offsetX, event.offsetY);
