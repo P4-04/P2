@@ -85,15 +85,6 @@ openMenu.addEventListener("mousedown", function (event) {
     cursorCurrentY = event.clientY;
 });
 
-toggleGridsSubmenu.addEventListener("click", function () {
-    let submenu = document.querySelector("#gridsSubmenu");
-    if (submenu.style.display === "none") {
-        submenu.style.display = "block";
-    } else {
-        submenu.style.display = "none";
-    }
-});
-
 document.addEventListener("mousemove", function (event) {
     cursorNewX = cursorCurrentX - event.clientX;
     cursorNewY = cursorCurrentY - event.clientY;
@@ -133,16 +124,6 @@ addSpawnButton.addEventListener("click", () => {
     setAddingSpawn(true);
 });
 
-//Event listeners for agents submenu
-toggleAgentsSubmenu.addEventListener("click", function () {
-    let submenu = document.querySelector("#agentsSubmenu");
-    if (submenu.style.display === "none") {
-        submenu.style.display = "block";
-    } else {
-        submenu.style.display = "none";
-    }
-});
-
 function refreshDesignsDropdown() {
     showDesignsDropdown.length = 0;
     let designs = getAllDesignNames();
@@ -153,6 +134,35 @@ function refreshDesignsDropdown() {
         showDesignsDropdown.appendChild(design)
     }
 }
+
+//Event to change the state of the submenu
+function toggleSubmenu(submenuName) {
+    const submenus = ["agentsSubmenu", "gridsSubmenu"];
+
+    submenus.forEach((submenu) => {
+      if (submenu !== submenuName) {
+        const otherSubmenu = document.querySelector(`#${submenu}`);
+        otherSubmenu.style.display = "none";
+      }
+    });
+
+    let submenu = document.querySelector(`#${submenuName}`);
+    if (submenu.style.display === "none") {
+      submenu.style.display = "block";
+    } else {
+      submenu.style.display = "none";
+    }
+  }  
+
+//Event listeners for agents submenu
+toggleAgentsSubmenu.addEventListener("click", function () {
+    toggleSubmenu("agentsSubmenu");
+});
+
+//Event listerns for grids submenu
+toggleGridsSubmenu.addEventListener("click", function () {
+    toggleSubmenu("gridsSubmenu");
+});
 
 toggleDesignsSubmenu.addEventListener("click", function() {
     let submenu = document.querySelector("#loadSubmenu");
