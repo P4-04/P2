@@ -31,7 +31,7 @@ const toggleAgentsSubmenu = document.querySelector("#agentsButton");
 const spawnButton = document.querySelector("#spawnButton");
 const removeButton = document.querySelector("#removeButton");
 const removeSelected = document.querySelector("#removeSelected") 
-const numAgentsInput = document.querySelector("#num-agents");
+const  numAgentsInput = document.querySelector("#num-agents");
 const toggleGridsSubmenu = document.querySelector("#gridsButton");
 
 //
@@ -173,6 +173,7 @@ toggleDesignsSubmenu.addEventListener("click", function() {
 loadSelectedButton.addEventListener("click", function () {
     loadDesign(showDesignsDropdown.value);
 })
+
 removeSelected.addEventListener("click", function () {
     removeDesign(showDesignsDropdown.value);
     refreshDesignsDropdown();
@@ -181,7 +182,7 @@ removeSelected.addEventListener("click", function () {
 showDesignsDropdown.addEventListener("click", async function () {
     // designsDropdown.classList.toggle("show");
     // if (designsDropdown.classList.contains("show")){
-    
+
 })
 //spawnButton.addEventListener("click", function () {
 //    populate();
@@ -262,8 +263,8 @@ startSim.addEventListener("click", function () {
 });
 
 
-toggle.addEventListener("click", function(){
-    setShowHeatMap(getShowHeatMap() ? false  : true);
+toggle.addEventListener("click", function () {
+    setShowHeatMap(getShowHeatMap() ? false : true);
 
 });
 
@@ -309,8 +310,48 @@ drawingArea.addEventListener("mousedown", (event) => {
 });
 
 drawingArea.addEventListener("mousemove", (event) => {
+    if (event.buttons !== 1) {
+        isDragging = false;
+    }
+
+    if (getAddingSpawn()) {
+        return;
+    }
+    if (isDragging == true) {
+        nextIndex = getCellIndex(event.clientX, event.clientY);
+        if (prevIndex.x !== nextIndex.x || prevIndex.y !== nextIndex.y) {
+            cellEventHandler(nextIndex);
+            prevIndex = nextIndex;
+        }
+    }
+});
+
+drawingArea.addEventListener("mouseup", () => {
+    if (getAddingSpawn()) {
+        return;
+    }
+    isDragging = false;
+    setAddingSpawn(false);
+    prevIndex = null;
+    if (menuHidden === false) {
+        menu.style.visibility = "visible";
+    }
+});
+
+//Initialization of variables needed for adding custom rectangular spawn area
+let startingCell;
+
+drawingArea.addEventListener("mousedown", (event) => {
+    if (getAddingSpawn()) {
+        isDragging = true;
+        startingCell = getCellIndex(event.offsetX, event.offsetY);
+        prevIndex = getCellIndex(event.offsetX, event.offsetY);
+        cellEventHandler(prevIndex);
+    }
+});
+
+drawingArea.addEventListener("mousemove", (event) => {
     if (getAddingSpawn() && isDragging) {
-        let spawnGroup = [];
         let nextIndex = getCellIndex(event.offsetX, event.offsetY);
         if (prevIndex.x != nextIndex.x || prevIndex.y != nextIndex.y) {
             switch (true) {
@@ -435,46 +476,6 @@ drawingArea.addEventListener("mousemove", (event) => {
             }
             prevIndex = nextIndex;
         }
-        addSpawnArea(spawnGroup);
-    }
-});
-
-drawingArea.addEventListener("mouseup", () => {
-    if (getAddingSpawn()) {
-        return;
-    }
-    isDragging = false;
-    setAddingSpawn(false);
-    prevIndex = null;
-    if (menuHidden === false) {
-        menu.style.visibility = "visible";
-    }
-});
-
-//Initialization of variables needed for adding custom rectangular spawn area
-let startingCell;
-
-drawingArea.addEventListener("mousedown", (event) => {
-    if (getAddingSpawn()) {
-        isDragging = true;
-        startingCell = getCellIndex(event.offsetX, event.offsetY);
-        prevIndex = getCellIndex(event.offsetX, event.offsetY);
-        cellEventHandler(prevIndex);
-    }
-});
-
-drawingArea.addEventListener("mousemove", (event) => {
-    if (getAddingSpawn() && isDragging) {
-        let nextIndex = getCellIndex(event.offsetX, event.offsetY);
-        if (prevIndex.x != nextIndex.x || prevIndex.y != nextIndex.y) {
-            for (let x = nextIndex.x; x >= startingCell.x; --x) {
-                for (let y = nextIndex.y; y >= startingCell.y; --y) {
-                    let index = { x, y };
-                    cellEventHandler(index);
-                }
-            }
-            prevIndex = nextIndex;
-        }
     }
 });
 
@@ -484,7 +485,6 @@ drawingArea.addEventListener("mouseup", (event) => {
         setAddingSpawn(false);
         let spawnGroup = [];
         let finalCell = getCellIndex(event.offsetX, event.offsetY);
-
         switch (true) {
             case (finalCell.x > startingCell.x && finalCell.y < startingCell.y): // 1st quadrant
                 for (let x = finalCell.x; x >= startingCell.x; --x) {
@@ -555,7 +555,6 @@ drawingArea.addEventListener("mouseup", (event) => {
 
                 break;
         }
-
         addSpawnArea(spawnGroup);
     }
 });
@@ -585,7 +584,7 @@ window.addEventListener("mousemove", function (event) {
     }
 });
 
-function resetMenuPosition(){
+function resetMenuPosition() {
     const menuRect = menu.getBoundingClientRect();
     const openMenuRect = openMenu.getBoundingClientRect();
     const windowHeight = window.innerHeight;
