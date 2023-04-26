@@ -1,7 +1,7 @@
 export {
     createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit,
     getAddingSpawn, endPoint, startPoint, prevExit, svgNS, getCells, drawTxt, getCell, getNeighborCells, getAgentsInCell, calcCellDensity, getCellDensity, toggleHeat,
-    setShowHeatMap, getShowHeatMap, setCells, DrawAllCells
+    setShowHeatMap, getShowHeatMap, setCells, DrawAllCells, setBlockMouse, getBlockMouse
 }
 import { animateCaller } from "./agents.js";
 
@@ -15,14 +15,19 @@ let prevExit = null;
 let addingExit = false;
 let addingSpawn = false;
 let endPoint = [];
+let shouldIgnoreMouse = false;
 let startPoint = null
 
 const drawingArea = document.querySelector(".drawing");
 const svgNS = "http://www.w3.org/2000/svg";
 
 //Function caller for correctly handling actions on cells
-function cellEventHandler(index) {
-    toggleCellProperties(index);
+function cellEventHandler(index, remove) {
+    if (getBlockMouse()) {
+        return;
+    }
+
+    toggleCellProperties(index, remove);
     drawCell(cells[index.x][index.y]);
 }
 
@@ -43,7 +48,18 @@ function getCellIndex(MouseX, MouseY) {
 /** 
  * @param {Cords} index The position of the cell to update
 */
-function toggleCellProperties(index) {
+function toggleCellProperties(index, remove) {
+
+    if (remove) {
+        cells[index.x][index.y].color = "white";
+        cells[index.x][index.y].isWall = false;
+        cells[index.x][index.y].isExit = false;
+        cells[index.x][index.y].mark = false;
+        cells[index.x][index.y].isSpawnPoint = false;
+        cells[index.x][index.y].value = 0;
+        return;
+    }
+
     if (addingExit) {
         cells[index.x][index.y].color = "green";
         cells[index.x][index.y].isExit = true;
@@ -103,6 +119,7 @@ function clearCanvas() {
 function drawCell(cell) {
     cell.rect.setAttribute('fill', cell.color);
 }
+
 function drawTxt(cell, value) {
     let numbering = document.createElementNS(svgNS, "text")
     numbering.setAttribute('x', cell.x)
@@ -159,13 +176,13 @@ function DrawAllCells() {
             cells[x][y].rect.setAttribute('height', cells[x][y].height);
             cells[x][y].rect.setAttribute('x', cells[x][y].x);
             cells[x][y].rect.setAttribute('y', cells[x][y].y);
-            if (cells[x][y].isWall == true){
+            if (cells[x][y].isWall == true) {
                 cells[x][y].rect.setAttribute('fill', 'black');
             }
-            else if (cells[x][y].isSpawnPoint == true){
+            else if (cells[x][y].isSpawnPoint == true) {
                 cells[x][y].rect.setAttribute('fill', 'blue');
             }
-            else if (cells[x][y].isExit == true){
+            else if (cells[x][y].isExit == true) {
                 cells[x][y].rect.setAttribute('fill', 'green');
             }
             else {
@@ -177,12 +194,12 @@ function DrawAllCells() {
     }
 }
 
-function setCells(newCells){
+function setCells(newCells) {
     clearCanvas();
     createGrid();
     for (let x = 0; x < cells.length; x++) {
         for (let y = 0; y < cells[0].length; y++) {
-            if (x < newCells.length && y < newCells[0].length){
+            if (x < newCells.length && y < newCells[0].length) {
                 cells[x][y] = newCells[x][y];
             }
         }
@@ -207,34 +224,21 @@ function getNeighborCells(x, y) {
     let neighbors = [];
     //Get x neighbors
     if (cell.x != 0) {
-        neighbors[0] = cells[(cell.x / cellSize) - 1][cell.y / cellSize];
+        neighbors.push(cells[(cell.x / cellSize) - 1][cell.y / cellSize]);
     }
 
     if (cell.y != 0) {
-        neighbors[2] = cells[cell.x / cellSize][(cell.y / cellSize) - 1];
+        neighbors.push(cells[cell.x / cellSize][(cell.y / cellSize) - 1]);
     }
 
     if (cell.x != cells[cells.length - 1][cells[0].length - 1].x) {
-        neighbors[1] = cells[(cell.x / cellSize) + 1][cell.y / cellSize];
+        neighbors.push(cells[(cell.x / cellSize) + 1][cell.y / cellSize]);
     }
 
     if (cell.y != cells[0][cells[0].length - 1].y) {
-        neighbors[3] = cells[cell.x / cellSize][(cell.y / cellSize) + 1];
+        neighbors.push(cells[cell.x / cellSize][(cell.y / cellSize) + 1]);
     }
 
-
-    if (neighbors[0] == undefined) {
-        neighbors.splice(0, 0)
-    }
-    if (neighbors[1] == undefined) {
-        neighbors.splice(1, 1)
-    }
-    if (neighbors[2] == undefined) {
-        neighbors.splice(2, 2)
-    }
-    if (neighbors[3] == undefined) {
-        neighbors.splice(3, 3)
-    }
     //Visualisation of the neighbors
     // neighbors.forEach(neig => {
     //          neig.color = "purple";
@@ -266,7 +270,7 @@ function toggleHeat(cellsToUpdate) {
             cell.rect.setAttribute('x', cell.x);
             cell.rect.setAttribute('y', cell.y);
             cell.rect.setAttribute('stroke', 'black');
-            
+
             //cell.rect.classList.toggle("cellClass");
 
             const scaler = 36; //255 / 7 = 36.4, we round down, and now we have a scaler for our cells (any value over 7 is bad);
@@ -275,11 +279,12 @@ function toggleHeat(cellsToUpdate) {
             let g = 255 - ((scaler) * density);
             let b = 255 - ((scaler) * density);
             var col = "rgb(" + r + "," + g + "," + b + ")";
-            
+
             cell.rect.setAttribute('fill', col);
             cell.rect.setAttribute('class', "heatCells");
             drawingArea.appendChild(cell.rect);
-        }});
+        }
+    });
 
 }
 
@@ -291,18 +296,16 @@ function getAgentsInCell(cell) { return cell.agents; };
 
 function setShowHeatMap(shouldDisplay) {
     showHeatMap = shouldDisplay;
-    if(!showHeatMap)
-    {
+    if (!showHeatMap) {
         let heatedCells = [];
         heatedCells = document.getElementsByClassName("heatCells");
-        
-        while(heatedCells.length != 0 ){
+
+        while (heatedCells.length != 0) {
             heatedCells[0].remove();
         }
     }
-    
-    if(showHeatMap)
-    {
+
+    if (showHeatMap) {
         for (let x = 0; x < cells.length; x++) {
             for (let y = 0; y < cells[0].length; y++) {
                 let density = getCellDensity(cells[x][y]);
@@ -315,21 +318,22 @@ function setShowHeatMap(shouldDisplay) {
                     cells[x][y].rect.setAttribute('stroke', 'black');
                     cells[x][y].rect.setAttribute('class', "heatCells");
                     const scaler = 36; //255 / 7 = 36.4, we round down, and now we have a scaler for our cells (any value over 7 is bad);
-        
+
                     let r = 255;
                     let g = 255 - ((scaler) * density);
                     let b = 255 - ((scaler) * density);
                     var col = "rgb(" + r + "," + g + "," + b + ")";
-                    let myColorR = 255;
-                    let myColorG = 0;
-                    let myColorB = 0;
+
                     cells[x][y].rect.setAttribute('fill', col);
-        
+
                     drawingArea.appendChild(cells[x][y].rect);
+                }
             }
         }
-    }
 
     }
 }
 function getShowHeatMap() { return showHeatMap; }
+
+function getBlockMouse() { return shouldIgnoreMouse; }
+function setBlockMouse(blockMouse) { shouldIgnoreMouse = blockMouse; }

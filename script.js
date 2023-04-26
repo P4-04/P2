@@ -1,7 +1,9 @@
-import { initCellValues, setEssenVariables, perfMeasure } from './modules/pathfinding.js';
-import { addSpawnArea, getSpawnArea, populate, removeAgentsFromArea, animateCaller, setSizes } from './modules/agents.js';
-import { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit, getCells, setCells, DrawAllCells, toggleHeat, setShowHeatMap, getShowHeatMap } from './modules/cells.js';
+import { setEssenVariables, perfMeasure } from './modules/pathfinding.js';
+import { addSpawnArea, getSpawnArea, populate, removeAgentsFromArea, animateCaller, setSizes, getAgents } from './modules/agents.js';
+import { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit, getCells, setCells, DrawAllCells, toggleHeat, 
+    setShowHeatMap, getShowHeatMap, setBlockMouse, getBlockMouse } from './modules/cells.js';
 import { getAllDesignNames, saveDesign, loadDesign, removeDesign } from './modules/designmanager.js';
+//import { func } from 'prop-types';
 
 
 
@@ -9,14 +11,19 @@ import { getAllDesignNames, saveDesign, loadDesign, removeDesign } from './modul
 const closeMenu = document.querySelector("#close");
 const openMenu = document.querySelector("#open");
 const startSim = document.querySelector("#start");
+const stopSim = document.querySelector("#stop");
 const numAgents = document.querySelector("#numAgents");
 const toggleDesignsSubmenu = document.querySelector("#toggleLoadSubmenu");
-const loadSelectedButton = document.querySelector("#loadSelected")
-const showDesignsDropdown = document.querySelector("#showDesignsDropdownButton")
+const loadSelectedButton = document.querySelector("#loadSelected");
+const showDesignsDropdown = document.querySelector("#showDesignsDropdownButton");
 const toggleSaveSubmenu = document.querySelector("#toggleSaveSubmenu");
-const saveButton = document.querySelector("#saveButton")
+const saveButton = document.querySelector("#saveButton");
+
+const cellSlider = document.querySelector("#cellSlider");
+const sizeDisplay = document.querySelector("#sizeDisplay");
 
 const menu = document.querySelector(".menu");
+const menuHandle = document.querySelector(".menu-handle")
 const drawingArea = document.querySelector(".drawing");
 
 const toggle = document.querySelector("#toggleDisplay");
@@ -31,7 +38,7 @@ const toggleAgentsSubmenu = document.querySelector("#agentsButton");
 const spawnButton = document.querySelector("#spawnButton");
 const removeButton = document.querySelector("#removeButton");
 const removeSelected = document.querySelector("#removeSelected") 
-const numAgentsInput = document.querySelector("#num-agents");
+const  numAgentsInput = document.querySelector("#num-agents");
 const toggleGridsSubmenu = document.querySelector("#gridsButton");
 
 //
@@ -54,14 +61,14 @@ popButton.addEventListener("click", populate);
 let menuHidden = true;
 
 //Event listeners for menu open / close / drag / clear / spawn / exit
-menu.addEventListener("mousedown", function (event) {
+menuHandle.addEventListener("mousedown", function (event) {
     isMouseDown = true;
     isDraggingOverlay = false;
     cursorCurrentX = event.clientX;
     cursorCurrentY = event.clientY;
 });
 
-menu.addEventListener("mouseup", function () {
+menuHandle.addEventListener("mouseup", function () {
     isMouseDown = false;
     isDraggingOverlay = false;
 });
@@ -81,15 +88,6 @@ openMenu.addEventListener("mousedown", function (event) {
     isDraggingOverlay = false;
     cursorCurrentX = event.clientX;
     cursorCurrentY = event.clientY;
-});
-
-toggleGridsSubmenu.addEventListener("click", function () {
-    let submenu = document.querySelector("#gridsSubmenu");
-    if (submenu.style.display === "none") {
-        submenu.style.display = "block";
-    } else {
-        submenu.style.display = "none";
-    }
 });
 
 document.addEventListener("mousemove", function (event) {
@@ -115,6 +113,41 @@ openMenu.addEventListener("mouseup", function () {
     }
 });
 
+cellSlider.addEventListener("mousedown", function () {
+    if (isDraggingOverlay === true) {
+        isDraggingOverlay = false;
+    }
+});
+
+cellSlider.addEventListener("mousemove", function() {
+    if (isDraggingOverlay === true) {
+        isDraggingOverlay = false;
+    }
+    sizeDisplay.textContent = cellSlider.value;
+    cellSize = cellSlider.value;
+    canvasWidth = window.innerWidth - window.innerWidth % cellSize;
+    canvasHeight = window.innerHeight - window.innerHeight % cellSize;
+    drawingArea.setAttribute('viewBox', `0 0 ${canvasWidth} ${canvasHeight}`);
+    drawingArea.setAttribute('width', canvasWidth);
+    drawingArea.setAttribute('height', canvasHeight);
+
+    createGrid(canvasWidth, canvasHeight);
+});
+
+// cellSlider.oninput = function() {
+//     sizeDisplay.textContent = this.value;
+//     cellSize = this.value;
+//     canvasWidth = window.innerWidth - window.innerWidth % cellSize;
+//     canvasHeight = window.innerHeight - window.innerHeight % cellSize;
+//     drawingArea.setAttribute('viewBox', `0 0 ${canvasWidth} ${canvasHeight}`);
+//     drawingArea.setAttribute('width', canvasWidth);
+//     drawingArea.setAttribute('height', canvasHeight);
+
+//     createGrid(canvasWidth, canvasHeight);
+
+// }
+
+
 // Add event to "Clear"-button
 //let clearButton = document.querySelector("#clear");
 clearButton.addEventListener("click", clearCanvas);
@@ -131,16 +164,6 @@ addSpawnButton.addEventListener("click", () => {
     setAddingSpawn(true);
 });
 
-//Event listeners for agents submenu
-toggleAgentsSubmenu.addEventListener("click", function () {
-    let submenu = document.querySelector("#agentsSubmenu");
-    if (submenu.style.display === "none") {
-        submenu.style.display = "block";
-    } else {
-        submenu.style.display = "none";
-    }
-});
-
 function refreshDesignsDropdown() {
     showDesignsDropdown.length = 0;
     let designs = getAllDesignNames();
@@ -152,11 +175,45 @@ function refreshDesignsDropdown() {
     }
 }
 
+//Event to change the state of the submenu
+function toggleSubmenu(submenuName) {
+    const submenus = ["agentsSubmenu", "gridsSubmenu"];
+
+    submenus.forEach((submenu) => {
+      if (submenu !== submenuName) {
+        const otherSubmenu = document.querySelector(`#${submenu}`);
+        otherSubmenu.style.display = "none";
+      }
+    });
+
+    let submenu = document.querySelector(`#${submenuName}`);
+    if (submenu.style.display === "none") {
+      submenu.style.display = "block";
+      document.querySelector("#loadSubmenu").style.display = "none";
+      document.querySelector("#saveSubmenu").style.display = "none";
+    } else {
+      submenu.style.display = "none";
+    }
+  }  
+
+//Event listeners for agents submenu
+toggleAgentsSubmenu.addEventListener("click", function () {
+    toggleSubmenu("agentsSubmenu");
+});
+
+//Event listerns for grids submenu
+toggleGridsSubmenu.addEventListener("click", function () {
+    toggleSubmenu("gridsSubmenu");
+});
+
 toggleDesignsSubmenu.addEventListener("click", function() {
     let submenu = document.querySelector("#loadSubmenu");
     if (submenu.style.display === "none") {
         refreshDesignsDropdown();
         submenu.style.display = "block";
+        document.querySelector("#saveSubmenu").style.display = "none";
+        document.querySelector("#agentsSubmenu").style.display = "none";
+        document.querySelector("#gridsSubmenu").style.display = "none";
         // let designs = getAllDesignNames();
         // for (let designName of designs) {
         //     let design = document.createElement("option");
@@ -173,6 +230,7 @@ toggleDesignsSubmenu.addEventListener("click", function() {
 loadSelectedButton.addEventListener("click", function () {
     loadDesign(showDesignsDropdown.value);
 })
+
 removeSelected.addEventListener("click", function () {
     removeDesign(showDesignsDropdown.value);
     refreshDesignsDropdown();
@@ -181,7 +239,7 @@ removeSelected.addEventListener("click", function () {
 showDesignsDropdown.addEventListener("click", async function () {
     // designsDropdown.classList.toggle("show");
     // if (designsDropdown.classList.contains("show")){
-    
+
 })
 //spawnButton.addEventListener("click", function () {
 //    populate();
@@ -191,6 +249,9 @@ toggleSaveSubmenu.addEventListener("click", function () {
     let submenu = document.querySelector("#saveSubmenu");
     if (submenu.style.display === "none") {
         submenu.style.display = "block";
+        document.querySelector("#loadSubmenu").style.display = "none";
+        document.querySelector("#agentsSubmenu").style.display = "none";
+        document.querySelector("#gridsSubmenu").style.display = "none";
     } else {
         submenu.style.display = "none";
     }
@@ -254,6 +315,7 @@ startSim.addEventListener("click", function () {
 
     setSizes(canvasWidth, canvasHeight)
     populate();
+    setBlockMouse(true);
 
     //toggleHeat();  
     animateCaller()
@@ -261,9 +323,16 @@ startSim.addEventListener("click", function () {
     //toggleHeat();
 });
 
+stopSim.addEventListener("click", function () {
 
-toggle.addEventListener("click", function(){
-    setShowHeatMap(getShowHeatMap() ? false  : true);
+    let agents = getAgents();
+    agents.forEach(agent => {
+        agent.destroy();
+    });
+});
+
+toggle.addEventListener("click", function () {
+    setShowHeatMap(getShowHeatMap() ? false : true);
 
 });
 
@@ -302,6 +371,7 @@ drawingArea.addEventListener("mousedown", (event) => {
     if (getAddingSpawn()) {
         return;
     }
+
     isDragging = true;
     menu.style.visibility = "hidden";
     prevIndex = getCellIndex(event.clientX, event.clientY);
@@ -312,10 +382,11 @@ drawingArea.addEventListener("mousemove", (event) => {
     if (event.buttons !== 1) {
         isDragging = false;
     }
-    
+
     if (getAddingSpawn()) {
         return;
     }
+
     if (isDragging == true) {
         nextIndex = getCellIndex(event.clientX, event.clientY);
         if (prevIndex.x !== nextIndex.x || prevIndex.y !== nextIndex.y) {
@@ -329,6 +400,7 @@ drawingArea.addEventListener("mouseup", () => {
     if (getAddingSpawn()) {
         return;
     }
+
     isDragging = false;
     setAddingSpawn(false);
     prevIndex = null;
@@ -341,6 +413,7 @@ drawingArea.addEventListener("mouseup", () => {
 let startingCell;
 
 drawingArea.addEventListener("mousedown", (event) => {
+
     if (getAddingSpawn()) {
         isDragging = true;
         startingCell = getCellIndex(event.offsetX, event.offsetY);
@@ -353,11 +426,125 @@ drawingArea.addEventListener("mousemove", (event) => {
     if (getAddingSpawn() && isDragging) {
         let nextIndex = getCellIndex(event.offsetX, event.offsetY);
         if (prevIndex.x != nextIndex.x || prevIndex.y != nextIndex.y) {
-            for (let x = nextIndex.x; x >= startingCell.x; --x) {
-                for (let y = nextIndex.y; y >= startingCell.y; --y) {
-                    let index = { x, y };
-                    cellEventHandler(index);
-                }
+            switch (true) {
+                case (nextIndex.x >= startingCell.x && nextIndex.y <= startingCell.y): // first quadrant 
+                    if (nextIndex.x == startingCell.x || nextIndex.y == startingCell.y) {
+                        let x = prevIndex.x
+                        for (let y = prevIndex.y; y <= startingCell.y; ++y) {
+                            let index = { x, y };
+                            cellEventHandler(index, "remove");
+                        }
+                        let y = prevIndex.y;
+                        for (let x = prevIndex.x; x >= startingCell.x; --x) {
+                            let index = { x, y };
+                            cellEventHandler(index, "remove");
+                        }
+                    }
+                    if (nextIndex.x < prevIndex.x) {
+                        let x = prevIndex.x;
+                        for (let y = prevIndex.y; y <= startingCell.y; ++y) {
+                            let index = { x, y };
+                            cellEventHandler(index, "remove");
+                        }
+                    }
+                    if (nextIndex.y > prevIndex.y) {
+                        let y = prevIndex.y;
+                        for (let x = prevIndex.x; x >= startingCell.x; --x) {
+                            let index = { x, y };
+                            cellEventHandler(index, "remove");
+                        }
+                    } else {
+                        for (let x = nextIndex.x; x >= startingCell.x; --x) {
+                            for (let y = nextIndex.y; y <= startingCell.y; ++y) {
+                                let index = { x, y };
+                                cellEventHandler(index);
+                            }
+                        }
+                    }
+                    break;
+                case (nextIndex.x <= startingCell.x && nextIndex.y <= startingCell.y): // second quadrant
+                    if (nextIndex.y == startingCell.y) {
+                        let y = prevIndex.y;
+                        for (let x = prevIndex.x; x <= startingCell.x; ++x) {
+                            let index = { x, y };
+                            cellEventHandler(index, "remove");
+                        }
+                    }
+                    if (nextIndex.x > prevIndex.x) {
+                        let x = prevIndex.x;
+                        for (let y = prevIndex.y; y <= startingCell.y; ++y) {
+                            let index = { x, y };
+                            cellEventHandler(index, "remove");
+                        }
+                    }
+                    if (nextIndex.y > prevIndex.y) {
+                        let y = prevIndex.y;
+                        for (let x = prevIndex.x; x <= startingCell.x; ++x) {
+                            let index = { x, y };
+                            cellEventHandler(index, "remove");
+                        }
+                    } else {
+                        for (let x = nextIndex.x; x <= startingCell.x; ++x) {
+                            for (let y = nextIndex.y; y <= startingCell.y; ++y) {
+                                let index = { x, y };
+                                cellEventHandler(index);
+                            }
+                        }
+                    }
+                    break;
+                case (nextIndex.x <= startingCell.x && nextIndex.y >= startingCell.y): // 3th quadrant
+                    if (nextIndex.x == startingCell.x) {
+                        let x = prevIndex.x
+                        for (let y = prevIndex.y; y >= startingCell.y; --y) {
+                            let index = { x, y };
+                            cellEventHandler(index, "remove");
+                        }
+                    }
+                    if (nextIndex.x > prevIndex.x) {
+                        let x = prevIndex.x;
+                        for (let y = prevIndex.y; y >= startingCell.y; --y) {
+                            let index = { x, y };
+                            cellEventHandler(index, "remove");
+                        }
+                    }
+                    if (nextIndex.y < prevIndex.y) {
+                        let y = prevIndex.y;
+                        for (let x = prevIndex.x; x <= startingCell.x; ++x) {
+                            let index = { x, y };
+                            cellEventHandler(index, "remove");
+                        }
+                    } else {
+                        for (let x = nextIndex.x; x <= startingCell.x; ++x) {
+                            for (let y = nextIndex.y; y >= startingCell.y; --y) {
+                                let index = { x, y };
+                                cellEventHandler(index);
+                            }
+                        }
+                    }
+                    break;
+                case (nextIndex.x >= startingCell.x && nextIndex.y >= startingCell.y): // 4th quadrant
+                    if (nextIndex.x < prevIndex.x) {
+                        let x = prevIndex.x;
+                        for (let y = prevIndex.y; y >= startingCell.y; --y) {
+                            let index = { x, y };
+                            cellEventHandler(index, "remove");
+                        }
+                    }
+                    if (nextIndex.y < prevIndex.y) {
+                        let y = prevIndex.y;
+                        for (let x = prevIndex.x; x >= startingCell.x; --x) {
+                            let index = { x, y };
+                            cellEventHandler(index, "remove");
+                        }
+                    } else {
+                        for (let x = nextIndex.x; x >= startingCell.x; --x) {
+                            for (let y = nextIndex.y; y >= startingCell.y; --y) {
+                                let index = { x, y };
+                                cellEventHandler(index);
+                            }
+                        }
+                    }
+                    break;
             }
             prevIndex = nextIndex;
         }
@@ -370,7 +557,6 @@ drawingArea.addEventListener("mouseup", (event) => {
         setAddingSpawn(false);
         let spawnGroup = [];
         let finalCell = getCellIndex(event.offsetX, event.offsetY);
-
         switch (true) {
             case (finalCell.x > startingCell.x && finalCell.y < startingCell.y): // 1st quadrant
                 for (let x = finalCell.x; x >= startingCell.x; --x) {
@@ -441,7 +627,6 @@ drawingArea.addEventListener("mouseup", (event) => {
 
                 break;
         }
-
         addSpawnArea(spawnGroup);
     }
 });
@@ -471,7 +656,7 @@ window.addEventListener("mousemove", function (event) {
     }
 });
 
-function resetMenuPosition(){
+function resetMenuPosition() {
     const menuRect = menu.getBoundingClientRect();
     const openMenuRect = openMenu.getBoundingClientRect();
     const windowHeight = window.innerHeight;

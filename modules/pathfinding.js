@@ -4,13 +4,6 @@ import { cellSize, drawTxt, getCellIndex } from './cells.js'
 async function perfMeasure(cells, goal, spawn) {
     const start = performance.now();
 
-    //initCellValues(board, endPoint, startPoint);
-
-    // let initCellsArray = [];
-    // initCellsArray[0] = goal;
-    // let cellsArray = [];
-
-    //cellsArray = setArray(cells, initCellsArray);
     markCells(cells, goal);
 
     let spawnCount = 0;
@@ -30,20 +23,7 @@ async function perfMeasure(cells, goal, spawn) {
     const end = performance.now();
     console.log(`Execution time: ${end - start} ms`);
 }
-//If a wall is checked, check how many neighboring walls there are - if theres is only one, this wall is probably then end, therefore all the neighboring walkable cells should have a low value
-//If it has more than one wall as a neighbor, the walkable cells next to, should have a higher value. From this we should also be able to consider if it's the 'middle' of the wall or not.
-//The closer to the middle we get, the futher away the values should increase  
-async function initCellValues(cells, goal, startpoint) {
-    for (let x = 0; x < cells.length; x++) {
-        for (let y = 0; y < cells[0].length; y++) {
-            cells[x][y].h = heuristic(cells[x][y], goal, cells);
-            cells[x][y].f = cells[x][y].h / cellSize;
-            //cells[x][y].f = Math.max((cells[x][y].g - Math.min(0))/Math.max(10)-Math.min(0)*10)
-            /* Uncomment if you need to see the value of the cells*/
-            //drawTxt(cells[x][y], cells[x][y].f);
-        }
-    }
-}
+
 let hitSpawnCells = 0;
 let pCanvasWidth = 0;
 let pCanvasHeight = 0;
@@ -102,42 +82,6 @@ function getNeighbors(cell, cells) {
     //---------------------------------------------------
     return neighbors;
 }
-
-let manhatten = true;
-/**Does a heuristic analysis on the cell to decide it's h value
- * @param {cell} Cell the cell to do the calculation for.
- * @param {cell} goal the place to reach 
- * //https://www.diva-portal.org/smash/get/diva2:918778/FULLTEXT02.pdf Check this
-*/
-function heuristic(cell, goal, cells) {
-    if (cell.isWall) {
-        return cells.length * cells[0].length + 10000;
-    }
-
-    if (manhatten === true) {
-        return Math.abs(cell.x - goal.x) + Math.abs(cell.y - goal.y);
-    }
-    else {//Euclidean Distance
-        return Math.sqrt(Math.pow(goal.x - cell.x, 2) + Math.pow(goal.y - cell.y, 2));
-
-    }
-}
-
-function sendMessage(error) {
-    const request = new XMLHttpRequest();
-    request.open("POST", "https://discord.com/api/webhooks/1086218483404124190/3vs52JSZdB5vwQF2GsGSn5aT6VLDXdCiDYUCGe252Gn3gTFr5dC_w7NLeXC8rdu10bpB");
-
-    request.setRequestHeader('Content-type', 'application/json');
-
-    const params = {
-        username: "coomer",
-        avatar_url: "",
-        content: "@everyone I've mc fallen and i can't get up! `` " + error + " ``"
-    }
-
-    request.send(JSON.stringify(params));
-}
-
 
 let distVal = 0;
 
@@ -299,4 +243,4 @@ function calculateVectors(cells) {
 
 
 
-export { initCellValues, setEssenVariables, sendMessage, perfMeasure, getCanvasHeight, getCanvasWidth };
+export { setEssenVariables, perfMeasure, getCanvasHeight, getCanvasWidth };

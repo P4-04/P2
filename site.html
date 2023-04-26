@@ -7,11 +7,13 @@
     <script type="module" src="script.js"></script>
     <button id="open" style="visibility: visible">Open Menu</button>
     <div class="menu" style="visibility: hidden;">
+        <div class="menu-handle"></div>
         <button id="start">Start simulation</button>
+        <button id="stop">Stop simulation</button>
         <hr>
         <button id="agentsButton">Agents</button>
         <button id="gridsButton">Grid</button>
-        <button id="toggleDisplay">Toggle</button>
+        <button id="toggleDisplay">Toggle heatmap</button>
         <button id="toggleSaveSubmenu">Save design</button>
         <div class="Submenu" id="saveSubmenu" style="display: none">
             <label for="designName">Name</label>
@@ -36,6 +38,11 @@
             <button id="addSpawn">Add Spawn</button>
             <button id="addExit">Add Exit</button>
             <button id="clear">Clear</button>
+            <div class="slider">
+                <label id="setCellSize">Set Cell Size</label>
+                <label id="sizeDisplay">25</label>
+                <input type="range" id="cellSlider" value="25" min="15" max="150">
+            </div>
         </div>
     </div>   
     <div class="container">
