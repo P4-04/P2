@@ -57,6 +57,7 @@ h2 {
 }
 
 .menu {
+    user-select: none;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
