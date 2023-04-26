@@ -1,11 +1,9 @@
 import { setEssenVariables, perfMeasure } from './modules/pathfinding.js';
 import { addSpawnArea, getSpawnArea, populate, removeAgentsFromArea, animateCaller, setSizes, getAgents } from './modules/agents.js';
 import { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit, getCells, setCells, DrawAllCells, toggleHeat, 
-    setShowHeatMap, getShowHeatMap, setBlockMouse, getBlockMouse } from './modules/cells.js';
+    setShowHeatMap, getShowHeatMap, setBlockMouse, getBlockMouse, setCellSize } from './modules/cells.js';
 import { getAllDesignNames, saveDesign, loadDesign, removeDesign } from './modules/designmanager.js';
 //import { func } from 'prop-types';
-
-
 
 //Initialize DOM elements
 const closeMenu = document.querySelector("#close");
@@ -113,18 +111,14 @@ openMenu.addEventListener("mouseup", function () {
     }
 });
 
-cellSlider.addEventListener("mousedown", function () {
-    if (isDraggingOverlay === true) {
-        isDraggingOverlay = false;
-    }
-});
-
-cellSlider.addEventListener("mousemove", function() {
-    if (isDraggingOverlay === true) {
-        isDraggingOverlay = false;
-    }
+cellSlider.addEventListener("mousemove", function () {
     sizeDisplay.textContent = cellSlider.value;
-    cellSize = cellSlider.value;
+})
+
+cellSlider.addEventListener("mouseup", function() {
+    sizeDisplay.textContent = cellSlider.value;
+    setCellSize(cellSlider.value);
+
     canvasWidth = window.innerWidth - window.innerWidth % cellSize;
     canvasHeight = window.innerHeight - window.innerHeight % cellSize;
     drawingArea.setAttribute('viewBox', `0 0 ${canvasWidth} ${canvasHeight}`);
@@ -135,8 +129,10 @@ cellSlider.addEventListener("mousemove", function() {
 });
 
 // cellSlider.oninput = function() {
-//     sizeDisplay.textContent = this.value;
-//     cellSize = this.value;
+//     sizeDisplay.textContent = cellSlider.value;
+//     setCellSize(cellSlider.value);
+//     console.log("cellSize " + cellSize);
+
 //     canvasWidth = window.innerWidth - window.innerWidth % cellSize;
 //     canvasHeight = window.innerHeight - window.innerHeight % cellSize;
 //     drawingArea.setAttribute('viewBox', `0 0 ${canvasWidth} ${canvasHeight}`);
@@ -346,8 +342,8 @@ toggle.addEventListener("click", function () {
 
 
 //Define canvas parameters and setting svg attributes
-const canvasWidth = window.innerWidth - window.innerWidth % cellSize;
-const canvasHeight = window.innerHeight - window.innerHeight % cellSize;
+let canvasWidth = window.innerWidth - window.innerWidth % cellSize;
+let canvasHeight = window.innerHeight - window.innerHeight % cellSize;
 drawingArea.setAttribute('viewBox', `0 0 ${canvasWidth} ${canvasHeight}`);
 drawingArea.setAttribute('width', canvasWidth);
 drawingArea.setAttribute('height', canvasHeight);
@@ -694,4 +690,3 @@ function resetMenuPosition() {
 //Pathfinding
 //
 //
-
