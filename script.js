@@ -2,6 +2,7 @@ import { setEssenVariables, perfMeasure } from './modules/pathfinding.js';
 import { addSpawnArea, getSpawnArea, populate, removeAgentsFromArea, animateCaller, setSizes } from './modules/agents.js';
 import { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit, getCells, setCells, DrawAllCells, toggleHeat, setShowHeatMap, getShowHeatMap } from './modules/cells.js';
 import { getAllDesignNames, saveDesign, loadDesign, removeDesign } from './modules/designmanager.js';
+//import { func } from 'prop-types';
 
 
 
@@ -11,10 +12,13 @@ const openMenu = document.querySelector("#open");
 const startSim = document.querySelector("#start");
 const numAgents = document.querySelector("#numAgents");
 const toggleDesignsSubmenu = document.querySelector("#toggleLoadSubmenu");
-const loadSelectedButton = document.querySelector("#loadSelected")
-const showDesignsDropdown = document.querySelector("#showDesignsDropdownButton")
+const loadSelectedButton = document.querySelector("#loadSelected");
+const showDesignsDropdown = document.querySelector("#showDesignsDropdownButton");
 const toggleSaveSubmenu = document.querySelector("#toggleSaveSubmenu");
-const saveButton = document.querySelector("#saveButton")
+const saveButton = document.querySelector("#saveButton");
+
+const cellSlider = document.querySelector("#cellSlider");
+const sizeDisplay = document.querySelector("#sizeDisplay");
 
 const menu = document.querySelector(".menu");
 const drawingArea = document.querySelector(".drawing");
@@ -114,6 +118,18 @@ openMenu.addEventListener("mouseup", function () {
         menu.style.visibility = "visible";
     }
 });
+
+// cellSlider.addEventListener("mousedown", function () {
+//     if (isDraggingOverlay === true) {
+//         isDraggingOverlay = false;
+//     }
+// });
+
+// cellSlider.oninput = function() {
+//     sizeDisplay.textContent = this.value;
+
+// }
+
 
 // Add event to "Clear"-button
 //let clearButton = document.querySelector("#clear");
