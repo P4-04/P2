@@ -3,13 +3,13 @@
     padding: 0;
     box-sizing: border-box;
 } */
-.box{
+.box {
     width: 100px;
     height: 100px;
     border: 1px solid rgb(255, 5, 251);
     margin: 0;
     padding: 0;
-    }
+}
 
 body {
     font-family: 'Roboto', Arial, sans-serif;
@@ -24,7 +24,7 @@ h2 {
     color: #333;
 }
 
-.heatCells{
+.heatCells {
     fill-opacity: 1;
     stroke-opacity: 1;
 }
@@ -32,22 +32,22 @@ h2 {
 .container {
     display: flex;
     flex-wrap: wrap;
-    position: absolute; 
-    left: 0; 
-    top: 0; 
+    position: absolute;
+    left: 0;
+    top: 0;
     z-index: 1;
 }
 
 .drawing {
     background-color: #eee;
     left: 0;
-    top: 0; 
+    top: 0;
     position: absolute;
 }
 
 #open {
     flex-direction: column;
-    width: 100px;	    
+    width: 100px;
     justify-content: flex-start;
     align-items: flex-start;
     width: fit-content;
@@ -74,9 +74,12 @@ h2 {
 }
 
 .menu hr {
-    width: 80%;       /* Customize the width of the separator */
-    margin: 5px auto; /* Add some margin around the separator */
-    border: 1px solid #636363; /* Set the color and thickness of the separator */
+    width: 80%;
+    /* Customize the width of the separator */
+    margin: 5px auto;
+    /* Add some margin around the separator */
+    border: 1px solid #636363;
+    /* Set the color and thickness of the separator */
 }
 
 .menu button {
@@ -114,7 +117,7 @@ button {
     cursor: pointer;
     margin: 10px;
     border-radius: 4px;
-    width:150px;
+    width: 150px;
     border-radius: 10px;
     white-space: nowrap;
 }
@@ -130,7 +133,7 @@ button:active {
     background-color: #454545;
 }
 
-.Submenu  {
+.Submenu {
     position: absolute;
     top: 0;
     left: 100%;
@@ -138,8 +141,8 @@ button:active {
     margin-left: 10px;
     border: 1px solid black;
     background-color: white;
-  }
- 
+}
+
 
 .Submenu input {
     width: 150px;
@@ -174,3 +177,14 @@ button:active {
     vertical-align: middle;
 }
 
+.menu-handle {
+    cursor: grab;
+    width: 80px;
+    height: 20px;
+    background-color: #3c3d3c;
+    border-radius: 10px;
+    box-sizing: border-box;
+    position: relative;
+    left: 50%;
+    transform: translate(-50%)
+}
