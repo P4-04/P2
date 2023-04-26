@@ -208,6 +208,7 @@ function anime(start) {
         if (agents[i] != null) {
             let x = Math.floor(agents[i].x / cellSize);
             let y = Math.floor(agents[i].y / cellSize);
+            console.log("anime cells " + cells[0][0].dVector.y + " " + x + " " + y + " cell size " + cellSize + " agent x and y" + agents[i].x + " " + agents[i].y)
             let newX = agents[i].x + ((cells[x][y].dVector.x) * agents[i].SpeedModifier) / 3;
             let newY = agents[i].y + ((cells[x][y].dVector.y) * agents[i].SpeedModifier) / 3;
 

@@ -115,6 +115,8 @@ cellSlider.addEventListener("mousemove", function () {
     sizeDisplay.textContent = cellSlider.value;
 })
 
+let sizeChange = false;
+
 cellSlider.addEventListener("mouseup", function() {
     sizeDisplay.textContent = cellSlider.value;
     setCellSize(cellSlider.value);
@@ -125,7 +127,9 @@ cellSlider.addEventListener("mouseup", function() {
     drawingArea.setAttribute('width', canvasWidth);
     drawingArea.setAttribute('height', canvasHeight);
 
+    sizeChange = true;
     createGrid(canvasWidth, canvasHeight);
+    sizeChange = false;
 });
 
 // cellSlider.oninput = function() {
@@ -237,9 +241,6 @@ showDesignsDropdown.addEventListener("click", async function () {
     // if (designsDropdown.classList.contains("show")){
 
 })
-//spawnButton.addEventListener("click", function () {
-//    populate();
-//});
 
 toggleSaveSubmenu.addEventListener("click", function () {
     let submenu = document.querySelector("#saveSubmenu");
@@ -679,14 +680,4 @@ function resetMenuPosition() {
     }
 }
 
-//
-//
-//Agents - Initializatoin / populating
-//
-//
-
-//
-//
-//Pathfinding
-//
-//
+export { sizeChange };

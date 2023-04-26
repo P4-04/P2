@@ -4,6 +4,7 @@ export {
     setShowHeatMap, getShowHeatMap, setCells, DrawAllCells, setBlockMouse, getBlockMouse, setCellSize
 }
 import { animateCaller } from "./agents.js";
+import { sizeChange } from "../script.js";
 
 //Custom cell size
 let cellSize = 25;
@@ -136,6 +137,9 @@ function drawTxt(cell, value) {
  * Initializes our grid-cells with their default properties and calls DrawAllCells
 */
 function createGrid(canvasWidth, canvasHeight) {
+    if (sizeChange === true) {
+        cells = [[]];
+    }
     for (let x = 0; x < canvasWidth / cellSize; x++) {
         cells[x] = [];
         for (let y = 0; y < canvasHeight / cellSize; y++) {
