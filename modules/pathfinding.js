@@ -38,51 +38,6 @@ function setEssenVariables(Width, Height, Size) {
 function getCanvasHeight() { return pCanvasHeight; }
 function getCanvasWidth() { return pCanvasWidth; }
 
-function getNeighbors(cell, cells) {
-    let neighbors = [];
-    //Get x neighbors
-    if (cell.x != 0) {
-        neighbors[0] = cells[(cell.x / pCellSize) - 1][cell.y / pCellSize];
-    }
-
-    if (cell.x != cells[cells.length - 1][cells[0].length - 1].x) {
-        neighbors[1] = cells[(cell.x / pCellSize) + 1][cell.y / pCellSize];
-    }
-
-    if (cell.y != 0) {
-        neighbors[2] = cells[cell.x / pCellSize][(cell.y / pCellSize) - 1];
-    }
-
-    if (cell.y != cells[0][cells[0].length - 1].y) {
-        neighbors[3] = cells[cell.x / pCellSize][(cell.y / pCellSize) + 1];
-    }
-
-
-    if (neighbors[0] == undefined) {
-        neighbors.splice(0, 0)
-    }
-    if (neighbors[1] == undefined) {
-        neighbors.splice(1, 1)
-    }
-    if (neighbors[2] == undefined) {
-        neighbors.splice(2, 2)
-    }
-    if (neighbors[3] == undefined) {
-        neighbors.splice(3, 3)
-    }
-    //Visualisation of our astar scan
-    // cell.color = "black"; 
-    // cell.rect.setAttribute('fill', cell.color);
-    // neighbors.forEach(neig => {
-    //     neig.color = "purple";
-    //     neig.rect.setAttribute('fill', neig.color);
-    //     console.log(neig.x + " " + neig.y);
-    //     setTimeout(500);
-    // });
-    //---------------------------------------------------
-    return neighbors;
-}
-
 let distVal = 0;
 
 //Makes an array for input in markCells

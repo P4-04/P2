@@ -323,9 +323,13 @@ startSim.addEventListener("click", function () {
 stopSim.addEventListener("click", function () {
 
     let agents = getAgents();
-    agents.forEach(agent => {
-        agent.destroy();
-    });
+    while (agents.length != 0)
+    {
+        agents[0].destroy();
+    }
+    //agents.forEach(agent => {
+        
+    //});
 });
 
 toggle.addEventListener("click", function () {
