@@ -23,6 +23,7 @@ const cellSlider = document.querySelector("#cellSlider");
 const sizeDisplay = document.querySelector("#sizeDisplay");
 
 const menu = document.querySelector(".menu");
+const menuHandle = document.querySelector(".menu-handle")
 const drawingArea = document.querySelector(".drawing");
 
 const toggle = document.querySelector("#toggleDisplay");
@@ -60,14 +61,14 @@ popButton.addEventListener("click", populate);
 let menuHidden = true;
 
 //Event listeners for menu open / close / drag / clear / spawn / exit
-menu.addEventListener("mousedown", function (event) {
+menuHandle.addEventListener("mousedown", function (event) {
     isMouseDown = true;
     isDraggingOverlay = false;
     cursorCurrentX = event.clientX;
     cursorCurrentY = event.clientY;
 });
 
-menu.addEventListener("mouseup", function () {
+menuHandle.addEventListener("mouseup", function () {
     isMouseDown = false;
     isDraggingOverlay = false;
 });
