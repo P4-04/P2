@@ -113,14 +113,37 @@ openMenu.addEventListener("mouseup", function () {
     }
 });
 
-// cellSlider.addEventListener("mousedown", function () {
-//     if (isDraggingOverlay === true) {
-//         isDraggingOverlay = false;
-//     }
-// });
+cellSlider.addEventListener("mousedown", function () {
+    if (isDraggingOverlay === true) {
+        isDraggingOverlay = false;
+    }
+});
+
+cellSlider.addEventListener("mousemove", function() {
+    if (isDraggingOverlay === true) {
+        isDraggingOverlay = false;
+    }
+    sizeDisplay.textContent = cellSlider.value;
+    cellSize = cellSlider.value;
+    canvasWidth = window.innerWidth - window.innerWidth % cellSize;
+    canvasHeight = window.innerHeight - window.innerHeight % cellSize;
+    drawingArea.setAttribute('viewBox', `0 0 ${canvasWidth} ${canvasHeight}`);
+    drawingArea.setAttribute('width', canvasWidth);
+    drawingArea.setAttribute('height', canvasHeight);
+
+    createGrid(canvasWidth, canvasHeight);
+});
 
 // cellSlider.oninput = function() {
 //     sizeDisplay.textContent = this.value;
+//     cellSize = this.value;
+//     canvasWidth = window.innerWidth - window.innerWidth % cellSize;
+//     canvasHeight = window.innerHeight - window.innerHeight % cellSize;
+//     drawingArea.setAttribute('viewBox', `0 0 ${canvasWidth} ${canvasHeight}`);
+//     drawingArea.setAttribute('width', canvasWidth);
+//     drawingArea.setAttribute('height', canvasHeight);
+
+//     createGrid(canvasWidth, canvasHeight);
 
 // }
 
@@ -166,6 +189,8 @@ function toggleSubmenu(submenuName) {
     let submenu = document.querySelector(`#${submenuName}`);
     if (submenu.style.display === "none") {
       submenu.style.display = "block";
+      document.querySelector("#loadSubmenu").style.display = "none";
+      document.querySelector("#saveSubmenu").style.display = "none";
     } else {
       submenu.style.display = "none";
     }
@@ -186,6 +211,9 @@ toggleDesignsSubmenu.addEventListener("click", function() {
     if (submenu.style.display === "none") {
         refreshDesignsDropdown();
         submenu.style.display = "block";
+        document.querySelector("#saveSubmenu").style.display = "none";
+        document.querySelector("#agentsSubmenu").style.display = "none";
+        document.querySelector("#gridsSubmenu").style.display = "none";
         // let designs = getAllDesignNames();
         // for (let designName of designs) {
         //     let design = document.createElement("option");
@@ -221,6 +249,9 @@ toggleSaveSubmenu.addEventListener("click", function () {
     let submenu = document.querySelector("#saveSubmenu");
     if (submenu.style.display === "none") {
         submenu.style.display = "block";
+        document.querySelector("#loadSubmenu").style.display = "none";
+        document.querySelector("#agentsSubmenu").style.display = "none";
+        document.querySelector("#gridsSubmenu").style.display = "none";
     } else {
         submenu.style.display = "none";
     }
