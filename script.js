@@ -1,6 +1,7 @@
 import { setEssenVariables, perfMeasure } from './modules/pathfinding.js';
-import { addSpawnArea, getSpawnArea, populate, removeAgentsFromArea, animateCaller, setSizes } from './modules/agents.js';
-import { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit, getCells, setCells, DrawAllCells, toggleHeat, setShowHeatMap, getShowHeatMap } from './modules/cells.js';
+import { addSpawnArea, getSpawnArea, populate, removeAgentsFromArea, animateCaller, setSizes, getAgents } from './modules/agents.js';
+import { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit, getCells, setCells, DrawAllCells, toggleHeat, 
+    setShowHeatMap, getShowHeatMap, setBlockMouse, getBlockMouse } from './modules/cells.js';
 import { getAllDesignNames, saveDesign, loadDesign, removeDesign } from './modules/designmanager.js';
 //import { func } from 'prop-types';
 
@@ -10,6 +11,7 @@ import { getAllDesignNames, saveDesign, loadDesign, removeDesign } from './modul
 const closeMenu = document.querySelector("#close");
 const openMenu = document.querySelector("#open");
 const startSim = document.querySelector("#start");
+const stopSim = document.querySelector("#stop");
 const numAgents = document.querySelector("#numAgents");
 const toggleDesignsSubmenu = document.querySelector("#toggleLoadSubmenu");
 const loadSelectedButton = document.querySelector("#loadSelected");
@@ -87,15 +89,6 @@ openMenu.addEventListener("mousedown", function (event) {
     cursorCurrentY = event.clientY;
 });
 
-toggleGridsSubmenu.addEventListener("click", function () {
-    let submenu = document.querySelector("#gridsSubmenu");
-    if (submenu.style.display === "none") {
-        submenu.style.display = "block";
-    } else {
-        submenu.style.display = "none";
-    }
-});
-
 document.addEventListener("mousemove", function (event) {
     cursorNewX = cursorCurrentX - event.clientX;
     cursorNewY = cursorCurrentY - event.clientY;
@@ -147,16 +140,6 @@ addSpawnButton.addEventListener("click", () => {
     setAddingSpawn(true);
 });
 
-//Event listeners for agents submenu
-toggleAgentsSubmenu.addEventListener("click", function () {
-    let submenu = document.querySelector("#agentsSubmenu");
-    if (submenu.style.display === "none") {
-        submenu.style.display = "block";
-    } else {
-        submenu.style.display = "none";
-    }
-});
-
 function refreshDesignsDropdown() {
     showDesignsDropdown.length = 0;
     let designs = getAllDesignNames();
@@ -167,6 +150,35 @@ function refreshDesignsDropdown() {
         showDesignsDropdown.appendChild(design)
     }
 }
+
+//Event to change the state of the submenu
+function toggleSubmenu(submenuName) {
+    const submenus = ["agentsSubmenu", "gridsSubmenu"];
+
+    submenus.forEach((submenu) => {
+      if (submenu !== submenuName) {
+        const otherSubmenu = document.querySelector(`#${submenu}`);
+        otherSubmenu.style.display = "none";
+      }
+    });
+
+    let submenu = document.querySelector(`#${submenuName}`);
+    if (submenu.style.display === "none") {
+      submenu.style.display = "block";
+    } else {
+      submenu.style.display = "none";
+    }
+  }  
+
+//Event listeners for agents submenu
+toggleAgentsSubmenu.addEventListener("click", function () {
+    toggleSubmenu("agentsSubmenu");
+});
+
+//Event listerns for grids submenu
+toggleGridsSubmenu.addEventListener("click", function () {
+    toggleSubmenu("gridsSubmenu");
+});
 
 toggleDesignsSubmenu.addEventListener("click", function() {
     let submenu = document.querySelector("#loadSubmenu");
@@ -271,6 +283,7 @@ startSim.addEventListener("click", function () {
 
     setSizes(canvasWidth, canvasHeight)
     populate();
+    setBlockMouse(true);
 
     //toggleHeat();  
     animateCaller()
@@ -278,6 +291,13 @@ startSim.addEventListener("click", function () {
     //toggleHeat();
 });
 
+stopSim.addEventListener("click", function () {
+
+    let agents = getAgents();
+    agents.forEach(agent => {
+        agent.destroy();
+    });
+});
 
 toggle.addEventListener("click", function () {
     setShowHeatMap(getShowHeatMap() ? false : true);
@@ -319,6 +339,7 @@ drawingArea.addEventListener("mousedown", (event) => {
     if (getAddingSpawn()) {
         return;
     }
+
     isDragging = true;
     menu.style.visibility = "hidden";
     prevIndex = getCellIndex(event.clientX, event.clientY);
@@ -333,6 +354,7 @@ drawingArea.addEventListener("mousemove", (event) => {
     if (getAddingSpawn()) {
         return;
     }
+
     if (isDragging == true) {
         nextIndex = getCellIndex(event.clientX, event.clientY);
         if (prevIndex.x !== nextIndex.x || prevIndex.y !== nextIndex.y) {
@@ -346,6 +368,7 @@ drawingArea.addEventListener("mouseup", () => {
     if (getAddingSpawn()) {
         return;
     }
+
     isDragging = false;
     setAddingSpawn(false);
     prevIndex = null;
@@ -358,6 +381,7 @@ drawingArea.addEventListener("mouseup", () => {
 let startingCell;
 
 drawingArea.addEventListener("mousedown", (event) => {
+
     if (getAddingSpawn()) {
         isDragging = true;
         startingCell = getCellIndex(event.offsetX, event.offsetY);

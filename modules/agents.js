@@ -1,5 +1,5 @@
-export { populate, removeAgentsFromArea, animateCaller, getSpawnArea, addSpawnArea, setSizes, setSpawnAreas }
-import { cellSize, svgNS, getCells, getCellIndex, getCell, endPoint, getNeighborCells, getAgentsInCell, calcCellDensity, toggleHeat, getShowHeatMap } from './cells.js'
+export { populate, removeAgentsFromArea, animateCaller, getSpawnArea, addSpawnArea, setSizes, setSpawnAreas, getAgents }
+import { cellSize, svgNS, getCells, getCellIndex, getCell, endPoint, getNeighborCells, getAgentsInCell, calcCellDensity, toggleHeat, getShowHeatMap, setBlockMouse } from './cells.js'
 
 import { getCanvasHeight, getCanvasWidth } from './pathfinding.js'
 
@@ -31,7 +31,7 @@ class Agent {
         this.body.transform.baseVal.appendItem(xyTransform);
 
         drawingArea.appendChild(this.body);
-        
+
         this.SpeedModifier = Math.random() * maxSpeedIncrease + 1.2;
         //Old cell for transition vector, smooting out movement
         this.prevCell = null;
@@ -69,17 +69,16 @@ class Agent {
         this.squareX = Math.ceil(x - (this.fattiness * Math.sqrt(2) / 2));
         this.squareY = Math.ceil(x - (this.fattiness * Math.sqrt(2) / 2));
 
-       
-            let xyTransform = drawingArea.createSVGTransform();
-            xyTransform.setTranslate(this.x, this.y);
-        if (!getShowHeatMap()){
+
+        let xyTransform = drawingArea.createSVGTransform();
+        xyTransform.setTranslate(this.x, this.y);
+        if (!getShowHeatMap()) {
             this.body.transform.baseVal[0] = xyTransform;
             this.body.setAttribute('fill-opacity', '100')
-        } else 
-        { 
+        } else {
             this.body.setAttribute('fill-opacity', '0');
         }
-        
+
         // this.square.left = x/(canvasWidth / cellSize);
         // this.square.top = y/(canvasHeight / cellSize);
         // this.square.right = this.square.left + this.fattiness;
@@ -104,8 +103,7 @@ class Agent {
             return;
         }
 
-        console.log(getShowHeatMap());
-        if (getShowHeatMap()){
+        if (getShowHeatMap()) {
             cellsToUpdate.push(this.myCell);
             cellsToUpdate.push(currentCell);
         }
@@ -138,6 +136,10 @@ class Agent {
         //this.myCell.agents[index] == null;
         me = null;
         removed = null;
+
+        if (agents.length == 0) {
+            setBlockMouse(false);
+        }
 
     }
 }
@@ -212,7 +214,7 @@ function anime(start) {
             //Code for applying decreasing fractions of previous vector to current vector
             //Makes movement in turns and corners appear more smooth
             if (getCell(x, y).dVector.x !== getCell(Math.floor(newX / cellSize), Math.floor(newY / cellSize)).dVector.x ||
-            getCell(x, y).dVector.y !== getCell(Math.floor(newX / cellSize), Math.floor(newY / cellSize)).dVector.y) {
+                getCell(x, y).dVector.y !== getCell(Math.floor(newX / cellSize), Math.floor(newY / cellSize)).dVector.y) {
                 agents[i].prevCell = getCell(x, y);
                 agents[i].prevCellFract = 50;
             }
@@ -246,12 +248,12 @@ function anime(start) {
                 newX = agents[i].x + (vectorTransformX * agents[i].SpeedModifier) / 3;
                 newY = agents[i].y + (vectorTransformY * agents[i].SpeedModifier) / 3;
             }
-            
+
             if (collisionCheck(newX, newY, agents[i], cells[Math.floor(newX / cellSize)][Math.floor(newY / cellSize)])) {
                 newX = agents[i].x
                 newY = agents[i].y
             }
-            if (newX < 0){
+            if (newX < 0) {
                 newX = 0;
             }
 
@@ -278,12 +280,25 @@ function anime(start) {
     let end = performance.now();
 
     console.log(`Execution time: ${end - start} ms`);
-    if (agents.length != 0){ requestAnimationFrame(animateCaller); }
+    if (agents.length != 0) { requestAnimationFrame(animateCaller); }
 
 }
 
 function collisionCheck(x, y, currAgent, newCell) {
-    let agentCollision = agents.some((agent) => Math.abs(agent.x - x) < agent.fattiness + currAgent.fattiness && Math.abs(agent.y - y) < agent.fattiness + currAgent.fattiness && agent.x != currAgent.x && agent.y != currAgent.y)
+    let neighbors = [];
+    let currentCell = getCell(Math.floor(currAgent.x / cellSize), Math.floor(currAgent.y / cellSize));
+
+    neighbors = getNeighborCells(currentCell.x / cellSize, currentCell.y / cellSize);
+
+    neighbors.push(currentCell);
+
+    let nearAgents = [];
+
+    neighbors.forEach(neigh => {
+        nearAgents = getAgentsInCell(neigh);
+    });
+
+    let agentCollision = nearAgents.some((agent) => Math.abs(agent.x - x) < agent.fattiness + currAgent.fattiness && Math.abs(agent.y - y) < agent.fattiness + currAgent.fattiness && agent.x != currAgent.x && agent.y != currAgent.y)
     let cellCollision = newCell.isWall
     if (agentCollision || cellCollision) {
         return true
@@ -299,9 +314,9 @@ async function animateCaller() {
         return;
     }
     const start = performance.now();
-    
+
     anime(start);
-    if (getShowHeatMap){
+    if (getShowHeatMap) {
         toggleHeat(cellsToUpdate);
     }
     cellsToUpdate = [];
