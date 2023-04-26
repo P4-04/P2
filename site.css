@@ -57,12 +57,14 @@ h2 {
 }
 
 .menu {
+    user-select: none;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;
     width: fit-content;
     height: fit-content;
+    user-select: none;
 
     /* updated background color and box shadow */
     background-color: rgb(47, 47, 47);
