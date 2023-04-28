@@ -177,8 +177,10 @@ function populateCells(area, agentsPerArea) {
     //let areaSize = { x: lastCell.x - firstCell.x, y: lastCell.y - firstCell.y };
     for (let i = 0; i < agentsPerArea; ++i) {
         let fattiness = ((cellSize / 6) + Math.floor(Math.random() * 3));
-        let x = getRandomArbitrary(firstCell.x * cellSize + fattiness, lastCell.x * cellSize + cellSize - fattiness);
-        let y = getRandomArbitrary(firstCell.y * cellSize + fattiness, lastCell.y * cellSize + cellSize - fattiness);
+
+        let x = getRandomArbitrary(firstCell.x * cellSize + fattiness, lastCell.x * cellSize + Math.floor(cellSize) - fattiness);
+        let y = getRandomArbitrary(firstCell.y * cellSize + fattiness, lastCell.y * cellSize + Math.floor(cellSize) - fattiness);
+        console.log("x and y " + x + " " + y);
         let agent = new Agent(x, y, fattiness);
         agents.push(agent);
     }
@@ -208,7 +210,6 @@ function anime(start) {
         if (agents[i] != null) {
             let x = Math.floor(agents[i].x / cellSize);
             let y = Math.floor(agents[i].y / cellSize);
-            console.log("anime cells " + cells[0][0].dVector.y + " " + x + " " + y + " cell size " + cellSize + " agent x and y" + agents[i].x + " " + agents[i].y)
             let newX = agents[i].x + ((cells[x][y].dVector.x) * agents[i].SpeedModifier) / 3;
             let newY = agents[i].y + ((cells[x][y].dVector.y) * agents[i].SpeedModifier) / 3;
 
@@ -286,20 +287,20 @@ function anime(start) {
 }
 
 function collisionCheck(x, y, currAgent, newCell) {
-    let neighbors = [];
-    let currentCell = getCell(Math.floor(currAgent.x / cellSize), Math.floor(currAgent.y / cellSize));
+    // let neighbors = [];
+    // let currentCell = getCell(Math.floor(currAgent.x / cellSize), Math.floor(currAgent.y / cellSize));
 
-    neighbors = getNeighborCells(currentCell.x / cellSize, currentCell.y / cellSize);
+    // neighbors = getNeighborCells(currentCell.x / cellSize, currentCell.y / cellSize);
 
-    neighbors.push(currentCell);
+    // neighbors.push(currentCell);
 
-    let nearAgents = [];
+    // let nearAgents = [];
 
-    neighbors.forEach(neigh => {
-        nearAgents = getAgentsInCell(neigh);
-    });
+    // neighbors.forEach(neigh => {
+    //     nearAgents = getAgentsInCell(neigh);
+    // });
 
-    let agentCollision = nearAgents.some((agent) => Math.abs(agent.x - x) < agent.fattiness + currAgent.fattiness && Math.abs(agent.y - y) < agent.fattiness + currAgent.fattiness && agent.x != currAgent.x && agent.y != currAgent.y)
+    let agentCollision = agents.some((agent) => Math.abs(agent.x - x) < agent.fattiness + currAgent.fattiness && Math.abs(agent.y - y) < agent.fattiness + currAgent.fattiness && agent.x != currAgent.x && agent.y != currAgent.y)
     let cellCollision = newCell.isWall
     if (agentCollision || cellCollision) {
         return true
