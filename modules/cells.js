@@ -138,6 +138,11 @@ function drawTxt(cell, value) {
 */
 function createGrid(canvasWidth, canvasHeight) {
     if (sizeChange === true) {
+        cells.forEach(row => {
+            row.forEach(cell => {
+                cell.rect.remove();
+            });
+        });
         cells = [[]];
     }
     for (let x = 0; x < canvasWidth / cellSize; x++) {

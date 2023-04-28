@@ -315,13 +315,16 @@ function collisionCheck(x, y, currAgent, newCell) {
 
     // neighbors = getNeighborCells(currentCell.x / cellSize, currentCell.y / cellSize);
 
-    neighbors.push(getCell(currentCell.x  / cellSize, currentCell.y / cellSize));
+    //neighbors.push(getCell(currentCell.x  / cellSize, currentCell.y / cellSize));
 
     // let nearAgents = [];
 
     // neighbors.forEach(neigh => {
     //     nearAgents = getAgentsInCell(neigh);
     // });
+
+    //Could make a check for cell.agents.length
+    //Too high density could enable smaller min distances, such as an inner square in agent
 
     //let agentCollision = nearAgents.some((agent) => Math.abs(agents[agent-1].x - x) < agents[agent-1].fattiness + currAgent.fattiness && Math.abs(agents[agent-1].y - y) < agents[agent-1].fattiness + currAgent.fattiness && agents[agent-1].x != currAgent.x && agents[agent-1].y != currAgent.y)
     let agentCollision = agents.some((agent) => Math.abs(agent.x - x) < agent.fattiness + currAgent.fattiness && Math.abs(agent.y - y) < agent.fattiness + currAgent.fattiness && agent.x != currAgent.x && agent.y != currAgent.y)
