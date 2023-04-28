@@ -282,7 +282,12 @@ function toggleHeat(cellsToUpdate) {
             let r = 255;
             let g = 255 - ((scaler) * density);
             let b = 255 - ((scaler) * density);
-            var col = "rgb(" + r + "," + g + "," + b + ")";
+
+            if (7 < density){
+                g = 0;
+                b = 0;
+            }
+            let col = "rgb(" + r + "," + g + "," + b + ")";
 
             cell.rect.setAttribute('fill', col);
             cell.rect.setAttribute('class', "heatCells");
@@ -326,7 +331,13 @@ function setShowHeatMap(shouldDisplay) {
                     let r = 255;
                     let g = 255 - ((scaler) * density);
                     let b = 255 - ((scaler) * density);
-                    var col = "rgb(" + r + "," + g + "," + b + ")";
+
+                    if (7 < density){
+                        g = 0;
+                        b = 0;
+                    }
+
+                    let col = "rgb(" + r + "," + g + "," + b + ")";
 
                     cells[x][y].rect.setAttribute('fill', col);
 
