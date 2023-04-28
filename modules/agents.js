@@ -260,7 +260,7 @@ function anime(start) {
             //Vector rotation for checking collision on current vector, 90deg counterclockwise, and 90deg clockwise
             //Counterclockwise vector rotation
             if (collisionCheck(newX, newY, agents[i], cells[Math.floor(newX / cellSize)][Math.floor(newY / cellSize)])) {
-                if (agents[i].currVector.x != 0 && agents[i].currVector.x != 0) {
+                if (agents[i].currVector.x != 0 && agents[i].currVector.y != 0) {
                     newX = agents[i].x + agents[i].currVector.x
                     newY = agents[i].y + agents[i].currVector.y
                 }
