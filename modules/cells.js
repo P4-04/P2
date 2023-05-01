@@ -1,12 +1,13 @@
 export {
     createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit,
     getAddingSpawn, endPoint, startPoint, prevExit, svgNS, getCells, drawTxt, getCell, getNeighborCells, getAgentsInCell, calcCellDensity, getCellDensity, toggleHeat,
-    setShowHeatMap, getShowHeatMap, setCells, DrawAllCells, setBlockMouse, getBlockMouse
+    setShowHeatMap, getShowHeatMap, setCells, DrawAllCells, setBlockMouse, getBlockMouse, setCellSize
 }
 import { animateCaller } from "./agents.js";
+import { sizeChange } from "../script.js";
 
 //Custom cell size
-const cellSize = 25;
+let cellSize = 25;
 let showHeatMap = true;
 //Initialize 2d array for cells
 let cells = [[]];
@@ -136,6 +137,14 @@ function drawTxt(cell, value) {
  * Initializes our grid-cells with their default properties and calls DrawAllCells
 */
 function createGrid(canvasWidth, canvasHeight) {
+    if (sizeChange === true) {
+        cells.forEach(row => {
+            row.forEach(cell => {
+                cell.rect.remove();
+            });
+        });
+        cells = [[]];
+    }
     for (let x = 0; x < canvasWidth / cellSize; x++) {
         cells[x] = [];
         for (let y = 0; y < canvasHeight / cellSize; y++) {
@@ -278,7 +287,12 @@ function toggleHeat(cellsToUpdate) {
             let r = 255;
             let g = 255 - ((scaler) * density);
             let b = 255 - ((scaler) * density);
-            var col = "rgb(" + r + "," + g + "," + b + ")";
+
+            if (7 < density){
+                g = 0;
+                b = 0;
+            }
+            let col = "rgb(" + r + "," + g + "," + b + ")";
 
             cell.rect.setAttribute('fill', col);
             cell.rect.setAttribute('class', "heatCells");
@@ -322,7 +336,13 @@ function setShowHeatMap(shouldDisplay) {
                     let r = 255;
                     let g = 255 - ((scaler) * density);
                     let b = 255 - ((scaler) * density);
-                    var col = "rgb(" + r + "," + g + "," + b + ")";
+
+                    if (7 < density){
+                        g = 0;
+                        b = 0;
+                    }
+
+                    let col = "rgb(" + r + "," + g + "," + b + ")";
 
                     cells[x][y].rect.setAttribute('fill', col);
 
@@ -334,6 +354,7 @@ function setShowHeatMap(shouldDisplay) {
     }
 }
 function getShowHeatMap() { return showHeatMap; }
+function setCellSize(value) {cellSize = value}
 
 function getBlockMouse() { return shouldIgnoreMouse; }
 function setBlockMouse(blockMouse) { shouldIgnoreMouse = blockMouse; }
