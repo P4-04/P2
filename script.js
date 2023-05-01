@@ -298,11 +298,11 @@ removeButton.addEventListener("click", function () {
 simButton.addEventListener("click", function () {
     // Check if the start button has been clicked and change it to "Stop simulation" if it has
     if (simButton.innerText === "Start simulation") {
-        if (startPoint === null) {
-            alert("Missing a start point!");
-            return;
-        }
-    
+        // if (startPoint === null) {
+        //     alert("Missing a start point!");
+        //     return;
+        // }
+        
         if (endPoint === null) {
             alert("Missing a exit point!");
             return;

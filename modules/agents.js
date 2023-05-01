@@ -295,10 +295,6 @@ function anime(start) {
                 newX = 0;
             }
 
-            // if (newY < 0){
-            //     newY = 0;
-            // }
-
             agents[i].setCoordinates(newX, newY);
             agents[i].updateAgentCell();
 
