@@ -1,4 +1,4 @@
-import { getSpawnArea } from './agents.js';
+import { getSpawnAreas } from './agents.js';
 import { cellSize, drawTxt, getCellIndex } from './cells.js'
 
 async function perfMeasure(cells, goal, spawn) {
@@ -7,14 +7,14 @@ async function perfMeasure(cells, goal, spawn) {
     markCells(cells, goal);
 
     let spawnCount = 0;
-    let spawnGroups = getSpawnArea();
-    for (let i = 0; i < getSpawnArea().length; i++)
+    let spawnGroups = getSpawnAreas();
+    for (let i = 0; i < getSpawnAreas().length; i++)
     {
         spawnCount = spawnCount + spawnGroups[i].length;
     }
-    if (hitSpawnCells != spawnCount){
-        alert("Not all spawn areas can reach the end point(s)!");
-    }
+    // if (hitSpawnCells != spawnCount){
+    //     alert("Not all spawn areas can reach the end point(s)!");
+    // }
 
     //calcVectorField(cells);
 

@@ -1,5 +1,5 @@
 import { setEssenVariables, perfMeasure } from './modules/pathfinding.js';
-import { addSpawnArea, getSpawnArea, populate, removeAgentsFromArea, animateCaller, setSizes, getAgents } from './modules/agents.js';
+import { addSpawnArea, getSpawnAreas, populate, removeAgentsFromArea, animateCaller, setSizes, getAgents } from './modules/agents.js';
 import { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit, getCells, setCells, DrawAllCells, toggleHeat, 
     setShowHeatMap, getShowHeatMap, setBlockMouse, getBlockMouse, setCellSize } from './modules/cells.js';
 import { getAllDesignNames, saveDesign, loadDesign, removeDesign } from './modules/designmanager.js';
@@ -259,7 +259,7 @@ saveButton.addEventListener("click", function () {
 
     if (designName.length > 0) {
         warningLabel.style.display = "none";
-        saveDesign(getCells(), getSpawnArea(), designName);
+        saveDesign(getCells(), getSpawnAreas(), designName);
     }
     else {
         warningLabel.style.display = "block";
@@ -278,7 +278,7 @@ removeButton.addEventListener("click", function () {
     }
 
     let totalCells = 0;
-    let spawnAreas = getSpawnArea();
+    let spawnAreas = getSpawnAreas();
     spawnAreas.forEach(area => {
         totalCells += area.length;
     });
@@ -298,11 +298,11 @@ removeButton.addEventListener("click", function () {
 simButton.addEventListener("click", function () {
     // Check if the start button has been clicked and change it to "Stop simulation" if it has
     if (simButton.innerText === "Start simulation") {
-        if (startPoint === null) {
-            alert("Missing a start point!");
-            return;
-        }
-    
+        // if (startPoint === null) {
+        //     alert("Missing a start point!");
+        //     return;
+        // }
+        
         if (endPoint === null) {
             alert("Missing a exit point!");
             return;
