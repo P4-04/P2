@@ -188,5 +188,11 @@ button:active {
     box-sizing: border-box;
     position: relative;
     left: 50%;
-    transform: translate(-50%)
+    transform: translate(-50%);
+    margin-bottom: 8px;
 }
+
+/* TODO : design for label with id sizeDisplay*/
+/*#sizeDisplay {
+    white-space: nowrap;
+}*/

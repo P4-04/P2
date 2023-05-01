@@ -1,4 +1,4 @@
-export { populate, removeAgentsFromArea, animateCaller, getSpawnArea, addSpawnArea, setSizes, setSpawnAreas, getAgents }
+export { populate, removeAgentsFromArea, animateCaller, getSpawnAreas, addSpawnArea, setSizes, setSpawnAreas, getAgents }
 import { cellSize, svgNS, getCells, getCellIndex, getCell, endPoint, getNeighborCells, getAgentsInCell, calcCellDensity, toggleHeat, getShowHeatMap, setBlockMouse } from './cells.js'
 
 import { getCanvasHeight, getCanvasWidth } from './pathfinding.js'
@@ -393,4 +393,4 @@ function removeAgentsFromArea(area, agentsToRemovePerArea, drawingArea) {
 
 function addSpawnArea(spawnGroup) { spawnAreas.push(spawnGroup); }
 function setSpawnAreas(newAreas) { spawnAreas = newAreas; }
-function getSpawnArea() { return spawnAreas; }
+function getSpawnAreas() { return spawnAreas; }
