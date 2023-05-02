@@ -1,4 +1,5 @@
 export { populate, removeAgentsFromArea, animateCaller, getSpawnAreas, addSpawnArea, setSizes, setSpawnAreas, getAgents }
+import { simButton } from '../script.js';
 import { cellSize, svgNS, getCells, getCellIndex, getCell, endPoint, getNeighborCells, getAgentsInCell, calcCellDensity, toggleHeat, getShowHeatMap, setBlockMouse } from './cells.js'
 
 import { getCanvasHeight, getCanvasWidth } from './pathfinding.js'
@@ -314,8 +315,13 @@ function anime(start) {
     let end = performance.now();
 
     //console.log(`Execution time: ${end - start} ms`);
-    if (agents.length != 0) { requestAnimationFrame(animateCaller); }
-
+    //console.log('Deleted agents count: ' + deletedAgentsCount + ' Agents length: ' + agents.length + ' All agents reached end: ' + allAgentsReachedEnd);
+    if (agents.length === 0) 
+    { 
+        simButton.innerText = 'Start simulation';
+    } else {
+        requestAnimationFrame(animateCaller); 
+    }
 }
 
 function collisionCheck(x, y, currAgent, newCell) {
