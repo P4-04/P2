@@ -305,6 +305,8 @@ simButton.addEventListener("click", function () {
             alert("Missing a exit point!");
             return;
         }
+
+        simButton.innerText = "Stop simulation";
     
         resetHeatmap();
         setEssenVariables(canvasWidth, canvasHeight, cellSize);
@@ -318,7 +320,7 @@ simButton.addEventListener("click", function () {
         
         //toggleHeat();
 
-        simButton.innerText = "Stop simulation";
+        
     } else {
         let agents = getAgents();
         while (agents.length != 0)
