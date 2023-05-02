@@ -1,7 +1,7 @@
 export {
     createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit,
     getAddingSpawn, endPoint, setEndpoints, startPoint, prevExit, svgNS, getCells, drawTxt, getCell, getNeighborCells, getAgentsInCell, calcCellDensity, getCellDensity, toggleHeat,
-    setShowHeatMap, getShowHeatMap, setCells, DrawAllCells, setBlockMouse, getBlockMouse, setCellSize
+    setShowHeatMap, getShowHeatMap, setCells, DrawAllCells, setBlockMouse, getBlockMouse, setCellSize, resetHeatmap
 }
 import { animateCaller } from "./agents.js";
 import { sizeChange } from "../script.js";
@@ -364,6 +364,18 @@ function setShowHeatMap(shouldDisplay) {
 
     }
 }
+
+function resetHeatmap(){
+    for (let x = 0; x < cells.length; x++) {
+        for (let y = 0; y < cells[0].length; y++) {
+            cells[x][y].highestDensity = 0;
+        }
+    }
+    let show = getShowHeatMap();
+    setShowHeatMap(false);
+    setShowHeatMap(show);
+}
+
 function getShowHeatMap() { return showHeatMap; }
 function setCellSize(value) {cellSize = value}
 function setEndpoints(endPoints) {endPoint = endPoints}
