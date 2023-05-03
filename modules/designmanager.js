@@ -1,4 +1,4 @@
-import { setCells, setEndpoints } from './cells.js';
+import { loadCells, setExits } from './cells.js';
 import { setSpawnAreas } from './agents.js';
 export { saveDesign, loadDesign, getAllDesignNames, removeDesign };
 
@@ -14,32 +14,40 @@ function getAllDesignNames() {
     return savedDesigns;
 }
 
-function saveDesign(cells, spawnAreas, name) {
+function saveDesign(cells, spawnAreas, name, cellSize) {
     let serializedCells = JSON.stringify(cells)
     let serializedSpawnAreas = JSON.stringify(spawnAreas) 
     localStorage.setItem(`${name}.cells`, `${serializedCells}`)
     localStorage.setItem(`${name}.areas`, `${serializedSpawnAreas}`)
+    localStorage.setItem(`${name}.cellsize`, cellSize)
 }
 
 function removeDesign(name) {
     localStorage.removeItem(`${name}.cells`)
     localStorage.removeItem(`${name}.areas`)
+    localStorage.removeItem(`${name}.cellSize`)
 }
 
 function loadDesign(name){
     let loadedCells = localStorage.getItem(`${name}.cells`);
     let loadedSpawnAreas = localStorage.getItem(`${name}.areas`);
+    let loadedCellsize = localStorage.getItem(`${name}.cellsize`);
     let deserializedCells = JSON.parse(loadedCells);
     let deserializedSpawnAreas = JSON.parse(loadedSpawnAreas);
-    let endPoints = [];
+    let Exits = [];
     deserializedCells.forEach(columns => {
         columns.forEach(cell => {
             if (cell.isExit) {
-                endPoints.push(cell);
+                Exits.push(cell);
             }
         });
     });
-    setEndpoints(endPoints);
-    setCells(deserializedCells);
+    setExits(Exits);
+    try {
+        loadCells(deserializedCells,loadedCellsize);
+    }
+    catch (e) {
+        window.alert(e)
+    }
     setSpawnAreas(deserializedSpawnAreas);
 }
