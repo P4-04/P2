@@ -1,4 +1,5 @@
 export { populate, removeAgentsFromArea, animateCaller, getSpawnAreas, addSpawnArea, setSizes, setSpawnAreas, getAgents }
+import { simButton } from '../script.js';
 import { cellSize, svgNS, getCells, getCellIndex, getCell, endPoint, getNeighborCells, getAgentsInCell, calcCellDensity, toggleHeat, getShowHeatMap, setBlockMouse } from './cells.js'
 
 import { getCanvasHeight, getCanvasWidth } from './pathfinding.js'
@@ -167,7 +168,6 @@ class Agent {
     }
 }
 
-//Calculation of agent distribution for individual cell population
 function populate() {
     if (spawnAreas.length == 0) {
         window.alert("Please add spawn areas");
@@ -176,10 +176,18 @@ function populate() {
     let totalCells = 0;
     let agentNum = null;
     agentNum = document.querySelector("#numAgents").value;
-    // Count the total number of spawn area cells
     spawnAreas.forEach(area => {
         totalCells += area.length;
     });
+
+    //The minimum distance between agents
+    const minAgentDistance = cellSize / 3; 
+    const maxAgents = totalCells * Math.floor((cellSize - minAgentDistance) / minAgentDistance);
+    if (agentNum > maxAgents) {
+        window.alert("Too many agents for the available spawn areas");
+        simButton.innerText = "Start simulation";
+        return;
+    }
 
     let agentsSpawned = 0;
     spawnAreas.forEach((area, index) => {
@@ -189,24 +197,39 @@ function populate() {
             agentsPerArea = agentNum - agentsSpawned;
         }
         agentsSpawned += agentsPerArea;
-        populateCells(area, agentsPerArea);
+        populateCells(area, agentsPerArea, minAgentDistance);
     });
 }
 
-//Drawing calculated amount of agents in each spawn area
-function populateCells(area, agentsPerArea) {
+function populateCells(area, agentsPerArea, minAgentDistance) {
     let firstCell = area[area.length - 1];
     let lastCell = area[0];
-    //let areaSize = { x: lastCell.x - firstCell.x, y: lastCell.y - firstCell.y };
-    for (let i = 0; i < agentsPerArea; ++i) {
-        let fattiness = ((cellSize / 6) + Math.floor(Math.random() * 3));
+    let fattiness = ((cellSize / 6) + Math.floor(Math.random() * 3));
 
-        let x = getRandomArbitrary(firstCell.x * cellSize + fattiness, lastCell.x * cellSize + Math.floor(cellSize) - fattiness);
-        let y = getRandomArbitrary(firstCell.y * cellSize + fattiness, lastCell.y * cellSize + Math.floor(cellSize) - fattiness);
-        console.log("x and y " + x + " " + y);
+    //The minimum distance from the edge of each spawn area cell
+    let padding = minAgentDistance / 2;
+
+    for (let i = 0; i < agentsPerArea; ++i) {
+        let validPosition = false;
+        let x, y;
+        while (!validPosition) {
+            x = getRandomArbitrary(firstCell.x * cellSize + fattiness + padding, lastCell.x * cellSize + Math.floor(cellSize) - fattiness - padding);
+            y = getRandomArbitrary(firstCell.y * cellSize + fattiness + padding, lastCell.y * cellSize + Math.floor(cellSize) - fattiness - padding);
+            validPosition = checkAgentDistance(x, y, minAgentDistance);
+        }
         let agent = new Agent(x, y, fattiness);
         agents.push(agent);
     }
+}
+
+function checkAgentDistance(x, y, minAgentDistance) {
+    for (let agent of agents) {
+        let distance = Math.sqrt(Math.pow(agent.x - x, 2) + Math.pow(agent.y - y, 2));
+        if (distance < minAgentDistance + agent.fattiness) {
+            return false;
+        }
+    }
+    return true;
 }
 
 //Getting position within spawn area
@@ -314,8 +337,13 @@ function anime(start) {
     let end = performance.now();
 
     //console.log(`Execution time: ${end - start} ms`);
-    if (agents.length != 0) { requestAnimationFrame(animateCaller); }
-
+    //console.log('Deleted agents count: ' + deletedAgentsCount + ' Agents length: ' + agents.length + ' All agents reached end: ' + allAgentsReachedEnd);
+    if (agents.length === 0) 
+    { 
+        simButton.innerText = 'Start simulation';
+    } else {
+        requestAnimationFrame(animateCaller); 
+    }
 }
 
 function collisionCheck(x, y, currAgent, newCell) {

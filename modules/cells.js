@@ -1,7 +1,7 @@
 export {
     createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit,
     getAddingSpawn, endPoint, setEndpoints, startPoint, prevExit, svgNS, getCells, drawTxt, getCell, getNeighborCells, getAgentsInCell, calcCellDensity, getCellDensity, toggleHeat,
-    setShowHeatMap, getShowHeatMap, setCells, DrawAllCells, setBlockMouse, getBlockMouse, setCellSize
+    setShowHeatMap, getShowHeatMap, setCells, DrawAllCells, setBlockMouse, getBlockMouse, setCellSize, resetHeatmap
 }
 import { animateCaller } from "./agents.js";
 import { sizeChange } from "../script.js";
@@ -295,8 +295,18 @@ function toggleHeat(cellsToUpdate) {
             let col = "rgb(" + r + "," + g + "," + b + ")";
 
             cell.rect.setAttribute('fill', col);
+
             cell.rect.setAttribute('class', "heatCells");
-            drawingArea.appendChild(cell.rect);
+            let cellID = cell.x.toString() + ", " + cell.y.toString();
+            let element = document.getElementById(cellID);
+            cell.rect.setAttribute("id", cellID);
+            
+            if (element != null){
+                console.log(element);
+                element.replaceWith(cell.rect)
+            } else {
+                drawingArea.appendChild(cell.rect);
+            }
         }
     });
 
@@ -331,6 +341,7 @@ function setShowHeatMap(shouldDisplay) {
                     cells[x][y].rect.setAttribute('y', cells[x][y].y);
                     cells[x][y].rect.setAttribute('stroke', 'black');
                     cells[x][y].rect.setAttribute('class', "heatCells");
+                    cells[x][y].rect.id = "text";
                     const scaler = 36; //255 / 7 = 36.4, we round down, and now we have a scaler for our cells (any value over 7 is bad);
 
                     let r = 255;
@@ -353,6 +364,18 @@ function setShowHeatMap(shouldDisplay) {
 
     }
 }
+
+function resetHeatmap(){
+    for (let x = 0; x < cells.length; x++) {
+        for (let y = 0; y < cells[0].length; y++) {
+            cells[x][y].highestDensity = 0;
+        }
+    }
+    let show = getShowHeatMap();
+    setShowHeatMap(false);
+    setShowHeatMap(show);
+}
+
 function getShowHeatMap() { return showHeatMap; }
 function setCellSize(value) {cellSize = value}
 function setEndpoints(endPoints) {endPoint = endPoints}

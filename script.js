@@ -1,7 +1,7 @@
 import { setEssenVariables, perfMeasure } from './modules/pathfinding.js';
 import { addSpawnArea, getSpawnAreas, populate, removeAgentsFromArea, animateCaller, setSizes, getAgents } from './modules/agents.js';
 import { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit, getCells, setCells, DrawAllCells, toggleHeat, 
-    setShowHeatMap, getShowHeatMap, setBlockMouse, getBlockMouse, setCellSize } from './modules/cells.js';
+    setShowHeatMap, getShowHeatMap, setBlockMouse, getBlockMouse, setCellSize, resetHeatmap } from './modules/cells.js';
 import { getAllDesignNames, saveDesign, loadDesign, removeDesign } from './modules/designmanager.js';
 //import { func } from 'prop-types';
 
@@ -25,7 +25,6 @@ const drawingArea = document.querySelector(".drawing");
 
 const toggle = document.querySelector("#toggleDisplay");
 
-const popButton = document.querySelector("#populate");
 const clearButton = document.querySelector("#clear");
 const addExitButton = document.querySelector("#addExit");
 const addSpawnButton = document.querySelector("#addSpawn");
@@ -51,9 +50,6 @@ let cursorCurrentX = 0;
 let cursorCurrentY = 0;
 let cursorNewX = 0;
 let cursorNewY = 0;
-
-//let popButton = document.querySelector("#populate");
-popButton.addEventListener("click", populate);
 
 let menuHidden = true;
 
@@ -145,6 +141,7 @@ cellSlider.addEventListener("mouseup", function() {
 //     createGrid(canvasWidth, canvasHeight);
 
 // }
+
 
 
 // Add event to "Clear"-button
@@ -296,6 +293,7 @@ removeButton.addEventListener("click", function () {
 
 //Event listener for starting simulation
 simButton.addEventListener("click", function () {
+
     // Check if the start button has been clicked and change it to "Stop simulation" if it has
     if (simButton.innerText === "Start simulation") {
         // if (startPoint === null) {
@@ -307,20 +305,22 @@ simButton.addEventListener("click", function () {
             alert("Missing a exit point!");
             return;
         }
+
+        simButton.innerText = "Stop simulation";
     
+        resetHeatmap();
         setEssenVariables(canvasWidth, canvasHeight, cellSize);
         perfMeasure(getCells(), endPoint, startPoint);
     
         setSizes(canvasWidth, canvasHeight)
         populate();
         setBlockMouse(true);
-    
-        //toggleHeat();  
+      
         animateCaller()
-    
+        
         //toggleHeat();
 
-        simButton.innerText = "Stop simulation";
+        
     } else {
         let agents = getAgents();
         while (agents.length != 0)
@@ -685,4 +685,4 @@ function resetMenuPosition() {
     }
 }
 
-export { sizeChange };
+export { sizeChange, simButton };
