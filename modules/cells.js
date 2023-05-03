@@ -1,7 +1,7 @@
 export {
     createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit,
-    getAddingSpawn, endPoint, setEndpoints, startPoint, prevExit, svgNS, getCells, drawTxt, getCell, getNeighborCells, getAgentsInCell, calcCellDensity, getCellDensity, toggleHeat,
-    setShowHeatMap, getShowHeatMap, setCells, DrawAllCells, setBlockMouse, getBlockMouse, setCellSize, resetHeatmap
+    getAddingSpawn, endPoint, setExits, startPoint, prevExit, svgNS, getCells, drawTxt, getCell, getNeighborCells, getAgentsInCell, calcCellDensity, getCellDensity, toggleHeat,
+    setShowHeatMap, getShowHeatMap, loadCells, DrawAllCells, setBlockMouse, getBlockMouse, setCellSize, resetHeatmap
 }
 import { animateCaller } from "./agents.js";
 import { sizeChange } from "../script.js";
@@ -137,14 +137,7 @@ function drawTxt(cell, value) {
  * Initializes our grid-cells with their default properties and calls DrawAllCells
 */
 function createGrid(canvasWidth, canvasHeight) {
-    if (sizeChange === true) {
-        cells.forEach(row => {
-            row.forEach(cell => {
-                cell.rect.remove();
-            });
-        });
-        cells = [[]];
-    }
+    cells = [[]];
     for (let x = 0; x < canvasWidth / cellSize; x++) {
         cells[x] = [];
         for (let y = 0; y < canvasHeight / cellSize; y++) {
@@ -165,7 +158,7 @@ function createGrid(canvasWidth, canvasHeight) {
                 dVector: { x: 0, y: 0 },
                 //Collision stuff
                 agents: [],
-                highestDensity: 0
+                highestDensity: 0,
             };
             //Push cell to cells array
             cells[x][y] = cell;
@@ -203,12 +196,19 @@ function DrawAllCells() {
     }
 }
 
-function setCells(newCells) {
-    clearCanvas();
-    createGrid();
+function loadCells(newCells, newCellSize) {
+    let canvasWidth = window.innerWidth - window.innerWidth % cellSize;
+    let canvasHeight = window.innerHeight - window.innerHeight % cellSize;
+    cellSize = newCellSize;
+    createGrid(canvasWidth, canvasHeight);
     for (let x = 0; x < cells.length; x++) {
         for (let y = 0; y < cells[0].length; y++) {
             if (x < newCells.length && y < newCells[0].length) {
+                // cells[x][y].color = newCells[x][y].isExit;
+                // cells[x][y].isExit = newCells[x][y].isExit;
+                // cells[x][y].isSpawnPoint = newCells[x][y].isSpawnPoint;
+                // cells[x][y].isWall = newCells[x][y].isWall;
+                // cells[x][y].mark = newCells[x][y].mark;
                 cells[x][y] = newCells[x][y];
             }
         }
@@ -378,7 +378,7 @@ function resetHeatmap(){
 
 function getShowHeatMap() { return showHeatMap; }
 function setCellSize(value) {cellSize = value}
-function setEndpoints(endPoints) {endPoint = endPoints}
+function setExits(exits) {endPoint = exits}
 
 function getBlockMouse() { return shouldIgnoreMouse; }
 function setBlockMouse(blockMouse) { shouldIgnoreMouse = blockMouse; }
