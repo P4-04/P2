@@ -93,6 +93,46 @@ function markCellsController(cells, currentCell) {
     currentCell.mark = true;
 }
 
+function getNeighbors(currentCell, cellsArray) {
+    let neighbors = { N: null, S: null, E: null, W: null, NE: null, NW: null, SE: null, SW: null }
+
+    let index = getCellIndex(currentCell.x, currentCell.y)
+    // Find north
+    if (index.y != 0) {
+        neighbors.N = cellsArray[index.x][index.y - 1]
+    }
+    // find south
+    if (index.y < cellsArray[0].length - 1) {
+        neighbors.S = cellsArray[index.x][index.y + 1]
+    }
+    // find east
+    if (index.x < cellsArray.length - 1) {
+        neighbors.E = cellsArray[index.x + 1][index.y]
+    }
+    // find west
+    if (index.x != 0) {
+        neighbors.W = cellsArray[index.x - 1][index.y]
+    }
+    // find north-east 
+    if (index.x < cellsArray.length - 1 && index.y != 0) {
+        neighbors.NE = cellsArray[index.x + 1][index.y - 1]
+    }
+    // find north-west
+    if (index.x != 0 && index.y != 0) {
+        neighbors.NW = cellsArray[index.x - 1][index.y - 1]
+    }
+    // find south-east
+    if (index.x < cellsArray.length - 1 && index.y < cellsArray[0].length - 1) {
+        neighbors.SE = cellsArray[index.x + 1][index.y + 1]
+    }
+    // find south-west
+    if (index.x != 0 && index.y < cellsArray[0].length - 1) {
+        neighbors.SW = cellsArray[index.x - 1][index.y + 1]
+    }
+    return neighbors
+}
+
+
 //Make array of neighbors on given cell
 function getNeighbors2(cells, currentCell) {
     let newCurrentCell = [];
@@ -149,48 +189,51 @@ function calculateVectors(cells) {
             if (cell.value === 0 || cell.isWall === true) {
                 continue;
             }
-            let currentCellIndex = getCellIndex(cell.x, cell.y)
-            let neighbors = getNeighbors2(cells, cell);
-            let lowestCost = neighbors.reduce(function (acc, curr) {
-                return Math.min(acc, curr.value);
-            }, Infinity);
-            let lowestCells = neighbors.filter(function (obj) {
-                return obj.value === lowestCost;
-            });
-            console.log("checked cell " + currentCellIndex.x + " " + currentCellIndex.y + " lowest cell length " + lowestCells.length);
+            let neighbors = getNeighbors(cell, cells);
 
-            //Checking for 3 lowest cells, in the case that 2 paths from goal are equal in distance
-            if (lowestCells.length === 3 || lowestCells.length === 2) {
-                let cell1Index = getCellIndex(lowestCells[0].x, lowestCells[0].y)
-                let cell2Index = getCellIndex(lowestCells[1].x, lowestCells[1].y)
-                let vector1 = { x: cell1Index.x - currentCellIndex.x, y: cell1Index.y - currentCellIndex.y }
-                let vector2 = { x: cell2Index.x - currentCellIndex.x, y: cell2Index.y - currentCellIndex.y }
-                let x = vector1.x + vector2.x;
-                let y = vector1.y + vector2.y;
-                cell.dVector.x = x;
-                cell.dVector.y = y;
-                console.log("vectors" + cell.dVector.x + " " + cell.dVector.y);
-                console.log("current cell info " + currentCellIndex.x + " " + currentCellIndex.y);
-            } else if (lowestCells.length === 1) {
-                let cellVector = getCellIndex(lowestCells[0].x, lowestCells[0].y)
-                let x = cellVector.x-currentCellIndex.x
-                let y = cellVector.y - currentCellIndex.y;
-                cell.dVector.x = x;
-                cell.dVector.y = y;
-                console.log("vectors" + cell.dVector.x + " " + cell.dVector.y);
-                console.log("current cell info " + currentCellIndex.x + " " + currentCellIndex.y);
+            if (neighbors.N && neighbors.N.isWall) {
+                neighbors.NE = null
+                neighbors.NW = null
+            }
+            if (neighbors.E && neighbors.E.isWall) {
+                neighbors.NE = null
+                neighbors.SE = null
+            }
+            if (neighbors.S && neighbors.S.isWall) {
+                neighbors.SE = null
+                neighbors.SW = null
+            }
+            if (neighbors.W && neighbors.W.isWall) {
+                neighbors.NW = null
+                neighbors.SW = null
+            }
+            let lowestValue = Infinity;
+            let direction = '';
+
+            for (let key in neighbors) {
+                let neighbor = neighbors[key];
+                if (neighbor && neighbor.isWall == false && neighbor.value < lowestValue) {
+                    lowestValue = neighbor.value;
+                    direction = key;
+                }
             }
 
-            //Some cells against walls have zero-vectors, stopping movement
-            //Assigns movement to the agents nonetheless, as these cells can be accessible in some rare cases
-            if (cell.dVector.x === 0 && cell.dVector.y === 0) {
-                let cellVector = getCellIndex(lowestCells[0].x, lowestCells[0].y)
-                let x = cellVector.x-currentCellIndex.x
-                let y = cellVector.y - currentCellIndex.y;
-                cell.dVector.x = x;
-                cell.dVector.y = y;
-                console.log("vectors" + cell.dVector.x + " " + cell.dVector.y);
-                console.log("current cell info " + currentCellIndex.x + " " + currentCellIndex.y);
+            if (direction === 'N') {
+                cell.dVector = { x: 0, y: -1 }
+            } else if (direction === 'S') {
+                cell.dVector = { x: 0, y: 1 }
+            } else if (direction === 'E') {
+                cell.dVector = { x: 1, y: 0 }
+            } else if (direction === 'W') {
+                cell.dVector = { x: -1, y: 0 }
+            } else if (direction === 'NE') {
+                cell.dVector = { x: 1, y: -1 }
+            } else if (direction === 'NW') {
+                cell.dVector = { x: -1, y: -1 }
+            } else if (direction === 'SE') {
+                cell.dVector = { x: 1, y: 1 }
+            } else if (direction === 'SW') {
+                cell.dVector = { x: -1, y: 1 }
             }
         }
     });
