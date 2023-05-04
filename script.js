@@ -256,7 +256,7 @@ saveButton.addEventListener("click", function () {
 
     if (designName.length > 0) {
         warningLabel.style.display = "none";
-        saveDesign(getCells(), getSpawnAreas(), designName);
+        saveDesign(getCells(), getSpawnAreas(), designName, cellSize);
     }
     else {
         warningLabel.style.display = "block";
