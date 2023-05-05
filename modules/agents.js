@@ -325,23 +325,26 @@ function anime(start) {
             let newCurrentCell = cells[Math.floor(newX / cellSize)][Math.floor(newY / cellSize)];
 
             if (newCurrentCell.agents >= 4) {
-                console.log("number of agents: " + newCurrentCell.agents);
                 let neighbors = getNeighbors2(cells, newCurrentCell);
 
                 neighbors.forEach(neighbor => {
-                    console.log("neighbor info " + neighbor);
+                    console.log("neighbor info " + neighbor.isWall);
                     if (neighbor !== undefined && neighbor.isWall === false) {
-                        if (newCurrentCell.dVector === { x: -1, y: 0 }) {
-                            neighbors[0].dVector = newCurrentCell.dVector;
-                            console.log("Vector Change West");
-                        } else if (newCurrentCell.dVector === { x: 1, y: 0 }) {
-                            neighbors[1].dVector = newCurrentCell.dVector;
-                            console.log("Vector Change East");
-                        } else if (newCurrentCell.dVector === { x: 0, y: -1 }) {
+                        if (newCurrentCell.dVector.x === -1 && newCurrentCell.dVector.y === 0) {
                             neighbors[2].dVector = newCurrentCell.dVector;
-                            console.log("Vector Change North");
-                        } else if (newCurrentCell.dVector === { x: 0, y: 1 }) {
                             neighbors[3].dVector = newCurrentCell.dVector;
+                            console.log("Vector Change West");
+                        } else if (newCurrentCell.dVector.x === 1 && newCurrentCell.dVector.y === 0) {
+                            neighbors[2].dVector = newCurrentCell.dVector;
+                            neighbors[3].dVector = newCurrentCell.dVector;
+                            console.log("Vector Change East");
+                        } else if (newCurrentCell.dVector.x === 0 && newCurrentCell.dVector.y === -1) {
+                            neighbors[0].dVector = newCurrentCell.dVector;
+                            neighbors[1].dVector = newCurrentCell.dVector;
+                            console.log("Vector Change North");
+                        } else if (newCurrentCell.dVector.x === 0 && newCurrentCell.dVector.y === 1) {
+                            neighbors[0].dVector = newCurrentCell.dVector;
+                            neighbors[1].dVector = newCurrentCell.dVector;
                             console.log("Vector Change South");
                         }
                     }
