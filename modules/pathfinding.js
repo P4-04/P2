@@ -80,7 +80,7 @@ function markCells(cells, currentCell) {
 //Sets distance value and mark on cell
 //Draws text on cell
 function markCellsController(cells, currentCell) {
-    cells[currentCell.x / pCellSize][currentCell.y / pCellSize].value = distVal;
+    cells[currentCell.x / pCellSize][currentCell.y / pCellSize].value = parseFloat(distVal);
     //drawTxt(cells[currentCell.x / pCellSize][currentCell.y / pCellSize], distVal);
     
     let cell = cells[currentCell.x / pCellSize][currentCell.y / pCellSize]
@@ -157,7 +157,7 @@ function calculateVectors(cells) {
             let lowestCells = neighbors.filter(function (obj) {
                 return obj.value === lowestCost;
             });
-            console.log("checked cell " + currentCellIndex.x + " " + currentCellIndex.y + " lowest cell length " + lowestCells.length);
+            //console.log("checked cell " + currentCellIndex.x + " " + currentCellIndex.y + " lowest cell length " + lowestCells.length);
 
             //Checking for 3 lowest cells, in the case that 2 paths from goal are equal in distance
             if (lowestCells.length === 3 || lowestCells.length === 2) {
@@ -170,7 +170,7 @@ function calculateVectors(cells) {
                 cell.dVector.x = x;
                 cell.dVector.y = y;
                 console.log("vectors" + cell.dVector.x + " " + cell.dVector.y);
-                console.log("current cell info " + currentCellIndex.x + " " + currentCellIndex.y);
+                //console.log("current cell info " + currentCellIndex.x + " " + currentCellIndex.y);
             } else if (lowestCells.length === 1) {
                 let cellVector = getCellIndex(lowestCells[0].x, lowestCells[0].y)
                 let x = cellVector.x-currentCellIndex.x
@@ -178,7 +178,7 @@ function calculateVectors(cells) {
                 cell.dVector.x = x;
                 cell.dVector.y = y;
                 console.log("vectors" + cell.dVector.x + " " + cell.dVector.y);
-                console.log("current cell info " + currentCellIndex.x + " " + currentCellIndex.y);
+                //console.log("current cell info " + currentCellIndex.x + " " + currentCellIndex.y);
             }
 
             //Some cells against walls have zero-vectors, stopping movement
@@ -190,7 +190,7 @@ function calculateVectors(cells) {
                 cell.dVector.x = x;
                 cell.dVector.y = y;
                 console.log("vectors" + cell.dVector.x + " " + cell.dVector.y);
-                console.log("current cell info " + currentCellIndex.x + " " + currentCellIndex.y);
+                //console.log("current cell info " + currentCellIndex.x + " " + currentCellIndex.y);
             }
         }
     });
@@ -198,4 +198,4 @@ function calculateVectors(cells) {
 
 
 
-export { setEssenVariables, perfMeasure, getCanvasHeight, getCanvasWidth };
+export { setEssenVariables, perfMeasure, getCanvasHeight, getCanvasWidth, getNeighbors2 };

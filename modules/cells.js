@@ -302,7 +302,7 @@ function toggleHeat(cellsToUpdate) {
             cell.rect.setAttribute("id", cellID);
             
             if (element != null){
-                console.log(element);
+                //console.log(element);
                 element.replaceWith(cell.rect)
             } else {
                 drawingArea.appendChild(cell.rect);

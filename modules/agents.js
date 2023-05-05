@@ -2,14 +2,14 @@ export { populate, removeAgentsFromArea, animateCaller, getSpawnAreas, addSpawnA
 import { simButton } from '../script.js';
 import { cellSize, svgNS, getCells, getCellIndex, getCell, endPoint, getNeighborCells, getAgentsInCell, calcCellDensity, toggleHeat, getShowHeatMap, setBlockMouse } from './cells.js'
 
-import { getCanvasHeight, getCanvasWidth } from './pathfinding.js'
+import { getCanvasHeight, getCanvasWidth, getNeighbors2 } from './pathfinding.js'
 
 const drawingArea = document.querySelector(".drawing");
 let spawnAreas = [];
 //Initializing array of agents
 let agents = [];
 //Max speed increase: 0.2, for a realistic speed of around 1.2-1.4 metres per second
-let maxSpeedIncrease = 0.2;
+let maxSpeedIncrease = 0.6;
 let deletedAgentsCount = 0;
 
 
@@ -266,6 +266,7 @@ function anime(start) {
                 getCell(x, y).dVector.y !== getCell(Math.floor(newX / cellSize), Math.floor(newY / cellSize)).dVector.y) {
                 agents[i].prevCell = getCell(x, y);
                 agents[i].prevCellFract = 50;
+                getCell(x, y).agents.splice(agents[i].myNumber, 1);
             }
 
             if (agents[i].prevCellFract <= 5) {
@@ -320,6 +321,32 @@ function anime(start) {
 
             agents[i].setCoordinates(newX, newY);
             agents[i].updateAgentCell();
+
+            let newCurrentCell = cells[Math.floor(newX / cellSize)][Math.floor(newY / cellSize)];
+
+            if (newCurrentCell.agents >= 4) {
+                console.log("number of agents: " + newCurrentCell.agents);
+                let neighbors = getNeighbors2(cells, newCurrentCell);
+
+                neighbors.forEach(neighbor => {
+                    console.log("neighbor info " + neighbor);
+                    if (neighbor !== undefined && neighbor.isWall === false) {
+                        if (newCurrentCell.dVector === { x: -1, y: 0 }) {
+                            neighbors[0].dVector = newCurrentCell.dVector;
+                            console.log("Vector Change West");
+                        } else if (newCurrentCell.dVector === { x: 1, y: 0 }) {
+                            neighbors[1].dVector = newCurrentCell.dVector;
+                            console.log("Vector Change East");
+                        } else if (newCurrentCell.dVector === { x: 0, y: -1 }) {
+                            neighbors[2].dVector = newCurrentCell.dVector;
+                            console.log("Vector Change North");
+                        } else if (newCurrentCell.dVector === { x: 0, y: 1 }) {
+                            neighbors[3].dVector = newCurrentCell.dVector;
+                            console.log("Vector Change South");
+                        }
+                    }
+                });
+            }
 
             endPoint.forEach(endPoint => {
                 if (getCell(x, y) === endPoint) {
