@@ -2,7 +2,7 @@ export { populate, removeAgentsFromArea, animateCaller, getSpawnAreas, addSpawnA
 import { simButton } from '../script.js';
 import { cellSize, svgNS, getCells, getCellIndex, getCell, endPoint, getNeighborCells, getAgentsInCell, calcCellDensity, toggleHeat, getShowHeatMap, setBlockMouse } from './cells.js'
 
-import {calculateVectors, getCanvasHeight, getCanvasWidth } from './pathfinding.js'
+import { calculateVectors, getCanvasHeight, getCanvasWidth } from './pathfinding.js'
 
 const drawingArea = document.querySelector(".drawing");
 let spawnAreas = [];
@@ -26,7 +26,7 @@ class Agent {
         //console.log(agents.length);
         this.x = x;
         this.y = y;
-        this.prevCell2 = {x: null, y: null}
+        this.prevCell2 = { x: null, y: null }
         this.currVector = { x: 0, y: 0 }
         this.fattiness = fattiness;
         this.body = document.createElementNS(svgNS, 'circle');
@@ -182,7 +182,7 @@ function populate() {
     });
 
     //The minimum distance between agents
-    const minAgentDistance = cellSize / 3; 
+    const minAgentDistance = cellSize / 3;
     const maxAgents = totalCells * Math.floor((cellSize - minAgentDistance) / minAgentDistance);
     if (agentNum > maxAgents) {
         window.alert("Too many agents for the available spawn areas");
@@ -321,11 +321,14 @@ function anime(start) {
             if (!agents[i].prevCell2.x) {
                 agents[i].prevCell2.x = Math.floor(newX / cellSize)
                 agents[i].prevCell2.y = Math.floor(newY / cellSize)
-                cells[Math.floor(newX / cellSize)][Math.floor(newY / cellSize)].value += 0.5
-            } else if (agents[i].prevCell2.x != Math.floor(newX / cellSize) || agents[i].prevCell2.y != Math.floor(newY / cellSize )) {
-                cells[agents[i].prevCell2.x][agents[i].prevCell2.y].value -= 0.5
-                cells[Math.floor(newX / cellSize)][Math.floor(newY / cellSize)].value += 0.5
-                agents[i].prevCell2 = {x: Math.floor(newX / cellSize), y: Math.floor(newY / cellSize)}
+                cells[Math.floor(newX / cellSize)][Math.floor(newY / cellSize)].value += 1
+            } else if (agents[i].prevCell2.x != Math.floor(newX / cellSize) || agents[i].prevCell2.y != Math.floor(newY / cellSize)) {
+                cells[agents[i].prevCell2.x][agents[i].prevCell2.y].value -= 1
+                if (!cells[Math.floor(newX / cellSize)][Math.floor(newY / cellSize)].isExit) {
+                    cells[Math.floor(newX / cellSize)][Math.floor(newY / cellSize)].value += 1
+                }
+
+                agents[i].prevCell2 = { x: Math.floor(newX / cellSize), y: Math.floor(newY / cellSize) }
             }
 
             agents[i].setCoordinates(newX, newY);
@@ -348,11 +351,10 @@ function anime(start) {
     calculateVectors(cells)
     //console.log(`Execution time: ${end - start} ms`);
     //console.log('Deleted agents count: ' + deletedAgentsCount + ' Agents length: ' + agents.length + ' All agents reached end: ' + allAgentsReachedEnd);
-    if (agents.length === 0) 
-    { 
+    if (agents.length === 0) {
         simButton.innerText = 'Start simulation';
     } else {
-        requestAnimationFrame(animateCaller); 
+        requestAnimationFrame(animateCaller);
     }
 }
 
