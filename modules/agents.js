@@ -335,34 +335,35 @@ function anime(start) {
             agents[i].setCoordinates(newX, newY);
             agents[i].updateAgentCell();
 
-            let newCurrentCell = cells[Math.floor(newX / cellSize)][Math.floor(newY / cellSize)];
+            //Experimental code for dynamic vectors
+            // let newCurrentCell = cells[Math.floor(newX / cellSize)][Math.floor(newY / cellSize)];
 
-            if (newCurrentCell.agents >= 4) {
-                let neighbors = getNeighbors2(cells, newCurrentCell);
+            // if (newCurrentCell.agents >= 4) {
+            //     let neighbors = getNeighbors2(cells, newCurrentCell);
 
-                neighbors.forEach(neighbor => {
-                    console.log("neighbor info " + neighbor.isWall);
-                    if (neighbor !== undefined && neighbor.isWall === false) {
-                        if (newCurrentCell.dVector.x === -1 && newCurrentCell.dVector.y === 0) {
-                            neighbors[2].dVector = newCurrentCell.dVector;
-                            neighbors[3].dVector = newCurrentCell.dVector;
-                            console.log("Vector Change West");
-                        } else if (newCurrentCell.dVector.x === 1 && newCurrentCell.dVector.y === 0) {
-                            neighbors[2].dVector = newCurrentCell.dVector;
-                            neighbors[3].dVector = newCurrentCell.dVector;
-                            console.log("Vector Change East");
-                        } else if (newCurrentCell.dVector.x === 0 && newCurrentCell.dVector.y === -1) {
-                            neighbors[0].dVector = newCurrentCell.dVector;
-                            neighbors[1].dVector = newCurrentCell.dVector;
-                            console.log("Vector Change North");
-                        } else if (newCurrentCell.dVector.x === 0 && newCurrentCell.dVector.y === 1) {
-                            neighbors[0].dVector = newCurrentCell.dVector;
-                            neighbors[1].dVector = newCurrentCell.dVector;
-                            console.log("Vector Change South");
-                        }
-                    }
-                });
-            }
+            //     neighbors.forEach(neighbor => {
+            //         console.log("neighbor info " + neighbor.isWall);
+            //         if (neighbor !== undefined && neighbor.isWall === false) {
+            //             if (newCurrentCell.dVector.x === -1 && newCurrentCell.dVector.y === 0) {
+            //                 neighbors[2].dVector = newCurrentCell.dVector;
+            //                 neighbors[3].dVector = newCurrentCell.dVector;
+            //                 console.log("Vector Change West");
+            //             } else if (newCurrentCell.dVector.x === 1 && newCurrentCell.dVector.y === 0) {
+            //                 neighbors[2].dVector = newCurrentCell.dVector;
+            //                 neighbors[3].dVector = newCurrentCell.dVector;
+            //                 console.log("Vector Change East");
+            //             } else if (newCurrentCell.dVector.x === 0 && newCurrentCell.dVector.y === -1) {
+            //                 neighbors[0].dVector = newCurrentCell.dVector;
+            //                 neighbors[1].dVector = newCurrentCell.dVector;
+            //                 console.log("Vector Change North");
+            //             } else if (newCurrentCell.dVector.x === 0 && newCurrentCell.dVector.y === 1) {
+            //                 neighbors[0].dVector = newCurrentCell.dVector;
+            //                 neighbors[1].dVector = newCurrentCell.dVector;
+            //                 console.log("Vector Change South");
+            //             }
+            //         }
+            //     });
+            // }
 
             endPoint.forEach(endPoint => {
                 if (getCell(x, y) === endPoint) {

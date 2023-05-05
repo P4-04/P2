@@ -81,7 +81,7 @@ function markCells(cells, currentCell) {
 //Sets distance value and mark on cell
 //Draws text on cell
 function markCellsController(cells, currentCell) {
-    cells[currentCell.x / pCellSize][currentCell.y / pCellSize].value = parseFloat(distVal);
+    cells[currentCell.x / pCellSize][currentCell.y / pCellSize].value = distVal;
     //drawTxt(cells[currentCell.x / pCellSize][currentCell.y / pCellSize], distVal);
     
     let cell = cells[currentCell.x / pCellSize][currentCell.y / pCellSize]
@@ -211,38 +211,30 @@ function calculateVectors(cells) {
             let lowestValue = Infinity;
             let direction = '';
 
-            //Checking for 3 lowest cells, in the case that 2 paths from goal are equal in distance
-            if (lowestCells.length === 3 || lowestCells.length === 2) {
-                let cell1Index = getCellIndex(lowestCells[0].x, lowestCells[0].y)
-                let cell2Index = getCellIndex(lowestCells[1].x, lowestCells[1].y)
-                let vector1 = { x: cell1Index.x - currentCellIndex.x, y: cell1Index.y - currentCellIndex.y }
-                let vector2 = { x: cell2Index.x - currentCellIndex.x, y: cell2Index.y - currentCellIndex.y }
-                let x = vector1.x + vector2.x;
-                let y = vector1.y + vector2.y;
-                cell.dVector.x = x;
-                cell.dVector.y = y;
-                console.log("vectors" + cell.dVector.x + " " + cell.dVector.y);
-                console.log("current cell info " + currentCellIndex.x + " " + currentCellIndex.y);
-            } else if (lowestCells.length === 1) {
-                let cellVector = getCellIndex(lowestCells[0].x, lowestCells[0].y)
-                let x = cellVector.x-currentCellIndex.x
-                let y = cellVector.y - currentCellIndex.y;
-                cell.dVector.x = x;
-                cell.dVector.y = y;
-                console.log("vectors" + cell.dVector.x + " " + cell.dVector.y);
-                console.log("current cell info " + currentCellIndex.x + " " + currentCellIndex.y);
+            for (let key in neighbors) {
+                let neighbor = neighbors[key];
+                if (neighbor && neighbor.isWall == false && neighbor.value < lowestValue) {
+                    lowestValue = neighbor.value;
+                    direction = key;
+                }
             }
 
-            //Some cells against walls have zero-vectors, stopping movement
-            //Assigns movement to the agents nonetheless, as these cells can be accessible in some rare cases
-            if (cell.dVector.x === 0 && cell.dVector.y === 0) {
-                let cellVector = getCellIndex(lowestCells[0].x, lowestCells[0].y)
-                let x = cellVector.x-currentCellIndex.x
-                let y = cellVector.y - currentCellIndex.y;
-                cell.dVector.x = x;
-                cell.dVector.y = y;
-                console.log("vectors" + cell.dVector.x + " " + cell.dVector.y);
-                console.log("current cell info " + currentCellIndex.x + " " + currentCellIndex.y);
+            if (direction === 'N') {
+                cell.dVector = { x: 0, y: -1 }
+            } else if (direction === 'S') {
+                cell.dVector = { x: 0, y: 1 }
+            } else if (direction === 'E') {
+                cell.dVector = { x: 1, y: 0 }
+            } else if (direction === 'W') {
+                cell.dVector = { x: -1, y: 0 }
+            } else if (direction === 'NE') {
+                cell.dVector = { x: 1, y: -1 }
+            } else if (direction === 'NW') {
+                cell.dVector = { x: -1, y: -1 }
+            } else if (direction === 'SE') {
+                cell.dVector = { x: 1, y: 1 }
+            } else if (direction === 'SW') {
+                cell.dVector = { x: -1, y: 1 }
             }
         }
     });
