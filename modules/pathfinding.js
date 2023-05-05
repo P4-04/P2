@@ -1,3 +1,4 @@
+export {calculateVectors}
 import { getSpawnAreas } from './agents.js';
 import { cellSize, drawTxt, getCellIndex } from './cells.js'
 
@@ -69,7 +70,7 @@ function markCells(cells, currentCell) {
             nextNeighbors.push(NeighborArr[3]);
         }
     }
-    distVal += 0.5;
+    distVal += 1;
 
     //If neighbors are present around current cells, do same procedure on cells
     if (nextNeighbors.length !== 0) {
@@ -237,6 +238,7 @@ function calculateVectors(cells) {
             }
         }
     });
+    
 }
 
 
