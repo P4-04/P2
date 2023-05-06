@@ -18,6 +18,9 @@ const saveButton = document.querySelector("#saveButton");
 
 const velocitySlider = document.querySelector("#velocitySlider");
 
+//<input type="color" id="colorPicker" value="#ff0000">
+const colorPicker = document.querySelector("#colorPicker");
+
 const cellSlider = document.querySelector("#cellSlider");
 const sizeDisplay = document.querySelector("#sizeDisplay");
 
@@ -45,6 +48,21 @@ const toggleGridsSubmenu = document.querySelector("#gridsButton");
 //
 //
 
+//Function to set a new color for all agents
+function updateAgentColors(newColor) {
+    let agents = getAgents();
+    agents.forEach(agent => {
+        agent.body.setAttribute('fill', newColor);
+    });
+}
+
+//Event listener for the color picker
+colorPicker.addEventListener('input', () => {
+    if (!rainbowCheckbox.checked) {
+        updateAgentColors(colorPicker.value);
+    }
+});
+  
 //Initialization of variables for overlay
 let isDraggingOverlay = false;
 let isMouseDown = false;
