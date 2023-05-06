@@ -1,5 +1,5 @@
 import { setEssenVariables, perfMeasure } from './modules/pathfinding.js';
-import { addSpawnArea, getSpawnAreas, populate, removeAgentsFromArea, animateCaller, setSizes, getAgents } from './modules/agents.js';
+import { addSpawnArea, getSpawnAreas, populate, removeAgentsFromArea, animateCaller, setSizes, getAgents, updateAgentColors } from './modules/agents.js';
 import { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit, getCells, DrawAllCells, toggleHeat, 
     setShowHeatMap, getShowHeatMap, setBlockMouse, getBlockMouse, setCellSize, resetHeatmap } from './modules/cells.js';
 import { getAllDesignNames, saveDesign, loadDesign, removeDesign } from './modules/designmanager.js';
@@ -48,19 +48,9 @@ const toggleGridsSubmenu = document.querySelector("#gridsButton");
 //
 //
 
-//Function to set a new color for all agents
-function updateAgentColors(newColor) {
-    let agents = getAgents();
-    agents.forEach(agent => {
-        agent.body.setAttribute('fill', newColor);
-    });
-}
-
 //Event listener for the color picker
 colorPicker.addEventListener('input', () => {
-    if (!rainbowCheckbox.checked) {
-        updateAgentColors(colorPicker.value);
-    }
+    updateAgentColors(colorPicker.value);
 });
   
 //Initialization of variables for overlay
@@ -715,4 +705,4 @@ function resetMenuPosition() {
     }
 }
 
-export { sizeChange, simButton };
+export { sizeChange, simButton, colorPicker};

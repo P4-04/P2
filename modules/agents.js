@@ -1,5 +1,5 @@
-export { populate, removeAgentsFromArea, animateCaller, getSpawnAreas, addSpawnArea, setSizes, setSpawnAreas, getAgents }
-import { simButton } from '../script.js';
+export { populate, removeAgentsFromArea, animateCaller, getSpawnAreas, addSpawnArea, setSizes, setSpawnAreas, getAgents, updateAgentColors}
+import { simButton, colorPicker} from '../script.js';
 import { cellSize, svgNS, getCells, getCellIndex, getCell, endPoint, getNeighborCells, getAgentsInCell, calcCellDensity, toggleHeat, getShowHeatMap, setBlockMouse } from './cells.js'
 
 import { calculateVectors, getCanvasHeight, getCanvasWidth, getNeighbors2 } from './pathfinding.js'
@@ -170,6 +170,14 @@ class Agent {
             setBlockMouse(false);
         }
     }
+}
+
+//Function to set a new color for all agents
+function updateAgentColors(newColor) {
+    let agents = getAgents();
+    agents.forEach(agent => {
+        agent.body.setAttribute('fill', newColor);
+    });
 }
 
 function populate() {
@@ -418,6 +426,7 @@ function anime(start) {
 
     if (exceededAgents > 0) {
         spawnExceededAgents();
+        updateAgentColors(colorPicker.value);
     }
 
     let end = performance.now();
