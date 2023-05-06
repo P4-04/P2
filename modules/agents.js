@@ -14,7 +14,6 @@ let deletedAgentsCount = 0;
 
 let exceededAgents = 0;
 
-
 let canvasWidth = 0;
 let canvasHeight = 0;
 
@@ -79,6 +78,9 @@ class Agent {
 
         // drawingArea.appendChild(this.rect);
     }
+    setSpeedModifier(speedModifier) {
+        this.SpeedModifier = speedModifier;
+    }    
     setCoordinates(x, y) {
         this.x = x;
         this.y = y;

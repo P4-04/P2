@@ -16,6 +16,8 @@ const showDesignsDropdown = document.querySelector("#showDesignsDropdownButton")
 const toggleSaveSubmenu = document.querySelector("#toggleSaveSubmenu");
 const saveButton = document.querySelector("#saveButton");
 
+const velocitySlider = document.querySelector("#velocitySlider");
+
 const cellSlider = document.querySelector("#cellSlider");
 const sizeDisplay = document.querySelector("#sizeDisplay");
 
@@ -126,6 +128,16 @@ cellSlider.addEventListener("mouseup", function() {
     createGrid(canvasWidth, canvasHeight);
     sizeChange = false;
 });
+
+//Event listener for changing velocity of agents
+velocitySlider.addEventListener("input", function () {
+    let agents = getAgents();
+    let sliderValue = parseFloat(velocitySlider.value);
+    agents.forEach(agent => {
+        agent.setSpeedModifier(sliderValue);
+    });
+});
+
 
 // cellSlider.oninput = function() {
 //     sizeDisplay.textContent = cellSlider.value;
