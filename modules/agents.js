@@ -145,7 +145,7 @@ class Agent {
         let me = agents.find(agent => agent.myNumber === this.myNumber);
         let index = agents.indexOf(me);
         //agents[index] == null;
-        ///console.log(agents.length);
+        //console.log(agents.length);
         agents.splice(index, 1);
         for (let i = index; i < agents.length; i++) {
             if (agents[i].myCell != null) { // Add null check here
@@ -168,8 +168,6 @@ class Agent {
             setBlockMouse(false);
         }
     }
-    
-    
 }
 
 function populate() {
@@ -184,7 +182,7 @@ function populate() {
         totalCells += area.length;
     });
 
-    //The minimum distance between agents
+    //the minimum distance between agents
     const minAgentDistance = cellSize / 3;
     const maxAgents = totalCells * Math.floor((cellSize - minAgentDistance) / minAgentDistance);
     if (agentNum > maxAgents) {
@@ -209,21 +207,26 @@ function populateCells(area, agentsPerArea, minAgentDistance) {
     let lastCell = area[0];
     let fattiness = ((cellSize / 6) + Math.floor(Math.random() * 3));
 
-    // Increase the padding to ensure agents are not placed too close to the border
+    //increase the padding to ensure agents are not placed too close to the border
     let padding = minAgentDistance;
-    let maxTries = 100; // Add a limit to the number of tries
+    //add a limit to the number of tries
+    let maxTries = 100; 
 
     for (let i = 0; i < agentsPerArea; ++i) {
         let validPosition = false;
         let x, y;
-        let tries = 0; // Initialize tries counter
-        while (!validPosition && tries < maxTries) { // Add tries limit to the condition
+        //initialize tries counter
+        let tries = 0; 
+        //add tries limit to the condition
+        while (!validPosition && tries < maxTries) { 
             x = getRandomArbitrary(firstCell.x * cellSize + fattiness + padding, lastCell.x * cellSize + Math.floor(cellSize) - fattiness - padding);
             y = getRandomArbitrary(firstCell.y * cellSize + fattiness + padding, lastCell.y * cellSize + Math.floor(cellSize) - fattiness - padding);
             validPosition = checkAgentDistance(x, y, minAgentDistance);
-            tries++; // Increment tries counter
+            //increment tries counter
+            tries++;
         }
-        if (validPosition) { // Only create an agent if there's a valid position
+        //only create an agent if there's a valid position
+        if (validPosition) {
             let agent = new Agent(x, y, fattiness);
             agents.push(agent);
         }
@@ -234,7 +237,7 @@ function populateCells(area, agentsPerArea, minAgentDistance) {
 function checkAgentDistance(x, y, minAgentDistance) {
     for (let agent of agents) {
         let distance = Math.sqrt(Math.pow(agent.x - x, 2) + Math.pow(agent.y - y, 2));
-        // Increase the distance check to also include the agent's fattiness
+        //increase the distance check to also include the agent's fattiness
         if (distance < minAgentDistance + agent.fattiness * 2) {
             return false;
         }
