@@ -12,9 +12,12 @@ let agents = [];
 let maxSpeedIncrease = 0.6;
 let deletedAgentsCount = 0;
 
+let exceededAgents = 0;
+
 
 let canvasWidth = 0;
 let canvasHeight = 0;
+
 function setSizes(Width, Height) {
     canvasWidth = Width
     canvasHeight = Height;
@@ -145,28 +148,28 @@ class Agent {
         ///console.log(agents.length);
         agents.splice(index, 1);
         for (let i = index; i < agents.length; i++) {
-            me = agents[i].myCell.agents.find(agent => agent == agents[i].myNumber);
-            index = agents[i].myCell.agents.indexOf(me);
-            agents[i].myCell.agents.splice(index, 1);
-            agents[i].myNumber = i + 1;
-            agents[i].myCell.agents.push(agents[i].myNumber);
-            agents[i].notifyCell(agents[i].myCell.x / cellSize, agents[i].myCell.y / cellSize,);
-
+            if (agents[i].myCell != null) { // Add null check here
+                let me = agents[i].myCell.agents.find(agent => agent == agents[i].myNumber);
+                let index = agents[i].myCell.agents.indexOf(me);
+                agents[i].myCell.agents.splice(index, 1);
+                agents[i].myNumber = i + 1;
+                agents[i].myCell.agents.push(agents[i].myNumber);
+                agents[i].notifyCell(agents[i].myCell.x / cellSize, agents[i].myCell.y / cellSize,);
+            }
         }
         //remove from cell (avoid collision check)
-        me = this.myCell.agents.find(agent => agent == this.myNumber);
-        index = this.myCell.agents.indexOf(me);
-        this.myCell.agents.splice(index, 1);
-
-        //this.myCell.agents[index] == null;
+        if (this.myCell && this.myCell.agents) { // Add null check here
+            let me = this.myCell.agents.find(agent => agent == this.myNumber);
+            let index = this.myCell.agents.indexOf(me);
+            this.myCell.agents.splice(index, 1);
+        }
         me = null;
-
-        //console.log(agents.length);
         if (agents.length == 0) {
             setBlockMouse(false);
         }
-
     }
+    
+    
 }
 
 function populate() {
@@ -185,9 +188,8 @@ function populate() {
     const minAgentDistance = cellSize / 3;
     const maxAgents = totalCells * Math.floor((cellSize - minAgentDistance) / minAgentDistance);
     if (agentNum > maxAgents) {
-        window.alert("Too many agents for the available spawn areas");
-        simButton.innerText = "Start simulation";
-        return;
+        exceededAgents = agentNum - maxAgents;
+        agentNum = maxAgents;
     }
 
     let agentsSpawned = 0;
@@ -207,30 +209,60 @@ function populateCells(area, agentsPerArea, minAgentDistance) {
     let lastCell = area[0];
     let fattiness = ((cellSize / 6) + Math.floor(Math.random() * 3));
 
-    //The minimum distance from the edge of each spawn area cell
-    let padding = minAgentDistance / 2;
+    // Increase the padding to ensure agents are not placed too close to the border
+    let padding = minAgentDistance;
+    let maxTries = 100; // Add a limit to the number of tries
 
     for (let i = 0; i < agentsPerArea; ++i) {
         let validPosition = false;
         let x, y;
-        while (!validPosition) {
+        let tries = 0; // Initialize tries counter
+        while (!validPosition && tries < maxTries) { // Add tries limit to the condition
             x = getRandomArbitrary(firstCell.x * cellSize + fattiness + padding, lastCell.x * cellSize + Math.floor(cellSize) - fattiness - padding);
             y = getRandomArbitrary(firstCell.y * cellSize + fattiness + padding, lastCell.y * cellSize + Math.floor(cellSize) - fattiness - padding);
             validPosition = checkAgentDistance(x, y, minAgentDistance);
+            tries++; // Increment tries counter
         }
-        let agent = new Agent(x, y, fattiness);
-        agents.push(agent);
+        if (validPosition) { // Only create an agent if there's a valid position
+            let agent = new Agent(x, y, fattiness);
+            agents.push(agent);
+        }
     }
 }
+
 
 function checkAgentDistance(x, y, minAgentDistance) {
     for (let agent of agents) {
         let distance = Math.sqrt(Math.pow(agent.x - x, 2) + Math.pow(agent.y - y, 2));
-        if (distance < minAgentDistance + agent.fattiness) {
+        // Increase the distance check to also include the agent's fattiness
+        if (distance < minAgentDistance + agent.fattiness * 2) {
             return false;
         }
     }
     return true;
+}
+
+function spawnExceededAgents() {
+    const minAgentDistance = cellSize / 3;
+    const padding = minAgentDistance / 2;
+    for (let area of spawnAreas) {
+        for (let cell of area) {
+            let fattiness = ((cellSize / 6) + Math.floor(Math.random() * 3));
+            let x = getRandomArbitrary(cell.x * cellSize + fattiness + padding, (cell.x + 1) * cellSize - fattiness - padding);
+            let y = getRandomArbitrary(cell.y * cellSize + fattiness + padding, (cell.y + 1) * cellSize - fattiness - padding);
+            if (checkAgentDistance(x, y, minAgentDistance)) {
+                let agent = new Agent(x, y, fattiness);
+                agents.push(agent);
+                exceededAgents--;
+                if (exceededAgents <= 0) {
+                    break;
+                }
+            }
+        }
+        if (exceededAgents <= 0) {
+            break;
+        }
+    } 
 }
 
 //Getting position within spawn area
@@ -378,6 +410,11 @@ function anime(start) {
         }
         i++;
     }
+
+    if (exceededAgents > 0) {
+        spawnExceededAgents();
+    }
+
     let end = performance.now();
     calculateVectors(cells)
     //console.log(`Execution time: ${end - start} ms`);
