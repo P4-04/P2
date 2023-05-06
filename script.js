@@ -47,11 +47,6 @@ const toggleGridsSubmenu = document.querySelector("#gridsButton");
 //Menu features - open / close / drag / clear / spawn / exit
 //
 //
-
-//Event listener for the color picker
-colorPicker.addEventListener('input', () => {
-    updateAgentColors(colorPicker.value);
-});
   
 //Initialization of variables for overlay
 let isDraggingOverlay = false;
@@ -144,6 +139,11 @@ velocitySlider.addEventListener("input", function () {
     agents.forEach(agent => {
         agent.setSpeedModifier(sliderValue);
     });
+});
+
+//Event listener for the color picker
+colorPicker.addEventListener('input', () => {
+    updateAgentColors(colorPicker.value);
 });
 
 
