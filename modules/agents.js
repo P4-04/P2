@@ -5,6 +5,7 @@ import { cellSize, svgNS, getCells, getCellIndex, getCell, endPoint, getNeighbor
 import { calculateVectors, getCanvasHeight, getCanvasWidth, getNeighbors2 } from './pathfinding.js'
 
 const drawingArea = document.querySelector(".drawing");
+let counter = document.querySelector("#agentCount");
 let spawnAreas = [];
 //Initializing array of agents
 let agents = [];
@@ -380,6 +381,9 @@ function anime(start) {
 
             agents[i].setCoordinates(newX, newY);
             agents[i].updateAgentCell();
+
+            counter.textContent = agents.length;
+
 
             //Experimental code for dynamic vectors
             // let newCurrentCell = cells[Math.floor(newX / cellSize)][Math.floor(newY / cellSize)];
