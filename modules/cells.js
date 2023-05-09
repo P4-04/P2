@@ -1,7 +1,7 @@
 export {
     createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit,
     getAddingSpawn, endPoint, setExits, startPoint, prevExit, svgNS, getCells, drawTxt, getCell, getNeighborCells, getAgentsInCell, calcCellDensity, getCellDensity, toggleHeat,
-    setShowHeatMap, getShowHeatMap, loadCells, DrawAllCells, setBlockMouse, getBlockMouse, setCellSize, resetHeatmap
+    setShowHeatMap, getShowHeatMap, loadCells, DrawAllCells, setBlockMouse, getBlockMouse, setCellSize, resetHeatmap, resetGrid, resetEndpoint
 }
 import { animateCaller } from "./agents.js";
 import { sizeChange } from "../script.js";
@@ -98,6 +98,10 @@ function toggleCellProperties(index, remove) {
     }
 }
 
+function resetEndpoint(){
+    endPoint = [];
+}
+
 /**
  * resets the grid to the default
 */
@@ -166,6 +170,28 @@ function createGrid(canvasWidth, canvasHeight) {
     }
     DrawAllCells(drawingArea);
 }
+
+function resetGrid(){
+    for (let x = 0; x < cells.length; x++) {
+        for (let y = 0; y < cells[0].length; y++) {
+                
+                cells[x][y].color = "white";
+                cells[x][y].isWall = false;
+                cells[x][y].isExit = false;
+                cells[x][y].isSpawnPoint = false;
+                //Vector field values
+                cells[x][y].mark = false;
+                cells[x][y].value = 0;
+                cells[x][y].vectorX = 0;
+                cells[x][y].vectorY = 0;
+                cells[x][y].dVector = { x: 0, y: 0 };
+                //Collision stuff
+                cells[x][y].agents = [],
+                cells[x][y].highestDensity = 0;
+            };
+        }
+}
+
 
 /**
  * Draws our cells on screen using SVG
