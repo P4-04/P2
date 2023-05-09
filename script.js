@@ -55,8 +55,16 @@ let cursorCurrentX = 0;
 let cursorCurrentY = 0;
 let cursorNewX = 0;
 let cursorNewY = 0;
-
 let menuHidden = true;
+let userCookie = document.cookie; 
+
+if (document.cookie.length != 0) {
+    userCookie = document.cookie;
+}
+else {
+    userCookie = crypto.randomUUID();
+    document.cookie = userCookie;
+}
 
 //Event listeners for menu open / close / drag / clear / spawn / exit
 menuHandle.addEventListener("mousedown", function (event) {
@@ -197,9 +205,9 @@ addSpawnButton.addEventListener("click", () => {
     setAddingSpawn(true);
 });
 
-function refreshDesignsDropdown() {
+async function refreshDesignsDropdown() {
     showDesignsDropdown.length = 0;
-    let designs = getAllDesignNames();
+    let designs = await getAllDesignNames(userCookie);
     for (let designName of designs) {
         let design = document.createElement("option");
         design.setAttribute("value", designName)
@@ -239,10 +247,10 @@ toggleGridsSubmenu.addEventListener("click", function () {
     toggleSubmenu("gridsSubmenu");
 });
 
-toggleDesignsSubmenu.addEventListener("click", function() {
+toggleDesignsSubmenu.addEventListener("click", async function() {
     let submenu = document.querySelector("#loadSubmenu");
     if (submenu.style.display === "none") {
-        refreshDesignsDropdown();
+        await refreshDesignsDropdown();
         submenu.style.display = "block";
         document.querySelector("#saveSubmenu").style.display = "none";
         document.querySelector("#agentsSubmenu").style.display = "none";
@@ -260,13 +268,13 @@ toggleDesignsSubmenu.addEventListener("click", function() {
     }
 })
 
-loadSelectedButton.addEventListener("click", function () {
-    loadDesign(showDesignsDropdown.value);
+loadSelectedButton.addEventListener("click", async function () {
+    await loadDesign(showDesignsDropdown.value);
 })
 
-removeSelected.addEventListener("click", function () {
-    removeDesign(showDesignsDropdown.value);
-    refreshDesignsDropdown();
+removeSelected.addEventListener("click", async function () {
+    await removeDesign(showDesignsDropdown.value);
+    await refreshDesignsDropdown();
 })
 
 showDesignsDropdown.addEventListener("click", async function () {
@@ -293,7 +301,7 @@ saveButton.addEventListener("click", function () {
 
     if (designName.length > 0) {
         warningLabel.style.display = "none";
-        saveDesign(getCells(), getSpawnAreas(), designName, cellSize);
+        saveDesign(userCookie, getCells(), getSpawnAreas(), designName, cellSize);
     }
     else {
         warningLabel.style.display = "block";
