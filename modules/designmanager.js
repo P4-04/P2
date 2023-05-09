@@ -15,7 +15,6 @@ async function getAllDesignNames(userCookie) {
     designs.forEach(design => {
         savedDesigns.push(design.name);
     });
-    console.log(savedDesigns)
     return savedDesigns;
 }
 
@@ -29,7 +28,6 @@ async function saveDesign(userCookie, cells, spawnAreas, name, cellSize) {
     }
 
     const serializedDesign = JSON.stringify(design);
-    console.log(userCookie)
     await fetch("/savedesign", {
         method: "POST",
         headers: {
@@ -39,8 +37,15 @@ async function saveDesign(userCookie, cells, spawnAreas, name, cellSize) {
     })
 }
 
-function removeDesign(name) {
-    localStorage.removeItem(`${name}`)
+async function removeDesign(name, userCookie) {
+    await fetch("/removedesign", {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+            "cookie": userCookie,
+            "name": name
+          }
+    })
 }
 
 async function loadDesign(name, userCookie){

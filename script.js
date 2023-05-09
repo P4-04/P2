@@ -273,7 +273,7 @@ loadSelectedButton.addEventListener("click", async function () {
 })
 
 removeSelected.addEventListener("click", async function () {
-    removeDesign(showDesignsDropdown.value);
+    await removeDesign(showDesignsDropdown.value);
     await refreshDesignsDropdown();
 })
 

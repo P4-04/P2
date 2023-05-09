@@ -64,3 +64,14 @@ app.get('/getdesignnames', (req, res) => {
     });
     res.send(JSON.stringify(designs))
 })
+
+app.delete('/removedesign', (req, res) => {
+    let db = loadDB()
+    Object.keys(db).forEach(id => {
+        if (db[id].userCookie === req.headers.cookie && db[id].name === req.headers.name){
+            delete db[id]; 
+        }
+    });
+    saveInDB(db)
+    res.send(200);
+})
