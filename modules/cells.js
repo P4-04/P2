@@ -206,21 +206,21 @@ function resetGrid(){
         }
 }
 
-function resetVectors()
-{
-    for (let x = 0; x < cells.length; x++) {
-        for (let y = 0; y < cells[0].length; y++) {
-                cells[x][y].mark = false;
-                cells[x][y].value = 0;
-                cells[x][y].vectorX = 0;
-                cells[x][y].vectorY = 0;
-                cells[x][y].dVector = { x: 0, y: 0 };
-                //Collision stuff
-                cells[x][y].agents = [],
-                cells[x][y].highestDensity = 0;
-            };
-        }
-}
+// function resetVectors()
+// {
+//     for (let x = 0; x < cells.length; x++) {
+//         for (let y = 0; y < cells[0].length; y++) {
+//                 cells[x][y].mark = false;
+//                 cells[x][y].value = 0;
+//                 cells[x][y].vectorX = 0;
+//                 cells[x][y].vectorY = 0;
+//                 cells[x][y].dVector = { x: 0, y: 0 };
+//                 //Collision stuff
+//                 cells[x][y].agents = [],
+//                 cells[x][y].highestDensity = 0;
+//             };
+//         }
+// }
 
 /**
  * Draws our cells on screen using SVG
