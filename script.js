@@ -356,6 +356,12 @@ simButton.addEventListener("click", function () {
 
 toggle.addEventListener("click", function () {
     setShowHeatMap(getShowHeatMap() ? false : true);
+    if (getShowHeatMap() === true) {
+        toggle.textContent = "Heatmap: on"
+    }
+    else if (getShowHeatMap() === false) {
+        toggle.textContent = "Heatmap: off"
+    }
 });
 
 
