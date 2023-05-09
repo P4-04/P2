@@ -1,7 +1,7 @@
 import { setEssenVariables, perfMeasure } from './modules/pathfinding.js';
 import { addSpawnArea, getSpawnAreas, populate, removeAgentsFromArea, animateCaller, setSizes, getAgents, updateAgentColors, setSpawnAreas } from './modules/agents.js';
 import { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit, getCells, DrawAllCells, toggleHeat, 
-    setShowHeatMap, getShowHeatMap, setBlockMouse, getBlockMouse, setCellSize, resetHeatmap, resetGrid, resetEndpoint } from './modules/cells.js';
+    setShowHeatMap, getShowHeatMap, setBlockMouse, getBlockMouse, setCellSize, resetHeatmap, resetGrid, resetEndpoint, resetVectors } from './modules/cells.js';
 import { getAllDesignNames, saveDesign, loadDesign, removeDesign } from './modules/designmanager.js';
 //import { func } from 'prop-types';
 
@@ -338,11 +338,12 @@ simButton.addEventListener("click", function () {
         //     return;
         // }
         
-        if (endPoint === null) {
+        if (endPoint == null) {
             alert("Missing a exit point!");
             return;
         }
 
+        resetVectors();
         simButton.innerText = "Stop simulation";
     
         resetHeatmap();
@@ -364,9 +365,6 @@ simButton.addEventListener("click", function () {
         {
             agents[0].destroy();
         }
-        //agents.forEach(agent => {
-            
-        //});
         simButton.innerText = "Start simulation";
     }
 });
