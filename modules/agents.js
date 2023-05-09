@@ -241,6 +241,9 @@ function populateCells(area, agentsPerArea, minAgentDistance) {
             let agent = new Agent(x, y, fattiness);
             agents.push(agent);
         }
+        else {
+            exceededAgents++;
+        }
     }
 }
 
