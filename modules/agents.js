@@ -1,8 +1,8 @@
 export { populate, removeAgentsFromArea, animateCaller, getSpawnAreas, addSpawnArea, setSizes, setSpawnAreas, getAgents, updateAgentColors}
 import { simButton, colorPicker} from '../script.js';
 import { cellSize, svgNS, getCells, getCellIndex, getCell, endPoint, getNeighborCells, getAgentsInCell, calcCellDensity, toggleHeat, getShowHeatMap, setBlockMouse } from './cells.js'
-
 import { calculateVectors, getCanvasHeight, getCanvasWidth, getNeighbors2 } from './pathfinding.js'
+import { updateFPSCounter } from './utils.js'
 
 const drawingArea = document.querySelector(".drawing");
 let counter = document.querySelector("#agentCount");
@@ -385,7 +385,7 @@ function anime(start) {
             agents[i].setCoordinates(newX, newY);
             agents[i].updateAgentCell();
 
-            counter.textContent = agents.length;
+            counter.textContent = agents.length + "ppl";
 
 
             //Experimental code for dynamic vectors
@@ -445,6 +445,7 @@ function anime(start) {
         simButton.innerText = 'Start simulation';
     } else {
         requestAnimationFrame(animateCaller);
+        updateFPSCounter();
     }
 }
 
