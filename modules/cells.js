@@ -275,8 +275,8 @@ function getCells() { return cells; }
 */
 function getCell(x, y) { return cells[x][y]; }
 
-function setAddingExit(isAdding) { addingExit = isAdding };
-function setAddingSpawn(isAdding) { addingSpawn = isAdding };
+function setAddingExit(isAdding) { addingExit = isAdding; addingSpawn = false };
+function setAddingSpawn(isAdding) { addingSpawn = isAdding; addingExit = false; };
 
 function getNeighborCells(x, y) {
     let cell = getCell(x, y);
