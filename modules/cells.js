@@ -1,7 +1,7 @@
 export {
     createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit,
     getAddingSpawn, endPoint, setExits, startPoint, prevExit, svgNS, getCells, drawTxt, getCell, getNeighborCells, getAgentsInCell, calcCellDensity, getCellDensity, toggleHeat,
-    setShowHeatMap, getShowHeatMap, loadCells, DrawAllCells, setBlockMouse, getBlockMouse, setCellSize, resetHeatmap
+    setShowHeatMap, getShowHeatMap, loadCells, DrawAllCells, setBlockMouse, getBlockMouse, setCellSize, resetHeatmap, resetGrid, resetEndpoint, resetVectors
 }
 import { animateCaller } from "./agents.js";
 import { sizeChange } from "../script.js";
@@ -86,6 +86,7 @@ function toggleCellProperties(index, remove) {
     } else if (cells[index.x][index.y].color == "white") {
         cells[index.x][index.y].color = "black";
         cells[index.x][index.y].isWall = true;
+        cells[index.x][index.y].isExit = false;
         cells[index.x][index.y].mark = true;
         cells[index.x][index.y].value = cells.length * cells[0].length / 3;
     } else if (cells[index.x][index.y].color == "black" || cells[index.x][index.y].color == "green" || cells[index.x][index.y].color == "blue") {
@@ -96,6 +97,10 @@ function toggleCellProperties(index, remove) {
         cells[index.x][index.y].isSpawnPoint = false;
         cells[index.x][index.y].value = 0;
     }
+}
+
+function resetEndpoint(){
+    endPoint = [];
 }
 
 /**
@@ -165,6 +170,43 @@ function createGrid(canvasWidth, canvasHeight) {
         }
     }
     DrawAllCells(drawingArea);
+}
+
+function resetGrid(){
+    for (let x = 0; x < cells.length; x++) {
+        for (let y = 0; y < cells[0].length; y++) {
+                
+                cells[x][y].color = "white";
+                cells[x][y].isWall = false;
+                cells[x][y].isExit = false;
+                cells[x][y].isSpawnPoint = false;
+                //Vector field values
+                cells[x][y].mark = false;
+                cells[x][y].value = 0;
+                cells[x][y].vectorX = 0;
+                cells[x][y].vectorY = 0;
+                cells[x][y].dVector = { x: 0, y: 0 };
+                //Collision stuff
+                cells[x][y].agents = [],
+                cells[x][y].highestDensity = 0;
+            };
+        }
+}
+
+function resetVectors()
+{
+    for (let x = 0; x < cells.length; x++) {
+        for (let y = 0; y < cells[0].length; y++) {
+                cells[x][y].mark = false;
+                cells[x][y].value = 0;
+                cells[x][y].vectorX = 0;
+                cells[x][y].vectorY = 0;
+                cells[x][y].dVector = { x: 0, y: 0 };
+                //Collision stuff
+                cells[x][y].agents = [],
+                cells[x][y].highestDensity = 0;
+            };
+        }
 }
 
 /**
@@ -297,7 +339,7 @@ function toggleHeat(cellsToUpdate) {
             cell.rect.setAttribute("id", cellID);
             
             if (element != null){
-                console.log(element);
+                //console.log(element);
                 element.replaceWith(cell.rect)
             } else {
                 drawingArea.appendChild(cell.rect);
