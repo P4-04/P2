@@ -1,6 +1,6 @@
 export { updateFPSCounter}
 
-
+//https://www.growingwiththeweb.com/2017/12/fast-simple-js-fps-counter.html
 let fpsCounter = {
     startTime: 0,
     frameNumber: 0,
