@@ -1,7 +1,7 @@
 import { setEssenVariables, perfMeasure } from './modules/pathfinding.js';
-import { addSpawnArea, getSpawnAreas, populate, removeAgentsFromArea, animateCaller, setSizes, getAgents, updateAgentColors } from './modules/agents.js';
+import { addSpawnArea, getSpawnAreas, populate, removeAgentsFromArea, animateCaller, setSizes, getAgents, updateAgentColors, setSpawnAreas } from './modules/agents.js';
 import { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit, getCells, DrawAllCells, toggleHeat, 
-    setShowHeatMap, getShowHeatMap, setBlockMouse, getBlockMouse, setCellSize, resetHeatmap, resetVectors } from './modules/cells.js';
+    setShowHeatMap, getShowHeatMap, setBlockMouse, getBlockMouse, setCellSize, resetHeatmap, resetGrid, resetEndpoint, resetVectors } from './modules/cells.js';
 import { getAllDesignNames, saveDesign, loadDesign, removeDesign } from './modules/designmanager.js';
 //import { func } from 'prop-types';
 
@@ -166,7 +166,24 @@ colorPicker.addEventListener('input', () => {
 
 // Add event to "Clear"-button
 //let clearButton = document.querySelector("#clear");
-clearButton.addEventListener("click", clearCanvas);
+clearButton.addEventListener("click", () => {
+    clearCanvas();
+
+    let agents = getAgents();
+    while (agents.length != 0)
+    {
+        agents[0].destroy();
+    }
+
+    resetGrid();
+    setSpawnAreas([]);
+    resetEndpoint();
+
+    if (simButton.innerText == "Stop simulation"){
+        simButton.innerText = "Start simulation";
+    }
+
+});
 
 // Add event to "add exit"-button and "add-spawn"-button
 //let addExitButton = document.querySelector("#addExit");
@@ -321,11 +338,12 @@ simButton.addEventListener("click", function () {
         //     return;
         // }
         
-        if (endPoint === null) {
+        if (endPoint == null) {
             alert("Missing a exit point!");
             return;
         }
 
+        resetVectors();
         simButton.innerText = "Stop simulation";
     
         resetHeatmap();
@@ -348,9 +366,6 @@ simButton.addEventListener("click", function () {
         {
             agents[0].destroy();
         }
-        //agents.forEach(agent => {
-            
-        //});
         simButton.innerText = "Start simulation";
     }
 });
