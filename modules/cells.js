@@ -1,7 +1,7 @@
 export {
     createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit,
     getAddingSpawn, endPoint, setExits, startPoint, prevExit, svgNS, getCells, drawTxt, getCell, getNeighborCells, getAgentsInCell, calcCellDensity, getCellDensity, toggleHeat,
-    setShowHeatMap, getShowHeatMap, loadCells, DrawAllCells, setBlockMouse, getBlockMouse, setCellSize, resetHeatmap
+    setShowHeatMap, getShowHeatMap, loadCells, DrawAllCells, setBlockMouse, getBlockMouse, setCellSize, resetHeatmap, resetVectors
 }
 import { animateCaller } from "./agents.js";
 import { sizeChange } from "../script.js";
@@ -109,6 +109,19 @@ function clearCanvas() {
             cell.isExit = false;
             cell.isSpawnPoint = false;
             cell.rect.setAttribute('fill', 'white');
+        });
+    });
+}
+
+function resetVectors() {
+    cells.forEach(column => {
+        column.forEach(cell => {
+            if (cell.isWall === false) {
+                cell.mark = false;
+                cell.value = 0;
+                cell.dVector.x = 0;
+                cell.dVector.y = 0;
+            }
         });
     });
 }
