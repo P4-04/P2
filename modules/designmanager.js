@@ -2,40 +2,60 @@ import { loadCells, setExits } from './cells.js';
 import { setSpawnAreas } from './agents.js';
 export { saveDesign, loadDesign, getAllDesignNames, removeDesign };
 
-function getAllDesignNames() {
+async function getAllDesignNames(userCookie) {
     let savedDesigns = [];
-    for ( let i = 0, len = localStorage.length; i < len; ++i ) {
-        //abcd.cells -> abcd | cut of the string after the first period
-        let designName = localStorage.key(i).substring(0, localStorage.key(i).indexOf('.')); 
-        if (!savedDesigns.includes(designName)) {
-            savedDesigns.push(designName);
-        }
-    }
+    let response = await fetch("/getdesignnames", {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "cookie": userCookie
+          }
+    })
+    let designs = await response.json();
+    designs.forEach(design => {
+        savedDesigns.push(design.name);
+    });
+    console.log(savedDesigns)
     return savedDesigns;
 }
 
-function saveDesign(cells, spawnAreas, name, cellSize) {
-    let serializedCells = JSON.stringify(cells)
-    let serializedSpawnAreas = JSON.stringify(spawnAreas) 
-    localStorage.setItem(`${name}.cells`, `${serializedCells}`)
-    localStorage.setItem(`${name}.areas`, `${serializedSpawnAreas}`)
-    localStorage.setItem(`${name}.cellsize`, cellSize)
+async function saveDesign(userCookie, cells, spawnAreas, name, cellSize) {
+    const design = {
+        userCookie: userCookie,
+        name: name,
+        cells: cells,
+        spawnAreas: spawnAreas,
+        cellSize: cellSize
+    }
+
+    const serializedDesign = JSON.stringify(design);
+    console.log(userCookie)
+    await fetch("/savedesign", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+          },
+        body: serializedDesign
+    })
 }
 
 function removeDesign(name) {
-    localStorage.removeItem(`${name}.cells`)
-    localStorage.removeItem(`${name}.areas`)
-    localStorage.removeItem(`${name}.cellSize`)
+    localStorage.removeItem(`${name}`)
 }
 
-function loadDesign(name){
-    let loadedCells = localStorage.getItem(`${name}.cells`);
-    let loadedSpawnAreas = localStorage.getItem(`${name}.areas`);
-    let loadedCellsize = localStorage.getItem(`${name}.cellsize`);
-    let deserializedCells = JSON.parse(loadedCells);
-    let deserializedSpawnAreas = JSON.parse(loadedSpawnAreas);
+async function loadDesign(name, userCookie){
+    let response = await fetch("/getdesign", {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "cookie": userCookie,
+            "name": name
+          }
+    })
+    let deserializedDesign = await response.json();
+
     let Exits = [];
-    deserializedCells.forEach(columns => {
+    deserializedDesign.cells.forEach(columns => {
         columns.forEach(cell => {
             if (cell.isExit) {
                 Exits.push(cell);
@@ -43,11 +63,6 @@ function loadDesign(name){
         });
     });
     setExits(Exits);
-    try {
-        loadCells(deserializedCells,loadedCellsize);
-    }
-    catch (e) {
-        window.alert(e)
-    }
-    setSpawnAreas(deserializedSpawnAreas);
+    loadCells(deserializedDesign.cells, deserializedDesign.cellSize);
+    setSpawnAreas(deserializedDesign.spawnAreas);
 }
