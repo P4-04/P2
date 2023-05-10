@@ -118,6 +118,19 @@ function clearCanvas() {
     });
 }
 
+function resetVectors() {
+    cells.forEach(column => {
+        column.forEach(cell => {
+            if (cell.isWall === false) {
+                cell.mark = false;
+                cell.value = 0;
+                cell.dVector.x = 0;
+                cell.dVector.y = 0;
+            }
+        });
+    });
+}
+
 /**
  * Updates a cell
  * @param {cell} cell the cell to update
@@ -193,7 +206,7 @@ function resetGrid(){
         }
 }
 
-function resetVectors()
+function resetVectorsComplete()
 {
     for (let x = 0; x < cells.length; x++) {
         for (let y = 0; y < cells[0].length; y++) {
@@ -262,8 +275,8 @@ function getCells() { return cells; }
 */
 function getCell(x, y) { return cells[x][y]; }
 
-function setAddingExit(isAdding) { addingExit = isAdding };
-function setAddingSpawn(isAdding) { addingSpawn = isAdding };
+function setAddingExit(isAdding) { addingExit = isAdding; addingSpawn = false };
+function setAddingSpawn(isAdding) { addingSpawn = isAdding; addingExit = false; };
 
 function getNeighborCells(x, y) {
     let cell = getCell(x, y);

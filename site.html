@@ -13,7 +13,7 @@
         <hr>
         <button id="agentsButton">Agents</button>
         <button id="gridsButton">Grid</button>
-        <button id="toggleDisplay">Toggle heatmap</button>
+        <button id="toggleDisplay" title="Deeper red means higher crowd density">Toggle heatmap</button>
         <button id="toggleSaveSubmenu">Save design</button>
         <div class="Submenu" id="saveSubmenu" style="display: none">
             <label for="designName">Name</label>
@@ -40,7 +40,7 @@
             <input type="color" id="colorPicker" value="#ff0000">
         </div>
         <div class="Submenu" id="gridsSubmenu" style="display: none">
-            <button id="addSpawn">Add Spawn</button>
+            <button id="addSpawn" title="Hold to draw">Add Entrance</button>
             <button id="addExit">Add Exit</button>
             <button id="clear">Clear</button>
             <div class="slider">
@@ -49,10 +49,18 @@
                 <input type="range" id="cellSlider" value="25" min="10" max="75">
             </div>
         </div>
-    </div>
-    <div>
-        <p id="agentCount"></p>
-    </div>   
+        <div class="menu-infobox">
+            
+            <div class="infobox-item">
+                <img src="resources/infopanel_crowd.png" alt="Crowd Icon">
+                <p id="agentCount"></p>
+            </div>
+            <div class="infobox-item">
+                <img src="resources/infopanel_framerate.png" alt="Framerate Icon">
+                <p id="framerateCount"></p>
+            </div>
+        </div>
+    </div>  
     <div class="container">
         <svg class="drawing"></svg>
     </div>
