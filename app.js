@@ -21,7 +21,7 @@ function saveInDB(data) {
 }
 
 app.use("/modules", express.static('modules'))
-app.use(express.json({limit: "500kb"}));
+app.use(express.json({limit: "1500kb"}));
 
 app.get('/script.js', (req, res) => {
     res.sendFile("./script.js", { root: __dirname });
@@ -60,7 +60,7 @@ app.get('/getdesignnames', (req, res) => {
     Object.keys(db).forEach(id => {
         if (db[id].userCookie === req.headers.cookie){
             designs.push(db[id])
-        } 
+        }
     });
     res.send(JSON.stringify(designs))
 })
@@ -73,5 +73,5 @@ app.delete('/removedesign', (req, res) => {
         }
     });
     saveInDB(db)
-    res.send(200);
+    res.sendStatus(200);
 })
