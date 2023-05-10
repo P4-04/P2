@@ -13,9 +13,10 @@ async function perfMeasure(cells, goal, spawn) {
     {
         spawnCount = spawnCount + spawnGroups[i].length;
     }
-    // if (hitSpawnCells != spawnCount){
-    //     alert("Not all spawn areas can reach the end point(s)!");
-    // }
+    if (hitSpawnCells != spawnCount){
+        alert("Not all spawn areas can reach the end point(s)!");
+        return;
+    }
 
     //calcVectorField(cells);
 

@@ -1,7 +1,7 @@
 import { setEssenVariables, perfMeasure } from './modules/pathfinding.js';
-import { addSpawnArea, getSpawnAreas, populate, removeAgentsFromArea, animateCaller, setSizes, getAgents, updateAgentColors } from './modules/agents.js';
+import { addSpawnArea, getSpawnAreas, populate, removeAgentsFromArea, animateCaller, setSizes, getAgents, updateAgentColors, setSpawnAreas } from './modules/agents.js';
 import { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit, getCells, DrawAllCells, toggleHeat, 
-    setShowHeatMap, getShowHeatMap, setBlockMouse, getBlockMouse, setCellSize, resetHeatmap } from './modules/cells.js';
+    setShowHeatMap, getShowHeatMap, setBlockMouse, getBlockMouse, setCellSize, resetHeatmap, resetGrid, resetEndpoint, resetVectors } from './modules/cells.js';
 import { getAllDesignNames, saveDesign, loadDesign, removeDesign } from './modules/designmanager.js';
 //import { func } from 'prop-types';
 
@@ -55,8 +55,16 @@ let cursorCurrentX = 0;
 let cursorCurrentY = 0;
 let cursorNewX = 0;
 let cursorNewY = 0;
-
 let menuHidden = true;
+let userCookie = document.cookie; 
+
+if (document.cookie.length != 0) {
+    userCookie = document.cookie;
+}
+else {
+    userCookie = crypto.randomUUID();
+    document.cookie = userCookie;
+}
 
 //Event listeners for menu open / close / drag / clear / spawn / exit
 menuHandle.addEventListener("mousedown", function (event) {
@@ -166,7 +174,24 @@ colorPicker.addEventListener('input', () => {
 
 // Add event to "Clear"-button
 //let clearButton = document.querySelector("#clear");
-clearButton.addEventListener("click", clearCanvas);
+clearButton.addEventListener("click", () => {
+    clearCanvas();
+
+    let agents = getAgents();
+    while (agents.length != 0)
+    {
+        agents[0].destroy();
+    }
+
+    resetGrid();
+    setSpawnAreas([]);
+    resetEndpoint();
+
+    if (simButton.innerText == "Stop simulation"){
+        simButton.innerText = "Start simulation";
+    }
+
+});
 
 // Add event to "add exit"-button and "add-spawn"-button
 //let addExitButton = document.querySelector("#addExit");
@@ -180,9 +205,9 @@ addSpawnButton.addEventListener("click", () => {
     setAddingSpawn(true);
 });
 
-function refreshDesignsDropdown() {
+async function refreshDesignsDropdown() {
     showDesignsDropdown.length = 0;
-    let designs = getAllDesignNames();
+    let designs = await getAllDesignNames(userCookie);
     for (let designName of designs) {
         let design = document.createElement("option");
         design.setAttribute("value", designName)
@@ -222,10 +247,10 @@ toggleGridsSubmenu.addEventListener("click", function () {
     toggleSubmenu("gridsSubmenu");
 });
 
-toggleDesignsSubmenu.addEventListener("click", function() {
+toggleDesignsSubmenu.addEventListener("click", async function() {
     let submenu = document.querySelector("#loadSubmenu");
     if (submenu.style.display === "none") {
-        refreshDesignsDropdown();
+        await refreshDesignsDropdown();
         submenu.style.display = "block";
         document.querySelector("#saveSubmenu").style.display = "none";
         document.querySelector("#agentsSubmenu").style.display = "none";
@@ -243,13 +268,13 @@ toggleDesignsSubmenu.addEventListener("click", function() {
     }
 })
 
-loadSelectedButton.addEventListener("click", function () {
-    loadDesign(showDesignsDropdown.value);
+loadSelectedButton.addEventListener("click", async function () {
+    await loadDesign(showDesignsDropdown.value);
 })
 
-removeSelected.addEventListener("click", function () {
-    removeDesign(showDesignsDropdown.value);
-    refreshDesignsDropdown();
+removeSelected.addEventListener("click", async function () {
+    await removeDesign(showDesignsDropdown.value);
+    await refreshDesignsDropdown();
 })
 
 showDesignsDropdown.addEventListener("click", async function () {
@@ -276,7 +301,7 @@ saveButton.addEventListener("click", function () {
 
     if (designName.length > 0) {
         warningLabel.style.display = "none";
-        saveDesign(getCells(), getSpawnAreas(), designName, cellSize);
+        saveDesign(userCookie, getCells(), getSpawnAreas(), designName, cellSize);
     }
     else {
         warningLabel.style.display = "block";
@@ -321,14 +346,16 @@ simButton.addEventListener("click", function () {
         //     return;
         // }
         
-        if (endPoint === null) {
+        if (endPoint == null) {
             alert("Missing a exit point!");
             return;
         }
 
+        resetVectors();
         simButton.innerText = "Stop simulation";
     
         resetHeatmap();
+        resetVectors();
         setEssenVariables(canvasWidth, canvasHeight, cellSize);
         perfMeasure(getCells(), endPoint, startPoint);
     
@@ -347,15 +374,18 @@ simButton.addEventListener("click", function () {
         {
             agents[0].destroy();
         }
-        //agents.forEach(agent => {
-            
-        //});
         simButton.innerText = "Start simulation";
     }
 });
 
 toggle.addEventListener("click", function () {
     setShowHeatMap(getShowHeatMap() ? false : true);
+    if (getShowHeatMap() === true) {
+        toggle.textContent = "Heatmap: on"
+    }
+    else if (getShowHeatMap() === false) {
+        toggle.textContent = "Heatmap: off"
+    }
 });
 
 
