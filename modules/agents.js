@@ -385,9 +385,6 @@ function anime(start) {
             agents[i].setCoordinates(newX, newY);
             agents[i].updateAgentCell();
 
-            counter.textContent = agents.length + "ppl";
-
-
             //Experimental code for dynamic vectors
             // let newCurrentCell = cells[Math.floor(newX / cellSize)][Math.floor(newY / cellSize)];
 
@@ -441,6 +438,7 @@ function anime(start) {
     calculateVectors(cells)
     //console.log(`Execution time: ${end - start} ms`);
     //console.log('Deleted agents count: ' + deletedAgentsCount + ' Agents length: ' + agents.length + ' All agents reached end: ' + allAgentsReachedEnd);
+    counter.textContent = agents.length + "ppl";
     if (agents.length === 0) {
         simButton.innerText = 'Start simulation';
     } else {
