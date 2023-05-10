@@ -259,11 +259,6 @@ function loadCells(newCells, newCellSize) {
     for (let x = 0; x < cells.length; x++) {
         for (let y = 0; y < cells[0].length; y++) {
             if (x < newCells.length && y < newCells[0].length) {
-                // cells[x][y].color = newCells[x][y].isExit;
-                // cells[x][y].isExit = newCells[x][y].isExit;
-                // cells[x][y].isSpawnPoint = newCells[x][y].isSpawnPoint;
-                // cells[x][y].isWall = newCells[x][y].isWall;
-                // cells[x][y].mark = newCells[x][y].mark;
                 cells[x][y] = newCells[x][y];
             }
         }
@@ -280,8 +275,8 @@ function getCells() { return cells; }
 */
 function getCell(x, y) { return cells[x][y]; }
 
-function setAddingExit(isAdding) { addingExit = isAdding };
-function setAddingSpawn(isAdding) { addingSpawn = isAdding };
+function setAddingExit(isAdding) { addingExit = isAdding; addingSpawn = false };
+function setAddingSpawn(isAdding) { addingSpawn = isAdding; addingExit = false; };
 
 function getNeighborCells(x, y) {
     let cell = getCell(x, y);
