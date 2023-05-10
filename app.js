@@ -21,6 +21,7 @@ function saveInDB(data) {
 }
 
 app.use("/modules", express.static('modules'))
+app.use("/resources", express.static('resources'))
 app.use(express.json({limit: "1500kb"}));
 
 app.get('/script.js', (req, res) => {
