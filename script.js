@@ -297,13 +297,11 @@ saveButton.addEventListener("click", async function () {
 
     if (designName.length > 0) {
         warningLabel.style.display = "none";
-        warningDiv.style.height = "0px"
         try {
             await saveDesign(userCookie, getCells(), getSpawnAreas(), designName, cellSize);
         } catch (error) {
             warningLabel.innerText = error.message;
             warningLabel.style.display = "block";
-            warningDiv.style.height = "55px"
         }
     }
     else {
