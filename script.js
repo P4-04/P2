@@ -255,13 +255,6 @@ toggleDesignsSubmenu.addEventListener("click", async function() {
         document.querySelector("#saveSubmenu").style.display = "none";
         document.querySelector("#agentsSubmenu").style.display = "none";
         document.querySelector("#gridsSubmenu").style.display = "none";
-        // let designs = getAllDesignNames();
-        // for (let designName of designs) {
-        //     let design = document.createElement("option");
-        //     design.setAttribute("value", designName)
-        //     design.innerText = `${designName}`
-        //     showDesignsDropdown.appendChild(design)
-        // }
     } else {
         submenu.style.display = "none";
         showDesignsDropdown.length = 0;
@@ -269,7 +262,9 @@ toggleDesignsSubmenu.addEventListener("click", async function() {
 })
 
 loadSelectedButton.addEventListener("click", async function () {
-    await loadDesign(showDesignsDropdown.value);
+    if (showDesignsDropdown.value.length !== 0){
+        await loadDesign(showDesignsDropdown.value);
+    }
 })
 
 removeSelected.addEventListener("click", async function () {
@@ -295,15 +290,24 @@ toggleSaveSubmenu.addEventListener("click", function () {
     }
 })
 
-saveButton.addEventListener("click", function () {
+saveButton.addEventListener("click", async function () {
     let designName = document.querySelector("#designName").value;
     let warningLabel = document.querySelector("#warningLabel");
+    let warningDiv = document.querySelector("#warningDiv");
 
     if (designName.length > 0) {
         warningLabel.style.display = "none";
-        saveDesign(userCookie, getCells(), getSpawnAreas(), designName, cellSize);
+        warningDiv.style.height = "0px"
+        try {
+            await saveDesign(userCookie, getCells(), getSpawnAreas(), designName, cellSize);
+        } catch (error) {
+            warningLabel.innerText = error.message;
+            warningLabel.style.display = "block";
+            warningDiv.style.height = "55px"
+        }
     }
     else {
+        warningLabel.innerText = "Incorrect name!";
         warningLabel.style.display = "block";
     }
 })
