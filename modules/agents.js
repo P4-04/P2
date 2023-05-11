@@ -380,6 +380,8 @@ function anime(start) {
                 }
 
                 agents[i].prevCell2 = { x: Math.floor(newX / cellSize), y: Math.floor(newY / cellSize) }
+            } else {
+                cells[agents[i].prevCell2.x][agents[i].prevCell2.y].highestDensity += agentWeight
             }
 
             agents[i].setCoordinates(newX, newY);

@@ -3,7 +3,7 @@ export {
     getAddingSpawn, endPoint, setExits, startPoint, prevExit, svgNS, getCells, drawTxt, getCell, getNeighborCells, getAgentsInCell, calcCellDensity, getCellDensity, toggleHeat,
     setShowHeatMap, getShowHeatMap, loadCells, DrawAllCells, setBlockMouse, getBlockMouse, setCellSize, resetHeatmap, resetGrid, resetEndpoint, resetVectors
 }
-import { animateCaller } from "./agents.js";
+import { animateCaller, getAgents } from "./agents.js";
 import { sizeChange } from "../script.js";
 
 //Custom cell size
@@ -116,6 +116,8 @@ function clearCanvas() {
             cell.rect.setAttribute('fill', 'white');
         });
     });
+    let agents = getAgents()
+    
 }
 
 function resetVectors() {

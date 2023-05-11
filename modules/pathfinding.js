@@ -97,16 +97,11 @@ function markCellsController(cells, currentCell) {
 
 function getNeighbors(currentCell, cellsArray) {
     let neighbors = { N: null, S: null, E: null, W: null, NE: null, NW: null, SE: null, SW: null }
-
     let index = getCellIndex(currentCell.x, currentCell.y)
     // Find north
-    if (index.y != 0) {
         neighbors.N = cellsArray[index.x][index.y - 1]
-    }
     // find south
-    if (index.y < cellsArray[0].length - 1) {
         neighbors.S = cellsArray[index.x][index.y + 1]
-    }
     // find east
     if (index.x < cellsArray.length - 1) {
         neighbors.E = cellsArray[index.x + 1][index.y]
@@ -116,19 +111,19 @@ function getNeighbors(currentCell, cellsArray) {
         neighbors.W = cellsArray[index.x - 1][index.y]
     }
     // find north-east 
-    if (index.x < cellsArray.length - 1 && index.y != 0) {
+    if (index.x < cellsArray.length - 1) {
         neighbors.NE = cellsArray[index.x + 1][index.y - 1]
     }
     // find north-west
-    if (index.x != 0 && index.y != 0) {
+    if (index.x != 0) {
         neighbors.NW = cellsArray[index.x - 1][index.y - 1]
     }
     // find south-east
-    if (index.x < cellsArray.length - 1 && index.y < cellsArray[0].length - 1) {
+    if (index.x < cellsArray.length - 1) {
         neighbors.SE = cellsArray[index.x + 1][index.y + 1]
     }
     // find south-west
-    if (index.x != 0 && index.y < cellsArray[0].length - 1) {
+    if (index.x != 0) {
         neighbors.SW = cellsArray[index.x - 1][index.y + 1]
     }
     return neighbors
@@ -186,8 +181,8 @@ function getNeighbors2(cells, currentCell) {
 
 
 function calculateVectors(cells) {
-    cells.forEach(row => {
-        for (let cell of row) {
+    cells.forEach(column => {
+        for (let cell of column) {
             if (cell.value === 0 || cell.isWall === true) {
                 continue;
             }
