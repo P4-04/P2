@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const fs = require('fs');
-const { serialize, deserialize } = require('v8');
+const crypto = require('crypto')
 const port = 8080;
 
 
@@ -20,6 +20,16 @@ function saveInDB(data) {
     fs.writeFileSync("db.json", design)
 }
 
+function saveAlreadyExistsForUser(db, userCookie, name){
+    for (const id of Object.keys(db)) {
+        if (db[id].userCookie === userCookie && db[id].name === name)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 app.use("/modules", express.static('modules'))
 app.use("/resources", express.static('resources'))
 app.use(express.json({limit: "1500kb"}));
@@ -33,15 +43,21 @@ app.get('/', (req, res) => {
 })
   
 app.listen(port, () => {
-    console.log(`App listening on port ${port}`);
+    console.log(`Crowd Crush listening on port ${port}`);
 })
 
 app.post('/savedesign', (req, res) => {
     deserializedDesign = JSON.stringify(req.body);
     let db = loadDB();
-    let id = Object.keys(db).length;
-    db[id] = req.body;
-    saveInDB(db);
+    if (saveAlreadyExistsForUser(db, req.headers.cookie, req.body.name)){
+        res.status(403).send('Duplicate name!') 
+    }
+    else{
+        let idforDesign = crypto.randomUUID();
+        db[idforDesign] = req.body;
+        saveInDB(db);
+        res.sendStatus(200);
+    }
 })
 
 app.get('/getdesign', (req, res) => {
