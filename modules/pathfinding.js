@@ -1,4 +1,4 @@
-export {calculateVectors}
+export { calculateVectors }
 import { getSpawnAreas } from './agents.js';
 import { cellSize, drawTxt, getCellIndex } from './cells.js'
 
@@ -9,11 +9,10 @@ async function perfMeasure(cells, goal, spawn) {
 
     let spawnCount = 0;
     let spawnGroups = getSpawnAreas();
-    for (let i = 0; i < getSpawnAreas().length; i++)
-    {
+    for (let i = 0; i < getSpawnAreas().length; i++) {
         spawnCount = spawnCount + spawnGroups[i].length;
     }
-    if (hitSpawnCells != spawnCount){
+    if (hitSpawnCells != spawnCount) {
         alert("Not all spawn areas can reach the end point(s)!");
         return;
     }
@@ -34,7 +33,7 @@ let pCellSize = 0;
 function setEssenVariables(Width, Height, Size) {
     pCanvasHeight = Height;
     pCanvasWidth = Width;
-    pCellSize = Size;   
+    pCellSize = Size;
 }
 
 function getCanvasHeight() { return pCanvasHeight; }
@@ -43,25 +42,29 @@ function getCanvasWidth() { return pCanvasWidth; }
 let distVal = 0;
 
 //Makes an array for input in markCells
-function setArray(cells, cellsArray) {
-    let updateArray = [];
-    for (let i = 0; i < cellsArray.length; i++) {
-        updateArray[i] = cells[cellsArray[i].x / pCellSize][cellsArray[i].y / pCellSize];
-    }
-    return updateArray;
-}
+//Not used, since exit is now an array, which was not always the case
+// function setArray(cells, cellsArray) {
+//     let updateArray = [];
+//     for (let i = 0; i < cellsArray.length; i++) {
+//         updateArray[i] = cells[cellsArray[i].x / pCellSize][cellsArray[i].y / pCellSize];
+//     }
+//     return updateArray;
+// }
 
-//Recursive function for marking arrau of cells and counting distance
+//Recursive function for marking array of cells and counting distance
 function markCells(cells, currentCell) {
     let nextNeighbors = [];
     let NeighborArr = [];
 
     for (let i = 0; i < currentCell.length; i++) {
         //Update cell if not already marked as updated or wall
-        //cell.isWall === true => cell.mark === true
+        //(cell.isWall === true) implies (cell.mark === true)
         if (currentCell[i] != undefined && currentCell[i].mark === false) {
+            //Set distance on current array of cells
             markCellsController(cells, currentCell[i]);
 
+            //Get next araray of cells to set distance for
+            //Only get direct neighbors
             NeighborArr = getNeighbors2(cells, currentCell[i]);
 
             //A maximum of 4 neighbors can be found for each cell
@@ -80,57 +83,57 @@ function markCells(cells, currentCell) {
 }
 
 //Sets distance value and mark on cell
-//Draws text on cell
 function markCellsController(cells, currentCell) {
     cells[currentCell.x / pCellSize][currentCell.y / pCellSize].value = distVal;
     //drawTxt(cells[currentCell.x / pCellSize][currentCell.y / pCellSize], distVal);
-    
-    let cell = cells[currentCell.x / pCellSize][currentCell.y / pCellSize]
 
-    if (cell.color == "blue")
-    {
+    let cell = cells[currentCell.x / pCellSize][currentCell.y / pCellSize];
+
+    //Counts amount of reachable spawn cells
+    if (cell.color == "blue") {
         hitSpawnCells++;
-    } 
+    }
     cells[currentCell.x / pCellSize][currentCell.y / pCellSize].mark = true;
-    currentCell.mark = true;
+    //currentCell.mark = true;
 }
 
+//Get all 8 neighbors
 function getNeighbors(currentCell, cellsArray) {
-    let neighbors = { N: null, S: null, E: null, W: null, NE: null, NW: null, SE: null, SW: null }
-    let index = getCellIndex(currentCell.x, currentCell.y)
+    let neighbors = { N: null, S: null, E: null, W: null, NE: null, NW: null, SE: null, SW: null };
+    let index = getCellIndex(currentCell.x, currentCell.y);
     // Find north
-        neighbors.N = cellsArray[index.x][index.y - 1]
-    // find south
-        neighbors.S = cellsArray[index.x][index.y + 1]
-    // find east
+    neighbors.N = cellsArray[index.x][index.y - 1];
+    // Find south
+    neighbors.S = cellsArray[index.x][index.y + 1];
+    // Find east
     if (index.x < cellsArray.length - 1) {
-        neighbors.E = cellsArray[index.x + 1][index.y]
+        neighbors.E = cellsArray[index.x + 1][index.y];
     }
-    // find west
+    // Find west
     if (index.x != 0) {
-        neighbors.W = cellsArray[index.x - 1][index.y]
+        neighbors.W = cellsArray[index.x - 1][index.y];
     }
-    // find north-east 
+    // Find north-east 
     if (index.x < cellsArray.length - 1) {
-        neighbors.NE = cellsArray[index.x + 1][index.y - 1]
+        neighbors.NE = cellsArray[index.x + 1][index.y - 1];
     }
-    // find north-west
+    // Find north-west
     if (index.x != 0) {
-        neighbors.NW = cellsArray[index.x - 1][index.y - 1]
+        neighbors.NW = cellsArray[index.x - 1][index.y - 1];
     }
-    // find south-east
+    // Find south-east
     if (index.x < cellsArray.length - 1) {
-        neighbors.SE = cellsArray[index.x + 1][index.y + 1]
+        neighbors.SE = cellsArray[index.x + 1][index.y + 1];
     }
-    // find south-west
+    // Find south-west
     if (index.x != 0) {
-        neighbors.SW = cellsArray[index.x - 1][index.y + 1]
+        neighbors.SW = cellsArray[index.x - 1][index.y + 1];
     }
-    return neighbors
+    return neighbors;
 }
 
 
-//Make array of neighbors on given cell
+//Get only direct neighbors of cell, adds them to array
 function getNeighbors2(cells, currentCell) {
     let newCurrentCell = [];
     if (currentCell.x != 0) {
@@ -166,20 +169,7 @@ function getNeighbors2(cells, currentCell) {
     return newCurrentCell;
 }
 
-//Sets vector attribute on marked cell
-//Calculated from direct neighbor values
-// function calcVectorField(cells) {
-//     for (let i = 1; i < cells.length-1; i++) {
-//         for (let j = 1; j < cells[i].length-1; j++) {
-//             if (cells[i][j].mark === true) {
-//                 cells[i][j].vectorX = (cells[i-1][j].value - cells[i+1][j].value);
-//                 cells[i][j].vectorY = (cells[i][j-1].value - cells[i][j+1].value);
-//             }
-//         }
-//     }
-// }
-
-
+//Calculate vectors of cells depending on lowest value neighbor
 function calculateVectors(cells) {
     cells.forEach(column => {
         for (let cell of column) {
@@ -215,6 +205,7 @@ function calculateVectors(cells) {
                 }
             }
 
+            //Set vectors for cells
             if (direction === 'N') {
                 cell.dVector = { x: 0, y: -1 }
             } else if (direction === 'S') {
@@ -234,7 +225,7 @@ function calculateVectors(cells) {
             }
         }
     });
-    
+
 }
 
 

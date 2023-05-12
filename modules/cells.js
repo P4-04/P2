@@ -4,7 +4,7 @@ export {
     setShowHeatMap, getShowHeatMap, loadCells, DrawAllCells, setBlockMouse, getBlockMouse, setCellSize, resetHeatmap, resetGrid, resetEndpoint, resetVectors
 }
 import { animateCaller, getAgents } from "./agents.js";
-import { sizeChange } from "../script.js";
+//import { sizeChange } from "../script.js";
 
 //Custom cell size
 let cellSize = 25;
@@ -51,6 +51,7 @@ function getCellIndex(MouseX, MouseY) {
 */
 function toggleCellProperties(index, remove) {
 
+    //Reset cell to default
     if (remove) {
         cells[index.x][index.y].color = "white";
         cells[index.x][index.y].isWall = false;
@@ -60,7 +61,7 @@ function toggleCellProperties(index, remove) {
         cells[index.x][index.y].value = 0;
         return;
     }
-
+    //Set cell to exit and add to exit array
     if (addingExit) {
         cells[index.x][index.y].color = "green";
         cells[index.x][index.y].isExit = true;
@@ -68,28 +69,26 @@ function toggleCellProperties(index, remove) {
         cells[index.x][index.y].isWall = false;
 
         endPoint.push(cells[index.x][index.y]);
-
-        // if (prevExit) {
-        //     prevExit.color = "white";
-        //     prevExit.isExit = false;
-        //     prevExit = cells[index.x][index.y];
-        // } else {
-        //     prevExit = cells[index.x][index.y];
-        // }
         addingExit = false;
-    } else if (addingSpawn) {
+    }
+    //Set cell to spawn
+    else if (addingSpawn) {
         cells[index.x][index.y].color = "blue";
         startPoint = cells[index.x][index.y];
         cells[index.x][index.y].isExit = false;
         cells[index.x][index.y].isSpawnPoint = true;
         cells[index.x][index.y].isWall = false;
-    } else if (cells[index.x][index.y].color == "white") {
+    }
+    //Set cell to wall
+    else if (cells[index.x][index.y].color == "white") {
         cells[index.x][index.y].color = "black";
         cells[index.x][index.y].isWall = true;
         cells[index.x][index.y].isExit = false;
         cells[index.x][index.y].mark = true;
         cells[index.x][index.y].value = cells.length * cells[0].length / 3;
-    } else if (cells[index.x][index.y].color == "black" || cells[index.x][index.y].color == "green" || cells[index.x][index.y].color == "blue") {
+    }
+    //Set cell to default
+    else if (cells[index.x][index.y].color == "black" || cells[index.x][index.y].color == "green" || cells[index.x][index.y].color == "blue") {
         cells[index.x][index.y].color = "white";
         cells[index.x][index.y].isWall = false;
         cells[index.x][index.y].isExit = false;
@@ -99,7 +98,7 @@ function toggleCellProperties(index, remove) {
     }
 }
 
-function resetEndpoint(){
+function resetEndpoint() {
     endPoint = [];
 }
 
@@ -117,9 +116,10 @@ function clearCanvas() {
         });
     });
     let agents = getAgents()
-    
+
 }
 
+//Reset all vectors from previous simulation runs
 function resetVectors() {
     cells.forEach(column => {
         column.forEach(cell => {
@@ -141,6 +141,9 @@ function drawCell(cell) {
     cell.rect.setAttribute('fill', cell.color);
 }
 
+//Function not used
+//Writes distance from exit in each cell
+//Used to test breadth first search for vector field
 function drawTxt(cell, value) {
     let numbering = document.createElementNS(svgNS, "text")
     numbering.setAttribute('x', cell.x)
@@ -162,6 +165,7 @@ function createGrid(canvasWidth, canvasHeight) {
         cells[x] = [];
         for (let y = 0; y < canvasHeight / cellSize; y++) {
             const cell = {
+                //Position, size and type
                 x: x * cellSize,
                 y: y * cellSize,
                 width: cellSize,
@@ -176,7 +180,7 @@ function createGrid(canvasWidth, canvasHeight) {
                 vectorX: 0,
                 vectorY: 0,
                 dVector: { x: 0, y: 0 },
-                //Collision stuff
+                //Collision and heatmap
                 agents: [],
                 highestDensity: 0,
             };
@@ -187,41 +191,39 @@ function createGrid(canvasWidth, canvasHeight) {
     DrawAllCells(drawingArea);
 }
 
-function resetGrid(){
+function resetGrid() {
     for (let x = 0; x < cells.length; x++) {
         for (let y = 0; y < cells[0].length; y++) {
-                
-                cells[x][y].color = "white";
-                cells[x][y].isWall = false;
-                cells[x][y].isExit = false;
-                cells[x][y].isSpawnPoint = false;
-                //Vector field values
-                cells[x][y].mark = false;
-                cells[x][y].value = 0;
-                cells[x][y].vectorX = 0;
-                cells[x][y].vectorY = 0;
-                cells[x][y].dVector = { x: 0, y: 0 };
-                //Collision stuff
-                cells[x][y].agents = [],
+            //Type
+            cells[x][y].color = "white";
+            cells[x][y].isWall = false;
+            cells[x][y].isExit = false;
+            cells[x][y].isSpawnPoint = false;
+            //Vector field values
+            cells[x][y].mark = false;
+            cells[x][y].value = 0;
+            cells[x][y].vectorX = 0;
+            cells[x][y].vectorY = 0;
+            cells[x][y].dVector = { x: 0, y: 0 };
+            //Collision and heatmap
+            cells[x][y].agents = [],
                 cells[x][y].highestDensity = 0;
-            };
-        }
+        };
+    }
 }
 
-function resetVectorsComplete()
-{
+function resetVectorsComplete() {
     for (let x = 0; x < cells.length; x++) {
         for (let y = 0; y < cells[0].length; y++) {
-                cells[x][y].mark = false;
-                cells[x][y].value = 0;
-                cells[x][y].vectorX = 0;
-                cells[x][y].vectorY = 0;
-                cells[x][y].dVector = { x: 0, y: 0 };
-                //Collision stuff
-                cells[x][y].agents = [],
-                cells[x][y].highestDensity = 0;
-            };
-        }
+            cells[x][y].mark = false;
+            cells[x][y].value = 0;
+            cells[x][y].vectorX = 0;
+            cells[x][y].vectorY = 0;
+            cells[x][y].dVector = { x: 0, y: 0 };
+            cells[x][y].agents = [],
+            cells[x][y].highestDensity = 0;
+        };
+    }
 }
 
 /**
@@ -273,13 +275,14 @@ function getCells() { return cells; }
 /** 
  * @param {int} x The X position of the cell to find
  * @param {int} y The Y position of the cell to find
- * @returns {cell} the cell we found
+ * @returns {cells} the cell we found
 */
 function getCell(x, y) { return cells[x][y]; }
 
 function setAddingExit(isAdding) { addingExit = isAdding; addingSpawn = false };
 function setAddingSpawn(isAdding) { addingSpawn = isAdding; addingExit = false; };
 
+//Get direct neighbors of current cell
 function getNeighborCells(x, y) {
     let cell = getCell(x, y);
     let neighbors = [];
@@ -300,16 +303,10 @@ function getNeighborCells(x, y) {
         neighbors.push(cells[cell.x / cellSize][(cell.y / cellSize) + 1]);
     }
 
-    //Visualisation of the neighbors
-    // neighbors.forEach(neig => {
-    //          neig.color = "purple";
-    //          neig.rect.setAttribute('fill', neig.color);
-    //          console.log(neig.x + " " + neig.y);
-    //      });
-    // console.log(neighbors.length);
     return neighbors;
 }
 
+//Density of agents on current cell
 function calcCellDensity(cell) {
     let curentDensity = cell.agents.length;
     if (cell.highestDensity < curentDensity) {
@@ -321,6 +318,7 @@ function getCellDensity(cell) {
     return cell.highestDensity;
 }
 
+//Toggle heatmap based on agent density on cells
 function toggleHeat(cellsToUpdate) {
     cellsToUpdate.forEach(cell => {
         let density = getCellDensity(cell);
@@ -334,13 +332,15 @@ function toggleHeat(cellsToUpdate) {
 
             //cell.rect.classList.toggle("cellClass");
 
-            const scaler = 36; //255 / 7 = 36.4, we round down, and now we have a scaler for our cells (any value over 7 is bad);
+            //Scalar for maximum agent density on cell
+            const scalar = 36; 
+            //255 / 7 = 36.4, we round down, and now we have a scalar for our cells (any value over 7 is bad)
 
             let r = 255;
-            let g = 255 - ((scaler) * density);
-            let b = 255 - ((scaler) * density);
+            let g = 255 - ((scalar) * density);
+            let b = 255 - ((scalar) * density);
 
-            if (7 < density){
+            if (7 < density) {
                 g = 0;
                 b = 0;
             }
@@ -352,9 +352,8 @@ function toggleHeat(cellsToUpdate) {
             let cellID = cell.x.toString() + ", " + cell.y.toString();
             let element = document.getElementById(cellID);
             cell.rect.setAttribute("id", cellID);
-            
-            if (element != null){
-                //console.log(element);
+
+            if (element != null) {
                 element.replaceWith(cell.rect)
             } else {
                 drawingArea.appendChild(cell.rect);
@@ -394,13 +393,13 @@ function setShowHeatMap(shouldDisplay) {
                     cells[x][y].rect.setAttribute('stroke', 'black');
                     cells[x][y].rect.setAttribute('class', "heatCells");
                     cells[x][y].rect.id = "text";
-                    const scaler = 36; //255 / 7 = 36.4, we round down, and now we have a scaler for our cells (any value over 7 is bad);
+                    const scalar = 36; 
 
                     let r = 255;
-                    let g = 255 - ((scaler) * density);
-                    let b = 255 - ((scaler) * density);
+                    let g = 255 - ((scalar) * density);
+                    let b = 255 - ((scalar) * density);
 
-                    if (7 < density){
+                    if (7 < density) {
                         g = 0;
                         b = 0;
                     }
@@ -417,7 +416,7 @@ function setShowHeatMap(shouldDisplay) {
     }
 }
 
-function resetHeatmap(){
+function resetHeatmap() {
     for (let x = 0; x < cells.length; x++) {
         for (let y = 0; y < cells[0].length; y++) {
             cells[x][y].highestDensity = 0;
@@ -429,8 +428,8 @@ function resetHeatmap(){
 }
 
 function getShowHeatMap() { return showHeatMap; }
-function setCellSize(value) {cellSize = value}
-function setExits(exits) {endPoint = exits}
+function setCellSize(value) { cellSize = value }
+function setExits(exits) { endPoint = exits }
 
 function getBlockMouse() { return shouldIgnoreMouse; }
 function setBlockMouse(blockMouse) { shouldIgnoreMouse = blockMouse; }
