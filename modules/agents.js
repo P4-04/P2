@@ -374,9 +374,9 @@ function animate(start) {
 
                 agents[i].prevCell2 = { x: Math.floor(newX / cellSize), y: Math.floor(newY / cellSize) }
             }
-            else {
-                cells[agents[i].prevCell2.x][agents[i].prevCell2.y].highestDensity += agentWeight;
-            }
+            // else {
+            //     cells[agents[i].prevCell2.x][agents[i].prevCell2.y].highestDensity += agentWeight;
+            // }
 
             //Update agent position based on calculations of next position
             agents[i].setCoordinates(newX, newY);
@@ -422,6 +422,7 @@ function collisionCheck(x, y, currAgent, newCell) {
     }
 }
 
+//Recursively call animate if agents exist
 async function animateCaller() {
 
     if (agents.length == 0) {
