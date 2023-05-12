@@ -233,7 +233,9 @@ toggleDesignsSubmenu.addEventListener("click", async function() {
 
 //Load selected design
 loadSelectedButton.addEventListener("click", async function () {
-    await loadDesign(showDesignsDropdown.value);
+    if (showDesignsDropdown.value.length !== 0){
+        await loadDesign(showDesignsDropdown.value);
+    }
 });
 
 //Remove selected design
@@ -262,15 +264,22 @@ toggleSaveSubmenu.addEventListener("click", function () {
 });
 
 //Save current design
-saveButton.addEventListener("click", function () {
+saveButton.addEventListener("click", async function () {
     let designName = document.querySelector("#designName").value;
     let warningLabel = document.querySelector("#warningLabel");
+    let warningDiv = document.querySelector("#warningDiv");
 
     if (designName.length > 0) {
         warningLabel.style.display = "none";
-        saveDesign(userCookie, getCells(), getSpawnAreas(), designName, cellSize);
+        try {
+            await saveDesign(userCookie, getCells(), getSpawnAreas(), designName, cellSize);
+        } catch (error) {
+            warningLabel.innerText = error.message;
+            warningLabel.style.display = "block";
+        }
     }
     else {
+        warningLabel.innerText = "Incorrect name!";
         warningLabel.style.display = "block";
     }
 })
