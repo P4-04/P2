@@ -1,5 +1,5 @@
-import * as scriptFile from '../modules/designmanager.js';
+const sum = require('../modules/testmodule.js');
 
-// const a = require("./savedesign")
-
-// test('')
+test('adds 1 + 2 to equal 3', () => {
+  expect(sum(1, 2)).toBe(3);
+});
