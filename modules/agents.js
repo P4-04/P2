@@ -4,6 +4,7 @@ import { cellSize, svgNS, getCells, getCellIndex, getCell, endPoint, getNeighbor
 import { calculateVectors, getCanvasHeight, getCanvasWidth, getNeighbors2 } from './pathfinding.js'
 import { updateFPSCounter } from './utils.js'
 
+
 const drawingArea = document.querySelector(".drawing");
 let counter = document.querySelector("#agentCount");
 let spawnAreas = [];
