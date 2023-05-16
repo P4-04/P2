@@ -61,17 +61,17 @@ async function loadDesign(name, userCookie){
             "name": name
           }
     })
-    let deserializedDesign = await response.json();
+    let serializedDesign = await response.json();
 
     let Exits = [];
-    deserializedDesign.cells.forEach(columns => {
+    serializedDesign.cells.forEach(columns => {
         columns.forEach(cell => {
             if (cell.isExit) {
                 Exits.push(cell);
-            }
+            }       
         });
     });
     setExits(Exits);
-    loadCells(deserializedDesign.cells, deserializedDesign.cellSize);
-    setSpawnAreas(deserializedDesign.spawnAreas);
+    loadCells(serializedDesign.cells, serializedDesign.cellSize);
+    setSpawnAreas(serializedDesign.spawnAreas);
 }
