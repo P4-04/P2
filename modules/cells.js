@@ -3,7 +3,7 @@ export {
     getAddingSpawn, endPoint, setExits, startPoint, prevExit, svgNS, getCells, drawTxt, getCell, getNeighborCells, getAgentsInCell, calcCellDensity, getHighestCellDensity, showLiveHeat,
     setShowHeatMap, getShowHeatMap, loadCells, DrawAllCells, setBlockMouse, getBlockMouse, setCellSize, resetHeatmap, resetGrid, resetEndpoint, resetVectors
 }
-import { animateCaller, getAgents } from "./agents.js";
+import { getAgents } from "./agents.js";
 //import { sizeChange } from "../script.js";
 
 //Custom cell size
