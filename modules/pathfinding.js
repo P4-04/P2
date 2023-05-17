@@ -225,7 +225,6 @@ function calculateVectors(cells) {
             }
         }
     });
-
 }
 
 
