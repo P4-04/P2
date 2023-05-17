@@ -1,7 +1,7 @@
 import { setEssenVariables, perfMeasure } from './modules/pathfinding.js';
 import { addSpawnArea, getSpawnAreas, populate, removeAgentsFromArea, animateCaller, setSizes, getAgents, updateAgentColors, setSpawnAreas } from './modules/agents.js';
-import { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit, getCells, DrawAllCells, toggleHeat, 
-    setShowHeatMap, getShowHeatMap, setBlockMouse, getBlockMouse, setCellSize, resetHeatmap, resetGrid, resetEndpoint, resetVectors } from './modules/cells.js';
+import { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingSpawn, endPoint, startPoint, getCells, 
+    setShowHeatMap, getShowHeatMap, setBlockMouse, setCellSize, resetHeatmap, resetGrid, resetEndpoint, resetVectors } from './modules/cells.js';
 import { getAllDesignNames, saveDesign, loadDesign, removeDesign } from './modules/designmanager.js';
 
 //Initialize DOM elements
@@ -358,10 +358,10 @@ simButton.addEventListener("click", function () {
 toggle.addEventListener("click", function () {
     setShowHeatMap(getShowHeatMap() ? false : true);
     if (getShowHeatMap() === true) {
-        toggle.textContent = "Heatmap: on"
+        toggle.textContent = "Heatmap: On"
     }
     else if (getShowHeatMap() === false) {
-        toggle.textContent = "Heatmap: off"
+        toggle.textContent = "Heatmap: Off"
     }
 });
 

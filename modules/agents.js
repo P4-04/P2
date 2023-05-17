@@ -1,7 +1,7 @@
-export { populate, removeAgentsFromArea, animateCaller, getSpawnAreas, addSpawnArea, setSizes, setSpawnAreas, getAgents, updateAgentColors }
-import { simButton, colorPicker } from '../script.js';
-import { cellSize, svgNS, getCells, getCellIndex, getCell, endPoint, getNeighborCells, getAgentsInCell, calcCellDensity, toggleHeat, getShowHeatMap, setBlockMouse } from './cells.js'
-import { calculateVectors, getCanvasHeight, getCanvasWidth, getNeighbors2 } from './pathfinding.js'
+export { populate, removeAgentsFromArea, animateCaller, getSpawnAreas, addSpawnArea, setSizes, setSpawnAreas, getAgents, updateAgentColors}
+import { simButton, colorPicker} from '../script.js';
+import { cellSize, svgNS, getCells, getCell, endPoint, calcCellDensity, showLiveHeat, getShowHeatMap, setBlockMouse } from './cells.js'
+import { calculateVectors } from './pathfinding.js'
 import { updateFPSCounter } from './utils.js'
 
 
@@ -433,7 +433,7 @@ async function animateCaller() {
 
     animate(start);
     if (getShowHeatMap) {
-        toggleHeat(cellsToUpdate);
+        showLiveHeat(cellsToUpdate);
     }
     cellsToUpdate = [];
     return;

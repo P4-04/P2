@@ -1,9 +1,9 @@
 export {
     createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit,
-    getAddingSpawn, endPoint, setExits, startPoint, prevExit, svgNS, getCells, drawTxt, getCell, getNeighborCells, getAgentsInCell, calcCellDensity, getCellDensity, toggleHeat,
+    getAddingSpawn, endPoint, setExits, startPoint, prevExit, svgNS, getCells, drawTxt, getCell, getNeighborCells, getAgentsInCell, calcCellDensity, getHighestCellDensity, showLiveHeat,
     setShowHeatMap, getShowHeatMap, loadCells, DrawAllCells, setBlockMouse, getBlockMouse, setCellSize, resetHeatmap, resetGrid, resetEndpoint, resetVectors
 }
-import { animateCaller, getAgents } from "./agents.js";
+import { getAgents } from "./agents.js";
 //import { sizeChange } from "../script.js";
 
 //Custom cell size
@@ -314,14 +314,14 @@ function calcCellDensity(cell) {
     }
 }
 
-function getCellDensity(cell) {
+function getHighestCellDensity(cell) {
     return cell.highestDensity;
 }
 
 //Toggle heatmap based on agent density on cells
-function toggleHeat(cellsToUpdate) {
+function showLiveHeat(cellsToUpdate) {
     cellsToUpdate.forEach(cell => {
-        let density = getCellDensity(cell);
+        let density = getHighestCellDensity(cell);
         if (density != 0 && cell.isWall == false && cell.isExit == false && cell.isSpawnPoint == false) {
             cell.rect = document.createElementNS(svgNS, 'rect');
             cell.rect.setAttribute('width', cell.width);
@@ -333,12 +333,11 @@ function toggleHeat(cellsToUpdate) {
             //cell.rect.classList.toggle("cellClass");
 
             //Scalar for maximum agent density on cell
-            const scalar = 36; 
-            //255 / 7 = 36.4, we round down, and now we have a scalar for our cells (any value over 7 is bad)
+            const scaler = 36; //255 / 7 = 36.4, we round down, and now we have a scaler for our cells (any value over 7 is bad);
 
             let r = 255;
-            let g = 255 - ((scalar) * density);
-            let b = 255 - ((scalar) * density);
+            let g = 255 - ((scaler) * density);
+            let b = 255 - ((scaler) * density);
 
             if (7 < density) {
                 g = 0;
@@ -360,7 +359,6 @@ function toggleHeat(cellsToUpdate) {
             }
         }
     });
-
 }
 
 function getAddingExit() { return addingExit; };
@@ -376,14 +374,15 @@ function setShowHeatMap(shouldDisplay) {
         heatedCells = document.getElementsByClassName("heatCells");
 
         while (heatedCells.length != 0) {
-            heatedCells[0].remove();
+            heatedCells[0].remove();    
         }
+        return;
     }
 
     if (showHeatMap) {
         for (let x = 0; x < cells.length; x++) {
             for (let y = 0; y < cells[0].length; y++) {
-                let density = getCellDensity(cells[x][y]);
+                let density = getHighestCellDensity(cells[x][y]);
                 if (density != 0 && cells[x][y].isWall == false && cells[x][y].isExit == false && cells[x][y].isSpawnPoint == false) {
                     cells[x][y].rect = document.createElementNS(svgNS, 'rect');
                     cells[x][y].rect.setAttribute('width', cells[x][y].width);
@@ -392,12 +391,14 @@ function setShowHeatMap(shouldDisplay) {
                     cells[x][y].rect.setAttribute('y', cells[x][y].y);
                     cells[x][y].rect.setAttribute('stroke', 'black');
                     cells[x][y].rect.setAttribute('class', "heatCells");
-                    cells[x][y].rect.id = "text";
-                    const scalar = 36; 
+                    let cellID = cells[x][y].x.toString() + ", " + cells[x][y].y.toString();
+                    let element = document.getElementById(cellID);
+                    cells[x][y].rect.setAttribute("id", cellID);
+                    const scaler = 36; //255 / 7 = 36.4, we round down, and now we have a scaler for our cells (any value over 7 is bad);
 
                     let r = 255;
-                    let g = 255 - ((scalar) * density);
-                    let b = 255 - ((scalar) * density);
+                    let g = 255 - ((scaler) * density);
+                    let b = 255 - ((scaler) * density);
 
                     if (7 < density) {
                         g = 0;
