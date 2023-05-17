@@ -1,6 +1,6 @@
 import { setEssenVariables, perfMeasure } from './modules/pathfinding.js';
 import { addSpawnArea, getSpawnAreas, populate, removeAgentsFromArea, animateCaller, setSizes, getAgents, updateAgentColors, setSpawnAreas } from './modules/agents.js';
-import { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit, getCells, DrawAllCells, toggleHeat, 
+import { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit, getAddingSpawn, endPoint, startPoint, prevExit, getCells, DrawAllCells, 
     setShowHeatMap, getShowHeatMap, setBlockMouse, getBlockMouse, setCellSize, resetHeatmap, resetGrid, resetEndpoint, resetVectors } from './modules/cells.js';
 import { getAllDesignNames, saveDesign, loadDesign, removeDesign } from './modules/designmanager.js';
 
