@@ -3,7 +3,6 @@
 //This file is not used in the actual application, it is only used for testing purposes
 //This file is not meant to be run, it is only meant to be imported by the tests
 
-
 module.exports = {
     populate,
     populateCells,
