@@ -7,6 +7,7 @@
 module.exports = {
     populate,
     populateCells,
+    spawnExceededAgents,
     checkAgentDistance,
     getRandomArbitrary
   };
@@ -86,28 +87,28 @@ function populateCells(area, agentsPerArea, minAgentDistance, agents, cellSize) 
   }
 }
 
-//Spawns agents which could not be spawned earlier
-function spawnExceededAgents() {
+function spawnExceededAgents(spawnAreas, agents, exceededAgents, cellSize) {
   const minAgentDistance = cellSize / 3;
   const padding = minAgentDistance / 2;
   for (let area of spawnAreas) {
-      for (let cell of area) {
-          let fattiness = ((cellSize / 6) + Math.floor(Math.random() * 3));
-          let x = getRandomArbitrary(cell.x * cellSize + fattiness + padding, (cell.x + 1) * cellSize - fattiness - padding);
-          let y = getRandomArbitrary(cell.y * cellSize + fattiness + padding, (cell.y + 1) * cellSize - fattiness - padding);
-          if (checkAgentDistance(x, y, minAgentDistance)) {
-              let agent = new Agent(x, y, fattiness);
-              agents.push(agent);
-              exceededAgents--;
-              if (exceededAgents <= 0) {
-                  break;
-              }
-          }
+    for (let cell of area) {
+      let fattiness = ((cellSize / 6) + Math.floor(Math.random() * 3));
+      let x = getRandomArbitrary(cell.x * cellSize + fattiness + padding, (cell.x + 1) * cellSize - fattiness - padding);
+      let y = getRandomArbitrary(cell.y * cellSize + fattiness + padding, (cell.y + 1) * cellSize - fattiness - padding);
+      if (checkAgentDistance(x, y, minAgentDistance, agents)) {
+        let agent = {x, y, fattiness};
+        agents.push(agent);
+        exceededAgents--;
+        if (exceededAgents <= 0) {
+          return agents;
+        }
       }
-      if (exceededAgents <= 0) {
-          break;
-      }
+    }
+    if (exceededAgents <= 0) {
+      return agents;
+    }
   }
+  return agents;
 }
   
 function checkAgentDistance(x, y, minAgentDistance, agents) {

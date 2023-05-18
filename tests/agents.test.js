@@ -1,6 +1,7 @@
 const {
   populate,
   populateCells,
+  spawnExceededAgents,
   checkAgentDistance,
   getRandomArbitrary 
 } = require('./refactored_modules.js');
@@ -26,7 +27,7 @@ describe('populate', () => {
         populate(spawnAreas, cellSize, numAgents);
       }).toThrowError();
     });
-  });
+});
 
 describe('populateCells', () => {
   test('handles the case where agentsPerArea is zero', () => {
@@ -39,7 +40,20 @@ describe('populateCells', () => {
     expect(agents.length).toBe(0);
   });
 });
-  
+
+describe('spawnExceededAgents', () => {
+  test('successfully spawns agents when there are excess agents', () => {
+    const spawnAreas = [[{ x: 0, y: 0 }, { x: 100, y: 100 }]];
+    const cellSize = 15;
+    let agents = [{ x: 5, y: 5, fattiness: 1 }];
+    let exceededAgents = 2;
+    
+    agents = spawnExceededAgents(spawnAreas, agents, exceededAgents, cellSize);
+    
+    expect(agents.length).toBe(2);
+  });
+});
+
 describe('checkAgentDistance', () => {
   test('returns false when distance is less than minAgentDistance + agent.fattiness * 2', () => {
     const x = 10;
