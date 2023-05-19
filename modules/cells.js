@@ -159,7 +159,14 @@ function drawTxt(cell, value) {
 /**
  * Initializes our grid-cells with their default properties and calls DrawAllCells
 */
-function createGrid(canvasWidth, canvasHeight) {
+function createGrid(canvasWidth, canvasHeight, sizeChange) {
+    if (sizeChange === true) {
+        cells.forEach(row => {
+            row.forEach(cell => {
+                cell.rect.remove();
+            });
+        });
+    }
     cells = [[]];
     for (let x = 0; x < canvasWidth / cellSize; x++) {
         cells[x] = [];

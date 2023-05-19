@@ -124,7 +124,7 @@ cellSlider.addEventListener("mouseup", function() {
 
     //Redraw grid
     sizeChange = true;
-    createGrid(canvasWidth, canvasHeight);
+    createGrid(canvasWidth, canvasHeight, sizeChange);
     sizeChange = false;
 });
 
