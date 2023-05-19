@@ -8,6 +8,7 @@ module.exports = {
     populateCells,
     spawnExceededAgents,
     checkAgentDistance,
+    collisionCheck,
     getRandomArbitrary
   };
 
@@ -50,7 +51,7 @@ function populate(spawnAreas, cellSize, numAgents) {
     return exceededAgents;
 }
   
-//Spawning agent randomly within correct area
+//Function for spawning agents randomly within correct area
 function populateCells(area, agentsPerArea, minAgentDistance, agents, cellSize) {
   let firstCell = area[area.length - 1];
   let lastCell = area[0];
@@ -86,6 +87,7 @@ function populateCells(area, agentsPerArea, minAgentDistance, agents, cellSize) 
   }
 }
 
+//Function for spawning agents in excess
 function spawnExceededAgents(spawnAreas, agents, exceededAgents, cellSize) {
   const minAgentDistance = cellSize / 3;
   const padding = minAgentDistance / 2;
@@ -109,7 +111,8 @@ function spawnExceededAgents(spawnAreas, agents, exceededAgents, cellSize) {
   }
   return agents;
 }
-  
+
+//Function for checking if the distance between agents is greater than the minimum distance
 function checkAgentDistance(x, y, minAgentDistance, agents) {
   for (let agent of agents) {
     let distance = Math.sqrt(Math.pow(agent.x - x, 2) + Math.pow(agent.y - y, 2));
@@ -121,7 +124,21 @@ function checkAgentDistance(x, y, minAgentDistance, agents) {
   return true;
 }
 
-//TODO
+//Function for checking if the agent is colliding with another agent or a wall
+function collisionCheck(x, y, currAgent, newCell, agents) {
+    let agentCollision = agents.some((agent) => Math.abs(agent.x - x) < agent.fattiness + currAgent.fattiness && Math.abs(agent.y - y) < agent.fattiness + currAgent.fattiness && agent.x != currAgent.x && agent.y != currAgent.y);
+    let cellCollision = newCell.isWall;
+    if (agentCollision || cellCollision) 
+    {
+        return true;
+    } 
+    else 
+    {
+        return false;
+    }
+}
+
+//Function for getting the index of a cell
 function calculateVectors(cells) {
   cells.forEach(column => {
       for (let cell of column) {
@@ -179,7 +196,7 @@ function calculateVectors(cells) {
   });
 }
 
-//TODO
+//Function for getting the index of a cell
 function getNeighbors(currentCell, cellsArray) {
   let neighbors = { N: null, S: null, E: null, W: null, NE: null, NW: null, SE: null, SW: null };
   let index = getCellIndex(currentCell.x, currentCell.y);
@@ -212,18 +229,6 @@ function getNeighbors(currentCell, cellsArray) {
       neighbors.SW = cellsArray[index.x - 1][index.y + 1];
   }
   return neighbors;
-}
-
-//TODO 
-function collisionCheck(x, y, currAgent, newCell) {
-  let agentCollision = agents.some((agent) => Math.abs(agent.x - x) < agent.fattiness + currAgent.fattiness && Math.abs(agent.y - y) < agent.fattiness + currAgent.fattiness && agent.x != currAgent.x && agent.y != currAgent.y);
-  let cellCollision = newCell.isWall;
-  if (agentCollision || cellCollision) {
-      return true;
-  } 
-  else {
-      return false;
-  }
 }
 
 //Heatmap tests:

@@ -3,6 +3,7 @@ const {
   populateCells,
   spawnExceededAgents,
   checkAgentDistance,
+  collisionCheck,
   getRandomArbitrary 
 } = require('./refactored_modules.js');
 
@@ -97,6 +98,41 @@ describe('checkAgentDistance', () => {
       { x: 30, y: 35, fattiness: 3 },
     ];
     const result = checkAgentDistance(x, y, minAgentDistance, agents);
+    expect(result).toBe(false);
+  });
+});
+
+describe('collisionCheck', () => {
+  test('returns true when there is an agent collision', () => {
+    const x = 10;
+    const y = 20;
+    const currAgent = { x: 15, y: 25, fattiness: 5 };
+    const newCell = { isWall: false };
+    const agents = [
+      { x: 13, y: 27, fattiness: 4 },
+      { x: 30, y: 35, fattiness: 3 },
+    ];
+    const result = collisionCheck(x, y, currAgent, newCell, agents);
+    expect(result).toBe(true);
+  });  
+
+  test('returns true when there is a cell collision', () => {
+    const x = 10;
+    const y = 20;
+    const currAgent = { x: 5, y: 5, fattiness: 1 };
+    const newCell = { isWall: true };
+    const agents = [{ x: 5, y: 5, fattiness: 1 }];
+    const result = collisionCheck(x, y, currAgent, newCell, agents);
+    expect(result).toBe(true);
+  });
+
+  test('returns false when there are no collisions', () => {
+    const x = 10;
+    const y = 20;
+    const currAgent = { x: 5, y: 5, fattiness: 1 };
+    const newCell = { isWall: false };
+    const agents = [{ x: 15, y: 25, fattiness: 2 }];
+    const result = collisionCheck(x, y, currAgent, newCell, agents);
     expect(result).toBe(false);
   });
 });
