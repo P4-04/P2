@@ -1,8 +1,9 @@
 export { populate, removeAgentsFromArea, animateCaller, getSpawnAreas, addSpawnArea, setSizes, setSpawnAreas, getAgents, updateAgentColors}
 import { simButton, colorPicker} from '../script.js';
-import { cellSize, svgNS, getCells, getCellIndex, getCell, endPoint, getNeighborCells, getAgentsInCell, calcCellDensity, toggleHeat, getShowHeatMap, setBlockMouse } from './cells.js'
-import { calculateVectors, getCanvasHeight, getCanvasWidth, getNeighbors2 } from './pathfinding.js'
+import { cellSize, svgNS, getCells, getCell, endPoint, calcCellDensity, showLiveHeat, getShowHeatMap, setBlockMouse } from './cells.js'
+import { calculateVectors } from './pathfinding.js'
 import { updateFPSCounter } from './utils.js'
+
 
 const drawingArea = document.querySelector(".drawing");
 let counter = document.querySelector("#agentCount");
@@ -10,6 +11,7 @@ let spawnAreas = [];
 //Initializing array of agents
 let agents = [];
 //Max speed increase: 0.2, for a realistic speed of around 1.2-1.4 metres per second
+//Higher values allow for higher speeds, or further movement per recursion
 let maxSpeedIncrease = 0.6;
 let deletedAgentsCount = 0;
 
@@ -26,7 +28,6 @@ function setSizes(Width, Height) {
 //Agents class with relevant svg attributes
 class Agent {
     constructor(x, y, fattiness) {
-        //console.log(agents.length);
         this.x = x;
         this.y = y;
         this.prevCell2 = { x: null, y: null }
@@ -57,13 +58,8 @@ class Agent {
         //The cell this agent is currently in
         this.myCell = null;
 
-        //We should probably delete all 'rect' from this document once done with collisions
-        // this.rect = document.createElementNS(svgNS, 'rect');
-        // this.rect.setAttribute('width', Math.floor(fattiness * Math.sqrt(2)));
-        // this.rect.setAttribute('height', Math.floor(fattiness * Math.sqrt(2)));
         this.squareX = Math.ceil(x - (fattiness * Math.sqrt(2) / 2));
         this.squareY = Math.ceil(y - (fattiness * Math.sqrt(2) / 2));
-        // this.rect.setAttribute('stroke', "pink");
 
         this.square = {
             x,
@@ -81,7 +77,7 @@ class Agent {
     }
     setSpeedModifier(speedModifier) {
         this.SpeedModifier = speedModifier;
-    }    
+    }
     setCoordinates(x, y) {
         this.x = x;
         this.y = y;
@@ -94,14 +90,10 @@ class Agent {
         if (!getShowHeatMap()) {
             this.body.transform.baseVal[0] = xyTransform;
             this.body.setAttribute('fill-opacity', '100')
-        } else {
+        }
+        else {
             this.body.setAttribute('fill-opacity', '0');
         }
-
-        // this.square.left = x/(canvasWidth / cellSize);
-        // this.square.top = y/(canvasHeight / cellSize);
-        // this.square.right = this.square.left + this.fattiness;
-        // this.square.bottom = this.square.top + this.fattiness;
         this.square.topLeft = x;
         this.square.topRight = y;
         this.square.bottomRight = x + this.fattiness;
@@ -112,14 +104,12 @@ class Agent {
         let cellY = Math.floor(this.y / cellSize);
         this.notifyCell(cellX, cellY);
     }
+    //Keeps track of number of agents on cell
     notifyCell(cellX, cellY) {
         let currentCell = getCell(cellX, cellY);
         if (this.myCell == null) {
             this.myCell = currentCell;
         }
-        // if (this.myCell == currentCell) {
-        //     return;
-        // }
 
         if (getShowHeatMap()) {
             cellsToUpdate.push(this.myCell);
@@ -132,8 +122,6 @@ class Agent {
 
         this.myCell = currentCell;
         this.myCell.agents.push(this.myNumber);
-
-        //console.log("added agent: " + this.myNumber + " to cell: " + this.myCell.x + " + " + this.myCell.y);
 
         calcCellDensity(this.myCell);
     }
@@ -181,6 +169,7 @@ function updateAgentColors(newColor) {
     });
 }
 
+//Function for evenlt distributing agents among total spawn area
 function populate() {
     if (spawnAreas.length == 0) {
         window.alert("Please add spawn areas");
@@ -213,6 +202,7 @@ function populate() {
     });
 }
 
+//Spawning agent randomly within correct area
 function populateCells(area, agentsPerArea, minAgentDistance) {
     let firstCell = area[area.length - 1];
     let lastCell = area[0];
@@ -221,15 +211,15 @@ function populateCells(area, agentsPerArea, minAgentDistance) {
     //increase the padding to ensure agents are not placed too close to the border
     let padding = minAgentDistance;
     //add a limit to the number of tries
-    let maxTries = 100; 
+    let maxTries = 100;
 
     for (let i = 0; i < agentsPerArea; ++i) {
         let validPosition = false;
         let x, y;
         //initialize tries counter
-        let tries = 0; 
+        let tries = 0;
         //add tries limit to the condition
-        while (!validPosition && tries < maxTries) { 
+        while (!validPosition && tries < maxTries) {
             x = getRandomArbitrary(firstCell.x * cellSize + fattiness + padding, lastCell.x * cellSize + Math.floor(cellSize) - fattiness - padding);
             y = getRandomArbitrary(firstCell.y * cellSize + fattiness + padding, lastCell.y * cellSize + Math.floor(cellSize) - fattiness - padding);
             validPosition = checkAgentDistance(x, y, minAgentDistance);
@@ -241,12 +231,12 @@ function populateCells(area, agentsPerArea, minAgentDistance) {
             let agent = new Agent(x, y, fattiness);
             agents.push(agent);
         }
+        //If no valid positions are found, spawn these agents later
         else {
             exceededAgents++;
         }
     }
 }
-
 
 function checkAgentDistance(x, y, minAgentDistance) {
     for (let agent of agents) {
@@ -259,6 +249,7 @@ function checkAgentDistance(x, y, minAgentDistance) {
     return true;
 }
 
+//Spawns agents which could not be spawned earlier
 function spawnExceededAgents() {
     const minAgentDistance = cellSize / 3;
     const padding = minAgentDistance / 2;
@@ -279,7 +270,7 @@ function spawnExceededAgents() {
         if (exceededAgents <= 0) {
             break;
         }
-    } 
+    }
 }
 
 //Getting position within spawn area
@@ -291,27 +282,21 @@ function getAgents() {
     return agents;
 }
 
-//
-//
-//Move agents - Animate / collision
-//
-//
 let cellsToUpdate = [];
 //Animate function, sets random position
-function anime(start) {
+function animate(start) {
     let i = 0, len = agents.length;
     let cells = getCells();
     while (i < len) {
-        /*Maybe see if we can remove the null check?*/
         if (agents[i] != null) {
-            //console.log(agents);
+            //Calculate next position for agent based on current cell vector
             let x = Math.floor(agents[i].x / cellSize);
             let y = Math.floor(agents[i].y / cellSize);
             let newX = agents[i].x + ((cells[x][y].dVector.x) * agents[i].SpeedModifier) / 3;
             let newY = agents[i].y + ((cells[x][y].dVector.y) * agents[i].SpeedModifier) / 3;
 
-            //Code for applying decreasing fractions of previous vector to current vector
-            //Makes movement in turns and corners appear more smooth
+            //Applies decreasing fractions of previous vector to current vector
+            //Agent move further away from walls during corner turns
             if (getCell(x, y).dVector.x !== getCell(Math.floor(newX / cellSize), Math.floor(newY / cellSize)).dVector.x ||
                 getCell(x, y).dVector.y !== getCell(Math.floor(newX / cellSize), Math.floor(newY / cellSize)).dVector.y) {
                 agents[i].prevCell = getCell(x, y);
@@ -319,15 +304,18 @@ function anime(start) {
                 getCell(x, y).agents.splice(agents[i].myNumber, 1);
             }
 
+            //Remove fraction of previous vector if fraction is too small
             if (agents[i].prevCellFract <= 5) {
                 agents[i].prevCell = null;
                 agents[i].prevCellFract = null;
             }
+            //If a fraction exists, apply it to current vector
             else if (agents[i].prevCellFract !== null) {
                 let prevVectorX = agents[i].prevCell.dVector.x * agents[i].prevCellFract;
                 let prevVectorY = agents[i].prevCell.dVector.y * agents[i].prevCellFract;
                 newX = agents[i].x + ((cells[x][y].dVector.x / (agents[i].prevCellFract) + (prevVectorX / agents[i].prevCellFract)) * agents[i].SpeedModifier) / 7;
                 newY = agents[i].y + ((cells[x][y].dVector.y / (agents[i].prevCellFract) + (prevVectorY / agents[i].prevCellFract)) * agents[i].SpeedModifier) / 7;
+                //Decrease fraction for each move
                 agents[i].prevCellFract -= 1;
             }
 
@@ -339,28 +327,30 @@ function anime(start) {
                     newY = agents[i].y + agents[i].currVector.y / 3;
                 }
                 if (collisionCheck(newX, newY, agents[i], cells[Math.floor(newX / cellSize)][Math.floor(newY / cellSize)])) {
-                    let vectorTransformX = Math.cos(90 * (Math.PI / 180)) * cells[x][y].dVector.x - Math.sin(90 * (Math.PI / 180)) * cells[x][y].dVector.y
-                    let vectorTransformY = Math.sin(90 * (Math.PI / 180)) * cells[x][y].dVector.x + Math.cos(90 * (Math.PI / 180)) * cells[x][y].dVector.y
+                    //Rotation matrix application to vector
+                    let vectorTransformX = Math.cos(90 * (Math.PI / 180)) * cells[x][y].dVector.x - Math.sin(90 * (Math.PI / 180)) * cells[x][y].dVector.y;
+                    let vectorTransformY = Math.sin(90 * (Math.PI / 180)) * cells[x][y].dVector.x + Math.cos(90 * (Math.PI / 180)) * cells[x][y].dVector.y;
 
                     newX = agents[i].x + (vectorTransformX * agents[i].SpeedModifier) / 3;
                     newY = agents[i].y + (vectorTransformY * agents[i].SpeedModifier) / 3;
-                    agents[i].currVector.x = vectorTransformX
-                    agents[i].currVector.y = vectorTransformY
+                    agents[i].currVector.x = vectorTransformX;
+                    agents[i].currVector.y = vectorTransformY;
 
-                    //Clockwise rotation
+                    //Clockwise rotation, if counterclockwise movement failed
                     if (collisionCheck(newX, newY, agents[i], cells[Math.floor(newX / cellSize)][Math.floor(newY / cellSize)])) {
-                        let vectorTransformX = Math.cos(90 * (Math.PI / 180)) * cells[x][y].dVector.x + Math.sin(90 * (Math.PI / 180)) * cells[x][y].dVector.y
-                        let vectorTransformY = -Math.sin(90 * (Math.PI / 180)) * cells[x][y].dVector.x + Math.cos(90 * (Math.PI / 180)) * cells[x][y].dVector.y
+                        //Inverse rotation matrix application to vector
+                        let vectorTransformX = Math.cos(90 * (Math.PI / 180)) * cells[x][y].dVector.x + Math.sin(90 * (Math.PI / 180)) * cells[x][y].dVector.y;
+                        let vectorTransformY = -Math.sin(90 * (Math.PI / 180)) * cells[x][y].dVector.x + Math.cos(90 * (Math.PI / 180)) * cells[x][y].dVector.y;
 
                         newX = agents[i].x + (vectorTransformX * agents[i].SpeedModifier) / 3;
                         newY = agents[i].y + (vectorTransformY * agents[i].SpeedModifier) / 3;
-                        agents[i].currVector.x = vectorTransformX
-                        agents[i].currVector.y = vectorTransformY
+                        agents[i].currVector.x = vectorTransformX;
+                        agents[i].currVector.y = vectorTransformY;
 
                         // if all directions have collisions, just stand still
                         if (collisionCheck(newX, newY, agents[i], cells[Math.floor(newX / cellSize)][Math.floor(newY / cellSize)])) {
-                            newX = agents[i].x
-                            newY = agents[i].y
+                            newX = agents[i].x;
+                            newY = agents[i].y;
                         }
                     }
                 }
@@ -368,65 +358,37 @@ function anime(start) {
             if (newX < 0) {
                 newX = 0;
             }
-            let agentWeight = 0.5
+
+            //Applying agent weight to cell
+            //Makes more densely packed cells less desirable
+            let agentWeight = 0.5;
             if (!agents[i].prevCell2.x) {
-                agents[i].prevCell2.x = Math.floor(newX / cellSize)
-                agents[i].prevCell2.y = Math.floor(newY / cellSize)
-                cells[Math.floor(newX / cellSize)][Math.floor(newY / cellSize)].value += agentWeight
-            } else if (agents[i].prevCell2.x != Math.floor(newX / cellSize) || agents[i].prevCell2.y != Math.floor(newY / cellSize)) {
-                cells[agents[i].prevCell2.x][agents[i].prevCell2.y].value -= agentWeight
+                agents[i].prevCell2.x = Math.floor(newX / cellSize);
+                agents[i].prevCell2.y = Math.floor(newY / cellSize);
+                cells[Math.floor(newX / cellSize)][Math.floor(newY / cellSize)].value += agentWeight;
+            }
+            else if (agents[i].prevCell2.x != Math.floor(newX / cellSize) || agents[i].prevCell2.y != Math.floor(newY / cellSize)) {
+                cells[agents[i].prevCell2.x][agents[i].prevCell2.y].value -= agentWeight;
                 if (!cells[Math.floor(newX / cellSize)][Math.floor(newY / cellSize)].isExit) {
-                    cells[Math.floor(newX / cellSize)][Math.floor(newY / cellSize)].value += agentWeight
+                    cells[Math.floor(newX / cellSize)][Math.floor(newY / cellSize)].value += agentWeight;
                 }
 
                 agents[i].prevCell2 = { x: Math.floor(newX / cellSize), y: Math.floor(newY / cellSize) }
-            } else {
-                cells[agents[i].prevCell2.x][agents[i].prevCell2.y].highestDensity += agentWeight
             }
+            // else {
+            //     cells[agents[i].prevCell2.x][agents[i].prevCell2.y].highestDensity += agentWeight;
+            // }
 
+            //Update agent position based on calculations of next position
             agents[i].setCoordinates(newX, newY);
             agents[i].updateAgentCell();
 
-            //Experimental code for dynamic vectors
-            // let newCurrentCell = cells[Math.floor(newX / cellSize)][Math.floor(newY / cellSize)];
-
-            // if (newCurrentCell.agents >= 4) {
-            //     let neighbors = getNeighbors2(cells, newCurrentCell);
-
-            //     neighbors.forEach(neighbor => {
-            //         console.log("neighbor info " + neighbor.isWall);
-            //         if (neighbor !== undefined && neighbor.isWall === false) {
-            //             if (newCurrentCell.dVector.x === -1 && newCurrentCell.dVector.y === 0) {
-            //                 neighbors[2].dVector = newCurrentCell.dVector;
-            //                 neighbors[3].dVector = newCurrentCell.dVector;
-            //                 console.log("Vector Change West");
-            //             } else if (newCurrentCell.dVector.x === 1 && newCurrentCell.dVector.y === 0) {
-            //                 neighbors[2].dVector = newCurrentCell.dVector;
-            //                 neighbors[3].dVector = newCurrentCell.dVector;
-            //                 console.log("Vector Change East");
-            //             } else if (newCurrentCell.dVector.x === 0 && newCurrentCell.dVector.y === -1) {
-            //                 neighbors[0].dVector = newCurrentCell.dVector;
-            //                 neighbors[1].dVector = newCurrentCell.dVector;
-            //                 console.log("Vector Change North");
-            //             } else if (newCurrentCell.dVector.x === 0 && newCurrentCell.dVector.y === 1) {
-            //                 neighbors[0].dVector = newCurrentCell.dVector;
-            //                 neighbors[1].dVector = newCurrentCell.dVector;
-            //                 console.log("Vector Change South");
-            //             }
-            //         }
-            //     });
-            // }
-
+            //Remove agent if end point is reached
             endPoint.forEach(endPoint => {
                 if (getCell(x, y) === endPoint) {
                     agents[i].destroy();
                 }
             });
-            // if (getCell(x, y) == endPoint) {
-            //     agents[i].destroy();
-            // }
-
-
         }
         i++;
     }
@@ -437,9 +399,9 @@ function anime(start) {
     }
 
     let end = performance.now();
+    //Recalculate vectors based on new added weight from agents
     calculateVectors(cells)
-    //console.log(`Execution time: ${end - start} ms`);
-    //console.log('Deleted agents count: ' + deletedAgentsCount + ' Agents length: ' + agents.length + ' All agents reached end: ' + allAgentsReachedEnd);
+    //Real time agent counter
     counter.textContent = agents.length + "ppl";
     if (agents.length === 0) {
         simButton.innerText = 'Start simulation';
@@ -449,34 +411,19 @@ function anime(start) {
     }
 }
 
+//Check for collision
 function collisionCheck(x, y, currAgent, newCell) {
-    // let neighbors = [];
-    // let currentCell = getCell(Math.floor(currAgent.x / cellSize), Math.floor(currAgent.y / cellSize));
-
-    // neighbors = getNeighborCells(currentCell.x / cellSize, currentCell.y / cellSize);
-
-    //neighbors.push(getCell(currentCell.x  / cellSize, currentCell.y / cellSize));
-
-    // let nearAgents = [];
-
-    // neighbors.forEach(neigh => {
-    //     nearAgents = getAgentsInCell(neigh);
-    // });
-
-    //Could make a check for cell.agents.length
-    //Too high density could enable smaller min distances, such as an inner square in agent
-
-    //let agentCollision = nearAgents.some((agent) => Math.abs(agents[agent-1].x - x) < agents[agent-1].fattiness + currAgent.fattiness && Math.abs(agents[agent-1].y - y) < agents[agent-1].fattiness + currAgent.fattiness && agents[agent-1].x != currAgent.x && agents[agent-1].y != currAgent.y)
-    let agentCollision = agents.some((agent) => Math.abs(agent.x - x) < agent.fattiness + currAgent.fattiness && Math.abs(agent.y - y) < agent.fattiness + currAgent.fattiness && agent.x != currAgent.x && agent.y != currAgent.y)
-    //    console.log(agentCollision);
+    let agentCollision = agents.some((agent) => Math.abs(agent.x - x) < agent.fattiness + currAgent.fattiness && Math.abs(agent.y - y) < agent.fattiness + currAgent.fattiness && agent.x != currAgent.x && agent.y != currAgent.y);
     let cellCollision = newCell.isWall;
     if (agentCollision || cellCollision) {
-        return true
-    } else {
-        return false
+        return true;
+    } 
+    else {
+        return false;
     }
 }
 
+//Recursively call animate if agents exist
 async function animateCaller() {
 
     if (agents.length == 0) {
@@ -484,9 +431,9 @@ async function animateCaller() {
     }
     const start = performance.now();
 
-    anime(start);
+    animate(start);
     if (getShowHeatMap) {
-        toggleHeat(cellsToUpdate);
+        showLiveHeat(cellsToUpdate);
     }
     cellsToUpdate = [];
     return;
