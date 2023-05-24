@@ -1,6 +1,6 @@
 import { setEssenVariables, perfMeasure } from './modules/pathfinding.js';
-import { addSpawnArea, getSpawnAreas, populate, removeAgentsFromArea, animateCaller, setSizes, getAgents, updateAgentColors, setSpawnAreas } from './modules/agents.js';
-import { createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingSpawn, endPoint, startPoint, getCells, 
+import { addSpawnArea, getSpawnAreas, populate, removeAgentsFromArea, animateCaller, setSizes, getAgents, setSpawnAreas } from './modules/agents.js';
+import { createGrid, getCellIndex, cellEventHandler, cellSize, setAddingExit, setAddingSpawn, getAddingSpawn, endPoint, startPoint, getCells, 
     setShowHeatMap, getShowHeatMap, setBlockMouse, setCellSize, resetHeatmap, resetGrid, resetEndpoint, resetVectors } from './modules/cells.js';
 import { getAllDesignNames, saveDesign, loadDesign, removeDesign } from './modules/designmanager.js';
 
@@ -14,8 +14,6 @@ const loadSelectedButton = document.querySelector("#loadSelected");
 const showDesignsDropdown = document.querySelector("#showDesignsDropdownButton");
 const toggleSaveSubmenu = document.querySelector("#toggleSaveSubmenu");
 const saveButton = document.querySelector("#saveButton");
-const velocitySlider = document.querySelector("#velocitySlider");
-const colorPicker = document.querySelector("#colorPicker");
 const cellSlider = document.querySelector("#cellSlider");
 const sizeDisplay = document.querySelector("#sizeDisplay");
 const menu = document.querySelector(".menu");
@@ -128,31 +126,16 @@ cellSlider.addEventListener("mouseup", function() {
     sizeChange = false;
 });
 
-//Event listener for changing velocity of agents
-velocitySlider.addEventListener("input", function () {
-    let agents = getAgents();
-    let sliderValue = parseFloat(velocitySlider.value);
-    agents.forEach(agent => {
-        agent.setSpeedModifier(sliderValue);
-    });
-});
-
-//Event listener for the color picker
-colorPicker.addEventListener('input', () => {
-    updateAgentColors(colorPicker.value);
-});
-
 // Add event to "Clear"-button
 clearButton.addEventListener("click", () => {
-    clearCanvas();
 
+    resetGrid();
     let agents = getAgents();
     while (agents.length != 0)
     {
         agents[0].destroy();
     }
 
-    resetGrid();
     setSpawnAreas([]);
     resetEndpoint();
 
@@ -324,10 +307,9 @@ simButton.addEventListener("click", function () {
             return;
         }
 
-        //Reset vectors and heatmap from last run of the simulation
-        resetVectors();
         simButton.innerText = "Stop simulation";
-    
+
+        //Reset vectors and heatmap from last run of the simulation
         resetHeatmap();
         resetVectors();
         setEssenVariables(canvasWidth, canvasHeight, cellSize);
@@ -339,9 +321,6 @@ simButton.addEventListener("click", function () {
         setBlockMouse(true);
       
         animateCaller();
-        
-        //toggleHeat();
-
         
     } 
     else {
@@ -700,4 +679,4 @@ function resetMenuPosition() {
     }
 }
 
-export { sizeChange, simButton, colorPicker};
+export { sizeChange, simButton};

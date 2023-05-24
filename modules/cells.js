@@ -1,6 +1,6 @@
 export {
-    createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit,
-    getAddingSpawn, endPoint, setExits, startPoint, prevExit, svgNS, getCells, drawTxt, getCell, getNeighborCells, getAgentsInCell, calcCellDensity, getHighestCellDensity, showLiveHeat,
+    createGrid, getCellIndex, cellEventHandler, cellSize, setAddingExit, setAddingSpawn, getAddingExit,
+    getAddingSpawn, endPoint, setExits, startPoint, prevExit, svgNS, getCells, drawTxt, getCell, getAgentsInCell, calcCellDensity, getHighestCellDensity, showLiveHeat,
     setShowHeatMap, getShowHeatMap, loadCells, DrawAllCells, setBlockMouse, getBlockMouse, setCellSize, resetHeatmap, resetGrid, resetEndpoint, resetVectors
 }
 import { getAgents } from "./agents.js";
@@ -103,32 +103,18 @@ function resetEndpoint() {
 }
 
 /**
- * resets the grid to the default
-*/
-function clearCanvas() {
-    cells.forEach(column => {
-        column.forEach(cell => {
-            cell.color = "white";
-            cell.isWall = false;
-            cell.isExit = false;
-            cell.isSpawnPoint = false;
-            cell.rect.setAttribute('fill', 'white');
-        });
-    });
-    let agents = getAgents()
-
-}
-
-//Reset all vectors from previous simulation runs
+ * Resets all vectors between each new simulation runs
+ */
 function resetVectors() {
     cells.forEach(column => {
         column.forEach(cell => {
-            if (cell.isWall === false) {
-                cell.mark = false;
-                cell.value = 0;
-                cell.dVector.x = 0;
-                cell.dVector.y = 0;
-            }
+            cells[x][y].mark = false;
+            cells[x][y].value = 0;
+            cells[x][y].vectorX = 0;
+            cells[x][y].vectorY = 0;
+            cells[x][y].dVector = { x: 0, y: 0 };
+            cells[x][y].agents = [],
+            cells[x][y].highestDensity = 0;
         });
     });
 }
@@ -198,6 +184,9 @@ function createGrid(canvasWidth, canvasHeight, sizeChange) {
     DrawAllCells(drawingArea);
 }
 
+/**
+ * Completly resets the grid 
+ */
 function resetGrid() {
     for (let x = 0; x < cells.length; x++) {
         for (let y = 0; y < cells[0].length; y++) {
@@ -213,28 +202,16 @@ function resetGrid() {
             cells[x][y].vectorY = 0;
             cells[x][y].dVector = { x: 0, y: 0 };
             //Collision and heatmap
-            cells[x][y].agents = [],
-                cells[x][y].highestDensity = 0;
+            cells[x][y].agents = [];
+            cells[x][y].highestDensity = 0;
+            cells[x][y].rect.setAttribute('fill', 'white');
         };
     }
 }
 
-function resetVectorsComplete() {
-    for (let x = 0; x < cells.length; x++) {
-        for (let y = 0; y < cells[0].length; y++) {
-            cells[x][y].mark = false;
-            cells[x][y].value = 0;
-            cells[x][y].vectorX = 0;
-            cells[x][y].vectorY = 0;
-            cells[x][y].dVector = { x: 0, y: 0 };
-            cells[x][y].agents = [],
-            cells[x][y].highestDensity = 0;
-        };
-    }
-}
 
 /**
- * Draws our cells on screen using SVG
+ * Draws cells on screen using SVG
  */
 function DrawAllCells() {
     for (let x = 0; x < cells.length; x++) {
@@ -277,6 +254,9 @@ function loadCells(newCells, newCellSize) {
     DrawAllCells();
 }
 
+/**
+ * @returns an array of all cells on the grid
+ */
 function getCells() { return cells; }
 
 /** 
@@ -288,30 +268,6 @@ function getCell(x, y) { return cells[x][y]; }
 
 function setAddingExit(isAdding) { addingExit = isAdding; addingSpawn = false };
 function setAddingSpawn(isAdding) { addingSpawn = isAdding; addingExit = false; };
-
-//Get direct neighbors of current cell
-function getNeighborCells(x, y) {
-    let cell = getCell(x, y);
-    let neighbors = [];
-    //Get x neighbors
-    if (cell.x != 0) {
-        neighbors.push(cells[(cell.x / cellSize) - 1][cell.y / cellSize]);
-    }
-
-    if (cell.y != 0) {
-        neighbors.push(cells[cell.x / cellSize][(cell.y / cellSize) - 1]);
-    }
-
-    if (cell.x != cells[cells.length - 1][cells[0].length - 1].x) {
-        neighbors.push(cells[(cell.x / cellSize) + 1][cell.y / cellSize]);
-    }
-
-    if (cell.y != cells[0][cells[0].length - 1].y) {
-        neighbors.push(cells[cell.x / cellSize][(cell.y / cellSize) + 1]);
-    }
-
-    return neighbors;
-}
 
 //Density of agents on current cell
 function calcCellDensity(cell) {

@@ -12,8 +12,8 @@ async function perfMeasure(cells, goal, spawn) {
     for (let i = 0; i < getSpawnAreas().length; i++) {
         spawnCount = spawnCount + spawnGroups[i].length;
     }
-    if (hitSpawnCells != spawnCount) {
-        alert("Not all spawn areas can reach the end point(s)!");
+    if (hitSpawnCells < 1) {
+        alert("No exit(s) can be reached!");
         return;
     }
 
@@ -65,7 +65,7 @@ function markCells(cells, currentCell) {
 
             //Get next araray of cells to set distance for
             //Only get direct neighbors
-            NeighborArr = getNeighbors2(cells, currentCell[i]);
+            NeighborArr = getNeighbors4D(cells, currentCell[i]);
 
             //A maximum of 4 neighbors can be found for each cell
             nextNeighbors.push(NeighborArr[0]);
@@ -98,7 +98,7 @@ function markCellsController(cells, currentCell) {
 }
 
 //Get all 8 neighbors
-function getNeighbors(currentCell, cellsArray) {
+function getNeighbors8D(currentCell, cellsArray) {
     let neighbors = { N: null, S: null, E: null, W: null, NE: null, NW: null, SE: null, SW: null };
     let index = getCellIndex(currentCell.x, currentCell.y);
     // Find north
@@ -134,7 +134,7 @@ function getNeighbors(currentCell, cellsArray) {
 
 
 //Get only direct neighbors of cell, adds them to array
-function getNeighbors2(cells, currentCell) {
+function getNeighbors4D(cells, currentCell) {
     let newCurrentCell = [];
     if (currentCell.x != 0) {
         newCurrentCell[0] = cells[(currentCell.x / pCellSize) - 1][currentCell.y / pCellSize];
@@ -176,7 +176,7 @@ function calculateVectors(cells) {
             if (cell.value === 0 || cell.isWall === true) {
                 continue;
             }
-            let neighbors = getNeighbors(cell, cells);
+            let neighbors = getNeighbors8D(cell, cells);
 
             if (neighbors.N && neighbors.N.isWall) {
                 neighbors.NE = null
@@ -229,4 +229,4 @@ function calculateVectors(cells) {
 
 
 
-export { setEssenVariables, perfMeasure, getCanvasHeight, getCanvasWidth, getNeighbors2 };
+export { setEssenVariables, perfMeasure, getCanvasHeight, getCanvasWidth };

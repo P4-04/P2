@@ -1,5 +1,5 @@
-export { populate, removeAgentsFromArea, animateCaller, getSpawnAreas, addSpawnArea, setSizes, setSpawnAreas, getAgents, updateAgentColors}
-import { simButton, colorPicker} from '../script.js';
+export { populate, removeAgentsFromArea, animateCaller, getSpawnAreas, addSpawnArea, setSizes, setSpawnAreas, getAgents}
+import { simButton} from '../script.js';
 import { cellSize, svgNS, getCells, getCell, endPoint, calcCellDensity, showLiveHeat, getShowHeatMap, setBlockMouse } from './cells.js'
 import { calculateVectors } from './pathfinding.js'
 import { updateFPSCounter } from './utils.js'
@@ -25,8 +25,16 @@ function setSizes(Width, Height) {
     canvasHeight = Height;
 }
 
-//Agents class with relevant svg attributes
+/**Agents class with relevant svg attributes
+ * 
+*/
 class Agent {
+    /**
+     * @constructor 
+     * @param x {int} x coordinate on the screen, where the agent should be located at the start
+     * @param y {int} y coordinate on the screen, where the agent should be located at the start
+     * @param fattiness {float} the size (r) of the agent
+     */
     constructor(x, y, fattiness) {
         this.x = x;
         this.y = y;
@@ -75,9 +83,11 @@ class Agent {
 
         // drawingArea.appendChild(this.rect);
     }
-    setSpeedModifier(speedModifier) {
-        this.SpeedModifier = speedModifier;
-    }
+    /**
+     * Moves the agent to a new position
+     * @param x {int} x coordinate on the screen to move to
+     * @param y {int} y coordinate on the screen to move to
+     */
     setCoordinates(x, y) {
         this.x = x;
         this.y = y;
@@ -87,6 +97,7 @@ class Agent {
 
         let xyTransform = drawingArea.createSVGTransform();
         xyTransform.setTranslate(this.x, this.y);
+
         if (!getShowHeatMap()) {
             this.body.transform.baseVal[0] = xyTransform;
             this.body.setAttribute('fill-opacity', '100')
@@ -99,15 +110,23 @@ class Agent {
         this.square.bottomRight = x + this.fattiness;
         this.square.bottomLeft = y + this.fattiness;
     }
+    /**
+     * Called everytime an agent moves, simply calculates what cell the agent is in now and calls notifyCell
+     */
     updateAgentCell() {
         let cellX = Math.floor(this.x / cellSize);
         let cellY = Math.floor(this.y / cellSize);
         this.notifyCell(cellX, cellY);
     }
-    //Keeps track of number of agents on cell
+    /**
+     * Uses the X and Y coordinate of a cell, to figure out if it's moved into a new cell, if it's a new cell, update the agent cell, the agents in the cell, the heatmap and density for the cell
+     * 
+     * @param {cell} cellX the x coordinate of a cell
+     * @param {cell} cellY the y coordinate of a cell 
+     */
     notifyCell(cellX, cellY) {
         let currentCell = getCell(cellX, cellY);
-        if (this.myCell == null) {
+        if (this.myCell == null || this.mycell != currentCell) {
             this.myCell = currentCell;
         }
 
@@ -125,9 +144,15 @@ class Agent {
 
         calcCellDensity(this.myCell);
     }
+    /**
+     * @returns the cell the agent currently resides in
+     */
     getAgentCell() {
         return this.myCell;
     }
+    /**
+     * Destroys an agent on the screen and removes all refrences to the agent
+     */
     destroy() {
         deletedAgentsCount = deletedAgentsCount + 1;
         //destroy agent body
@@ -161,15 +186,9 @@ class Agent {
     }
 }
 
-//Function to set a new color for all agents
-function updateAgentColors(newColor) {
-    let agents = getAgents();
-    agents.forEach(agent => {
-        agent.body.setAttribute('fill', newColor);
-    });
-}
-
-//Function for evenlt distributing agents among total spawn area
+/**
+ * Evenly distributes agents among all spawn cells
+ */
 function populate() {
     if (spawnAreas.length == 0) {
         window.alert("Please add spawn areas");
@@ -202,7 +221,9 @@ function populate() {
     });
 }
 
-//Spawning agent randomly within correct area
+/**
+ * Spawns agents randomly within a cell
+ */
 function populateCells(area, agentsPerArea, minAgentDistance) {
     let firstCell = area[area.length - 1];
     let lastCell = area[0];
@@ -238,6 +259,13 @@ function populateCells(area, agentsPerArea, minAgentDistance) {
     }
 }
 
+/**
+ * 
+ * @param {int} x 
+ * @param {int} y 
+ * @param {} minAgentDistance 
+ * @returns 
+ */
 function checkAgentDistance(x, y, minAgentDistance) {
     for (let agent of agents) {
         let distance = Math.sqrt(Math.pow(agent.x - x, 2) + Math.pow(agent.y - y, 2));
@@ -249,7 +277,9 @@ function checkAgentDistance(x, y, minAgentDistance) {
     return true;
 }
 
-//Spawns agents which could not be spawned earlier
+/**
+ * Spawns agents that weren't possible to safely spawn in the begining
+ */
 function spawnExceededAgents() {
     const minAgentDistance = cellSize / 3;
     const padding = minAgentDistance / 2;
@@ -273,17 +303,27 @@ function spawnExceededAgents() {
     }
 }
 
-//Getting position within spawn area
+/**
+ * Gets a position within the spawn area
+ * @param {number} min 
+ * @param {number} max 
+ * @returns a random position
+ */
 function getRandomArbitrary(min, max) {
     return Math.random() * (max - min) + min;
 }
-
+/**
+ * @returns the agents array
+ */
 function getAgents() {
     return agents;
 }
 
 let cellsToUpdate = [];
-//Animate function, sets random position
+/**
+ * Animate function, sets random position
+ * @param {*} start 
+ */
 function animate(start) {
     let i = 0, len = agents.length;
     let cells = getCells();
@@ -361,7 +401,7 @@ function animate(start) {
 
             //Applying agent weight to cell
             //Makes more densely packed cells less desirable
-            let agentWeight = 0.5;
+            let agentWeight = 1.5;
             if (!agents[i].prevCell2.x) {
                 agents[i].prevCell2.x = Math.floor(newX / cellSize);
                 agents[i].prevCell2.y = Math.floor(newY / cellSize);
@@ -395,7 +435,6 @@ function animate(start) {
 
     if (exceededAgents > 0) {
         spawnExceededAgents();
-        updateAgentColors(colorPicker.value);
     }
 
     let end = performance.now();
@@ -411,7 +450,14 @@ function animate(start) {
     }
 }
 
-//Check for collision
+/**
+ * Tests for collisions between agents
+ * @param {*} x 
+ * @param {*} y 
+ * @param {*} currAgent 
+ * @param {*} newCell 
+ * @returns 
+ */
 function collisionCheck(x, y, currAgent, newCell) {
     let agentCollision = agents.some((agent) => Math.abs(agent.x - x) < agent.fattiness + currAgent.fattiness && Math.abs(agent.y - y) < agent.fattiness + currAgent.fattiness && agent.x != currAgent.x && agent.y != currAgent.y);
     let cellCollision = newCell.isWall;
@@ -424,6 +470,10 @@ function collisionCheck(x, y, currAgent, newCell) {
 }
 
 //Recursively call animate if agents exist
+/**
+ * Async function that calls the animate function as long as agents exits - initially only used to measure performance of the 'animate' function
+ * @returns {void}
+ */
 async function animateCaller() {
 
     if (agents.length == 0) {
@@ -465,6 +515,16 @@ function removeAgentsFromArea(area, agentsToRemovePerArea, drawingArea) {
     return removedAgents;
 }
 
+/**
+ * @param {[[]]} spawnGroup adds a new group of spawnable cells to the arry 
+ */
 function addSpawnArea(spawnGroup) { spawnAreas.push(spawnGroup); }
+/**
+ * Overrides the spawnAreas array with a completly new array
+ * @param {[[]]} newAreas 
+ */
 function setSpawnAreas(newAreas) { spawnAreas = newAreas; }
+/**
+ * @returns {[[]]} an array of spawn groups
+ */
 function getSpawnAreas() { return spawnAreas; }
