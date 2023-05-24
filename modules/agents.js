@@ -401,7 +401,7 @@ function animate(start) {
 
             //Applying agent weight to cell
             //Makes more densely packed cells less desirable
-            let agentWeight = 1.5;
+            let agentWeight = 1.25;
             if (!agents[i].prevCell2.x) {
                 agents[i].prevCell2.x = Math.floor(newX / cellSize);
                 agents[i].prevCell2.y = Math.floor(newY / cellSize);
