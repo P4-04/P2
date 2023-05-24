@@ -22,12 +22,7 @@ let startPoint = null
 const drawingArea = document.querySelector(".drawing");
 const svgNS = "http://www.w3.org/2000/svg";
 
-/**
- * Function caller for correctly handling actions on cells
- * @param {{x,y}} index the index of the cell to update
- * @param {boolean} remove 
- * @returns {void}
- */
+//Function caller for correctly handling actions on cells
 function cellEventHandler(index, remove) {
     if (getBlockMouse()) {
         return;
@@ -52,8 +47,7 @@ function getCellIndex(MouseX, MouseY) {
 }
 
 /** 
- * Updates the cells to their new properties, relative to the selected setting in the dropdown
- * @param {{x,y}} index The position of the cell to update
+ * @param {Cords} index The position of the cell to update
 */
 function toggleCellProperties(index, remove) {
 
@@ -104,9 +98,6 @@ function toggleCellProperties(index, remove) {
     }
 }
 
-/**
- * Resets the endPoint array to be empty
- */
 function resetEndpoint() {
     endPoint = [];
 }
@@ -136,12 +127,24 @@ function drawCell(cell) {
     cell.rect.setAttribute('fill', cell.color);
 }
 
+//Function not used
+//Writes distance from exit in each cell
+//Used to test breadth first search for vector field
+function drawTxt(cell, value) {
+    let numbering = document.createElementNS(svgNS, "text")
+    numbering.setAttribute('x', cell.x)
+    numbering.setAttribute('y', cell.y + 17)
+    numbering.classList.add('svgText');
+    if (cell.isWall) {
+        numbering.setAttribute('fill', "white");
+    }
+    numbering.textContent = Math.round(value);
+    drawingArea.appendChild(numbering)
+}
+
 /**
- * Initializes the grid cells with their default properties and calls DrawAllCells
- * @param {int} canvasWidth the width of the canvas 
- * @param {int} canvasHeight the height of the canvas 
- * @param {boolean} sizeChange whenever the cell size is being changed or not 
- */
+ * Initializes our grid-cells with their default properties and calls DrawAllCells
+*/
 function createGrid(canvasWidth, canvasHeight, sizeChange) {
     if (sizeChange === true) {
         cells.forEach(row => {
@@ -263,22 +266,10 @@ function getCells() { return cells; }
 */
 function getCell(x, y) { return cells[x][y]; }
 
-/**
- * Takes the isAdding parameter and changes addingExit accordingly. Sets addingSpawn to false 
- * @param {boolean} isAdding if the user wants to add an exit or not
- */
 function setAddingExit(isAdding) { addingExit = isAdding; addingSpawn = false };
-
-/**
- * Takes the isAdding parameter and changes addingSpawn accordingly. Sets addingExit to false 
- * @param {boolean} isAdding if the user wants to add an exit or not
- */
 function setAddingSpawn(isAdding) { addingSpawn = isAdding; addingExit = false; };
 
-/**
- * Calculates the current density of a cell. If the current density is larger than the highest density, update the variable. 
- * @param {cell} cell the cell to calculate the density for 
- */
+//Density of agents on current cell
 function calcCellDensity(cell) {
     let curentDensity = cell.agents.length;
     if (cell.highestDensity < curentDensity) {
@@ -286,19 +277,11 @@ function calcCellDensity(cell) {
     }
 }
 
-/**
- * 
- * @param {cell} cell the cell to get the density for 
- * @returns the hightest recorded density of the cell
- */
 function getHighestCellDensity(cell) {
     return cell.highestDensity;
 }
 
-/**
- * Draws heatmap cells ontop of all cells from the cellsToUpdate array
- * @param {cells} cellsToUpdate an array of all cells that agents have moved from, and to
- */
+//Toggle heatmap based on agent density on cells
 function showLiveHeat(cellsToUpdate) {
     cellsToUpdate.forEach(cell => {
         let density = getHighestCellDensity(cell);
@@ -309,6 +292,8 @@ function showLiveHeat(cellsToUpdate) {
             cell.rect.setAttribute('x', cell.x);
             cell.rect.setAttribute('y', cell.y);
             cell.rect.setAttribute('stroke', 'black');
+
+            //cell.rect.classList.toggle("cellClass");
 
             //Scalar for maximum agent density on cell
             const scaler = 36; //255 / 7 = 36.4, we round down, and now we have a scaler for our cells (any value over 7 is bad);
@@ -339,27 +324,12 @@ function showLiveHeat(cellsToUpdate) {
     });
 }
 
-/**
- * @returns if the user is adding an exit or not
- */
 function getAddingExit() { return addingExit; };
-
-/**
- * @returns if the user is adding a spawn area or not
- */
 function getAddingSpawn() { return addingSpawn; };
 
-/**
- * @param {cell} cell the cell to get agents from
- * @returns all agents within a cell
- */
 function getAgentsInCell(cell) { return cell.agents; };
 
-/**
- * Is called when the user toggles the heatmap on or off. If the heatmap is toggled off, heated cells are removed. If toggeled on, it draws a heatmap cell ontop of all cells that ever contained an agent
- * @param {boolean} shouldDisplay if the heatmap should be displayed or not
- * @returns {void}
- */
+
 function setShowHeatMap(shouldDisplay) {
     showHeatMap = shouldDisplay;
     if (!showHeatMap) {
@@ -376,7 +346,7 @@ function setShowHeatMap(shouldDisplay) {
         for (let x = 0; x < cells.length; x++) {
             for (let y = 0; y < cells[0].length; y++) {
                 let density = getHighestCellDensity(cells[x][y]);
-                if (density != 0 && cells[x][y].isExit == false && cells[x][y].isSpawnPoint == false) {
+                if (density != 0 && cells[x][y].isWall == false && cells[x][y].isExit == false && cells[x][y].isSpawnPoint == false) {
                     cells[x][y].rect = document.createElementNS(svgNS, 'rect');
                     cells[x][y].rect.setAttribute('width', cells[x][y].width);
                     cells[x][y].rect.setAttribute('height', cells[x][y].height);
@@ -410,9 +380,6 @@ function setShowHeatMap(shouldDisplay) {
     }
 }
 
-/**
- * Resets all density values to 0. Ensures old cells are removed, and turns the heatmap on, if it were before this function call
- */
 function resetHeatmap() {
     for (let x = 0; x < cells.length; x++) {
         for (let y = 0; y < cells[0].length; y++) {
@@ -423,27 +390,10 @@ function resetHeatmap() {
     setShowHeatMap(false);
     setShowHeatMap(show);
 }
-/**
- * @returns {boolean} if the heatmap is being displayed or not
- */
+
 function getShowHeatMap() { return showHeatMap; }
-/**
- * 
- * @param {int} value the new size of the cells on the grid
- */
 function setCellSize(value) { cellSize = value }
-/**
- * 
- * @param {cell} exits 
- */
 function setExits(exits) { endPoint = exits }
 
-/**
- * @returns {boolean} if the website should ignore all mouse clicks on the grid
- */
 function getBlockMouse() { return shouldIgnoreMouse; }
-
-/**
- * @param {boolean} blocMouse sets if the website should ignore all mouse clicks on the grid
- */
 function setBlockMouse(blockMouse) { shouldIgnoreMouse = blockMouse; }
