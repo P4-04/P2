@@ -1,6 +1,7 @@
 export { calculateVectors }
 import { getSpawnAreas } from './agents.js';
-import { cellSize, drawTxt, getCellIndex } from './cells.js'
+import { cellSize, getCellIndex, getCellSize } from './cells.js'
+
 
 async function perfMeasure(cells, goal, spawn) {
     const start = performance.now();
@@ -17,8 +18,6 @@ async function perfMeasure(cells, goal, spawn) {
         return;
     }
 
-    //calcVectorField(cells);
-
     calculateVectors(cells);
 
     const end = performance.now();
@@ -26,30 +25,9 @@ async function perfMeasure(cells, goal, spawn) {
 }
 
 let hitSpawnCells = 0;
-let pCanvasWidth = 0;
-let pCanvasHeight = 0;
-let pCellSize = 0;
-
-function setEssenVariables(Width, Height, Size) {
-    pCanvasHeight = Height;
-    pCanvasWidth = Width;
-    pCellSize = Size;
-}
-
-function getCanvasHeight() { return pCanvasHeight; }
-function getCanvasWidth() { return pCanvasWidth; }
 
 let distVal = 0;
 
-//Makes an array for input in markCells
-//Not used, since exit is now an array, which was not always the case
-// function setArray(cells, cellsArray) {
-//     let updateArray = [];
-//     for (let i = 0; i < cellsArray.length; i++) {
-//         updateArray[i] = cells[cellsArray[i].x / pCellSize][cellsArray[i].y / pCellSize];
-//     }
-//     return updateArray;
-// }
 
 //Recursive function for marking array of cells and counting distance
 function markCells(cells, currentCell) {
@@ -84,6 +62,7 @@ function markCells(cells, currentCell) {
 
 //Sets distance value and mark on cell
 function markCellsController(cells, currentCell) {
+    let pCellSize = getCellSize();
     cells[currentCell.x / pCellSize][currentCell.y / pCellSize].value = distVal;
     //drawTxt(cells[currentCell.x / pCellSize][currentCell.y / pCellSize], distVal);
 
@@ -136,6 +115,7 @@ function getNeighbors8D(currentCell, cellsArray) {
 //Get only direct neighbors of cell, adds them to array
 function getNeighbors4D(cells, currentCell) {
     let newCurrentCell = [];
+    let pCellSize = getCellSize();
     if (currentCell.x != 0) {
         newCurrentCell[0] = cells[(currentCell.x / pCellSize) - 1][currentCell.y / pCellSize];
         if (newCurrentCell[0] === undefined) {
@@ -229,4 +209,4 @@ function calculateVectors(cells) {
 
 
 
-export { setEssenVariables, perfMeasure, getCanvasHeight, getCanvasWidth };
+export { perfMeasure };

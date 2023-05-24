@@ -1,4 +1,4 @@
-import { setEssenVariables, perfMeasure } from './modules/pathfinding.js';
+import { perfMeasure } from './modules/pathfinding.js';
 import { addSpawnArea, getSpawnAreas, populate, removeAgentsFromArea, animateCaller, setSizes, getAgents, setSpawnAreas } from './modules/agents.js';
 import { createGrid, getCellIndex, cellEventHandler, cellSize, setAddingExit, setAddingSpawn, getAddingSpawn, endPoint, startPoint, getCells, 
     setShowHeatMap, getShowHeatMap, setBlockMouse, setCellSize, resetHeatmap, resetGrid, resetEndpoint, resetVectors } from './modules/cells.js';
@@ -312,7 +312,6 @@ simButton.addEventListener("click", function () {
         //Reset vectors and heatmap from last run of the simulation
         resetHeatmap();
         resetVectors();
-        setEssenVariables(canvasWidth, canvasHeight, cellSize);
         perfMeasure(getCells(), endPoint, startPoint);
     
         setSizes(canvasWidth, canvasHeight);
@@ -679,4 +678,6 @@ function resetMenuPosition() {
     }
 }
 
-export { sizeChange, simButton};
+function getCanvasHeight() {return canvasHeight;}
+function getCanvasWidth() {return canvasWidth;}
+export { sizeChange, simButton, getCanvasHeight, getCanvasWidth};

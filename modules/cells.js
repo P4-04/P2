@@ -1,9 +1,8 @@
 export {
     createGrid, getCellIndex, cellEventHandler, cellSize, setAddingExit, setAddingSpawn, getAddingExit,
-    getAddingSpawn, endPoint, setExits, startPoint, prevExit, svgNS, getCells, drawTxt, getCell, getAgentsInCell, calcCellDensity, getHighestCellDensity, showLiveHeat,
-    setShowHeatMap, getShowHeatMap, loadCells, DrawAllCells, setBlockMouse, getBlockMouse, setCellSize, resetHeatmap, resetGrid, resetEndpoint, resetVectors
+    getAddingSpawn, endPoint, setExits, startPoint, prevExit, svgNS, getCells, getCell, getAgentsInCell, calcCellDensity, getHighestCellDensity, showLiveHeat,
+    setShowHeatMap, getShowHeatMap, loadCells, DrawAllCells, setBlockMouse, getBlockMouse, setCellSize, resetHeatmap, resetGrid, resetEndpoint, resetVectors, getCellSize
 }
-import { getAgents } from "./agents.js";
 //import { sizeChange } from "../script.js";
 
 //Custom cell size
@@ -117,13 +116,13 @@ function resetEndpoint() {
 function resetVectors() {
     cells.forEach(column => {
         column.forEach(cell => {
-            cells[x][y].mark = false;
-            cells[x][y].value = 0;
-            cells[x][y].vectorX = 0;
-            cells[x][y].vectorY = 0;
-            cells[x][y].dVector = { x: 0, y: 0 };
-            cells[x][y].agents = [],
-            cells[x][y].highestDensity = 0;
+            cell.mark = false;
+            cell.value = 0;
+            cell.vectorX = 0;
+            cell.vectorY = 0;
+            cell.dVector = { x: 0, y: 0 };
+            cell.agents = [],
+            cell.highestDensity = 0;
         });
     });
 }
@@ -376,7 +375,7 @@ function setShowHeatMap(shouldDisplay) {
         for (let x = 0; x < cells.length; x++) {
             for (let y = 0; y < cells[0].length; y++) {
                 let density = getHighestCellDensity(cells[x][y]);
-                if (density != 0 && cells[x][y].isExit == false && cells[x][y].isSpawnPoint == false) {
+                if (density != 0 && cells[x][y].isWall == false && cells[x][y].isExit == false && cells[x][y].isSpawnPoint == false) {
                     cells[x][y].rect = document.createElementNS(svgNS, 'rect');
                     cells[x][y].rect.setAttribute('width', cells[x][y].width);
                     cells[x][y].rect.setAttribute('height', cells[x][y].height);
@@ -423,15 +422,22 @@ function resetHeatmap() {
     setShowHeatMap(false);
     setShowHeatMap(show);
 }
+
 /**
  * @returns {boolean} if the heatmap is being displayed or not
  */
 function getShowHeatMap() { return showHeatMap; }
+
 /**
- * 
  * @param {int} value the new size of the cells on the grid
  */
 function setCellSize(value) { cellSize = value }
+
+/**
+ * @returns {int} value the size of the cells on the grid
+ */
+function getCellSize(){ return cellSize;}
+
 /**
  * 
  * @param {cell} exits 
