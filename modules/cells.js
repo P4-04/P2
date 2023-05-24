@@ -1,7 +1,7 @@
 export {
-    createGrid, getCellIndex, cellEventHandler, clearCanvas, cellSize, setAddingExit, setAddingSpawn, getAddingExit,
-    getAddingSpawn, endPoint, setExits, startPoint, prevExit, svgNS, getCells, drawTxt, getCell, getAgentsInCell, calcCellDensity, getHighestCellDensity, showLiveHeat,
-    setShowHeatMap, getShowHeatMap, loadCells, DrawAllCells, setBlockMouse, getBlockMouse, setCellSize, resetHeatmap, resetGrid, resetEndpoint, resetVectors
+    createGrid, getCellIndex, cellEventHandler, cellSize, setAddingExit, setAddingSpawn, getAddingExit,
+    getAddingSpawn, endPoint, setExits, startPoint, prevExit, svgNS, getCells, getCell, getAgentsInCell, calcCellDensity, getHighestCellDensity, showLiveHeat,
+    setShowHeatMap, getShowHeatMap, loadCells, DrawAllCells, setBlockMouse, getBlockMouse, setCellSize, resetHeatmap, resetGrid, resetEndpoint, resetVectors, getCellSize
 }
 //import { sizeChange } from "../script.js";
 

@@ -232,15 +232,15 @@ function populateCells(area, agentsPerArea, minAgentDistance) {
     //increase the padding to ensure agents are not placed too close to the border
     let padding = minAgentDistance;
     //add a limit to the number of tries
-    let maxTries = 100;
+    let maxTries = 100; 
 
     for (let i = 0; i < agentsPerArea; ++i) {
         let validPosition = false;
         let x, y;
         //initialize tries counter
-        let tries = 0;
+        let tries = 0; 
         //add tries limit to the condition
-        while (!validPosition && tries < maxTries) {
+        while (!validPosition && tries < maxTries) { 
             x = getRandomArbitrary(firstCell.x * cellSize + fattiness + padding, lastCell.x * cellSize + Math.floor(cellSize) - fattiness - padding);
             y = getRandomArbitrary(firstCell.y * cellSize + fattiness + padding, lastCell.y * cellSize + Math.floor(cellSize) - fattiness - padding);
             validPosition = checkAgentDistance(x, y, minAgentDistance);
@@ -300,7 +300,7 @@ function spawnExceededAgents() {
         if (exceededAgents <= 0) {
             break;
         }
-    }
+    } 
 }
 
 /**
@@ -429,12 +429,18 @@ function animate(start) {
                     agents[i].destroy();
                 }
             });
+            // if (getCell(x, y) == endPoint) {
+            //     agents[i].destroy();
+            // }
+
+
         }
         i++;
     }
 
     if (exceededAgents > 0) {
         spawnExceededAgents();
+        updateAgentColors(colorPicker.value);
     }
 
     let end = performance.now();
