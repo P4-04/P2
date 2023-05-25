@@ -206,7 +206,7 @@ function populate() {
 function populateCells(area, agentsPerArea, minAgentDistance) {
     let firstCell = area[area.length - 1];
     let lastCell = area[0];
-    let fattiness = ((cellSize / 6) + Math.floor(Math.random() * 3));
+    let fattiness = ((cellSize / 6) + Math.floor(Math.random() * (cellSize / 6)));
 
     //increase the padding to ensure agents are not placed too close to the border
     let padding = minAgentDistance;
