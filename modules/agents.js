@@ -1,4 +1,4 @@
-export { populate, removeAgentsFromArea, animateCaller, getSpawnAreas, addSpawnArea, setSizes, setSpawnAreas, getAgents}
+export { populate, animateCaller, getSpawnAreas, addSpawnArea, setSizes, setSpawnAreas, getAgents}
 import { simButton} from '../script.js';
 import { cellSize, svgNS, getCells, getCell, endPoint, calcCellDensity, showLiveHeat, getShowHeatMap, setBlockMouse } from './cells.js'
 import { calculateVectors } from './pathfinding.js'
@@ -440,7 +440,7 @@ function animate(start) {
 
     if (exceededAgents > 0) {
         spawnExceededAgents();
-        updateAgentColors(colorPicker.value);
+        //updateAgentColors(colorPicker.value);
     }
 
     let end = performance.now();
@@ -495,31 +495,32 @@ async function animateCaller() {
     return;
 }
 
-function removeAgentsFromArea(area, agentsToRemovePerArea, drawingArea) {
-    let removedAgents = 0;
-    let agentsInArea = agents.filter(agent => {
-        return area.some(cell => {
-            return cell.x === Math.floor(agent.x / cellSize) && cell.y === Math.floor(agent.y / cellSize);
-        });
-    });
 
-    let totalAgentsInArea = agentsInArea.length;
-    let agentsToRemove = Math.min(agentsToRemovePerArea, totalAgentsInArea);
-    let agentsToKeep = [];
+// function removeAgentsFromArea(area, agentsToRemovePerArea, drawingArea) {
+//     let removedAgents = 0;
+//     let agentsInArea = agents.filter(agent => {
+//         return area.some(cell => {
+//             return cell.x === Math.floor(agent.x / cellSize) && cell.y === Math.floor(agent.y / cellSize);
+//         });
+//     });
 
-    for (let i = 0; i < agents.length; i++) {
-        if (agentsToRemove > 0 && agentsInArea.includes(agents[i])) {
-            drawingArea.removeChild(agents[i].body);
-            removedAgents++;
-            agentsToRemove--;
-        } else {
-            agentsToKeep.push(agents[i]);
-        }
-    }
+//     let totalAgentsInArea = agentsInArea.length;
+//     let agentsToRemove = Math.min(agentsToRemovePerArea, totalAgentsInArea);
+//     let agentsToKeep = [];
 
-    agents = agentsToKeep;
-    return removedAgents;
-}
+//     for (let i = 0; i < agents.length; i++) {
+//         if (agentsToRemove > 0 && agentsInArea.includes(agents[i])) {
+//             drawingArea.removeChild(agents[i].body);
+//             removedAgents++;
+//             agentsToRemove--;
+//         } else {
+//             agentsToKeep.push(agents[i]);
+//         }
+//     }
+
+//     agents = agentsToKeep;
+//     return removedAgents;
+// }
 
 /**
  * @param {[[]]} spawnGroup adds a new group of spawnable cells to the arry 

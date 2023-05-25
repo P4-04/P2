@@ -2,8 +2,13 @@ export { calculateVectors }
 import { getSpawnAreas } from './agents.js';
 import { cellSize, getCellIndex, getCellSize } from './cells.js'
 
-
-async function perfMeasure(cells, goal, spawn) {
+/**
+ * Used to call the initial BFS and vector calculation to measure performance
+ * @param {cells[]} cells array of cells
+ * @param {cells[]} goal array of goal cells
+ * @returns {void}
+ */
+async function perfMeasure(cells, goal) {
     const start = performance.now();
 
     markCells(cells, goal);
@@ -29,7 +34,11 @@ let hitSpawnCells = 0;
 let distVal = 0;
 
 
-//Recursive function for marking array of cells and counting distance
+/**
+ * Recursive function for marking array of cells and counting distance
+ * @param {cells[]} cells array of cells
+ * @param {cell[]} currentCell array of next cells
+ */
 function markCells(cells, currentCell) {
     let nextNeighbors = [];
     let NeighborArr = [];
@@ -60,7 +69,11 @@ function markCells(cells, currentCell) {
     }
 }
 
-//Sets distance value and mark on cell
+/**
+ * Sets distance value and mark on cell
+ * @param {cells[]} cells array of cells
+ * @param {cell[]} currentCell array of cells to set value for
+ */
 function markCellsController(cells, currentCell) {
     let pCellSize = getCellSize();
     cells[currentCell.x / pCellSize][currentCell.y / pCellSize].value = distVal;
@@ -79,7 +92,7 @@ function markCellsController(cells, currentCell) {
 /**
  * Get all of the 8 closest cells, to the selected cell 
  * @param {cell} currentCell the cell to get the neighbors for 
- * @param {[cell]} cellsArray an array of all cells in the grid
+ * @param {cells[]} cellsArray an array of all cells in the grid
  * @returns a struct of the closest cells
  */
 function getNeighbors8D(currentCell, cellsArray) {
@@ -158,7 +171,10 @@ function getNeighbors4D(cells, currentCell) {
     return newCurrentCell;
 }
 
-//Calculate vectors of cells depending on lowest value neighbor
+/**
+ * Calculate vectors of cells depending on lowest value neighbor
+ * @param {cells[]} cells array of cells
+ */
 function calculateVectors(cells) {
     cells.forEach(column => {
         for (let cell of column) {

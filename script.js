@@ -1,5 +1,5 @@
 import { perfMeasure } from './modules/pathfinding.js';
-import { addSpawnArea, getSpawnAreas, populate, removeAgentsFromArea, animateCaller, setSizes, getAgents, setSpawnAreas } from './modules/agents.js';
+import { addSpawnArea, getSpawnAreas, populate, animateCaller, setSizes, getAgents, setSpawnAreas } from './modules/agents.js';
 import { createGrid, getCellIndex, cellEventHandler, cellSize, setAddingExit, setAddingSpawn, getAddingSpawn, endPoint, startPoint, getCells, 
     setShowHeatMap, getShowHeatMap, setBlockMouse, setCellSize, resetHeatmap, resetGrid, resetEndpoint, resetVectors } from './modules/cells.js';
 import { getAllDesignNames, saveDesign, loadDesign, removeDesign } from './modules/designmanager.js';
@@ -25,7 +25,7 @@ const addExitButton = document.querySelector("#addExit");
 const addSpawnButton = document.querySelector("#addSpawn");
 const toggleAgentsSubmenu = document.querySelector("#agentsButton");
 //const spawnButton = document.querySelector("#spawnButton");
-const removeButton = document.querySelector("#removeButton");
+//const removeButton = document.querySelector("#removeButton");
 const removeSelected = document.querySelector("#removeSelected") 
 //const  numAgentsInput = document.querySelector("#num-agents");
 const toggleGridsSubmenu = document.querySelector("#gridsButton");
@@ -268,29 +268,29 @@ saveButton.addEventListener("click", async function () {
 })
 
 //Event listener for removing specified number of agents
-removeButton.addEventListener("click", function () {
-    let agentNumToRemove = document.querySelector("#numAgents").value;
-    if (isNaN(agentNumToRemove) || agentNumToRemove <= 0) {
-        window.alert("Please enter a valid number of agents to remove");
-        return;
-    }
+// removeButton.addEventListener("click", function () {
+//     let agentNumToRemove = document.querySelector("#numAgents").value;
+//     if (isNaN(agentNumToRemove) || agentNumToRemove <= 0) {
+//         window.alert("Please enter a valid number of agents to remove");
+//         return;
+//     }
 
-    let totalCells = 0;
-    let spawnAreas = getSpawnAreas();
-    spawnAreas.forEach(area => {
-        totalCells += area.length;
-    });
+//     let totalCells = 0;
+//     let spawnAreas = getSpawnAreas();
+//     spawnAreas.forEach(area => {
+//         totalCells += area.length;
+//     });
 
-    let removedAgents = 0;
-    spawnAreas.forEach((area, index) => {
-        let ratio = area.length / totalCells;
-        let agentsToRemovePerArea = Math.floor(ratio * agentNumToRemove);
-        if (index === spawnAreas.length - 1) {
-            agentsToRemovePerArea = agentNumToRemove - removedAgents;
-        }
-        removedAgents += removeAgentsFromArea(area, agentsToRemovePerArea, drawingArea);
-    });
-});
+//     let removedAgents = 0;
+//     spawnAreas.forEach((area, index) => {
+//         let ratio = area.length / totalCells;
+//         let agentsToRemovePerArea = Math.floor(ratio * agentNumToRemove);
+//         if (index === spawnAreas.length - 1) {
+//             agentsToRemovePerArea = agentNumToRemove - removedAgents;
+//         }
+//         removedAgents += removeAgentsFromArea(area, agentsToRemovePerArea, drawingArea);
+//     });
+// });
 
 //Event listener for starting simulation
 simButton.addEventListener("click", function () {
