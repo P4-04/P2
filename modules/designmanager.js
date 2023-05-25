@@ -26,8 +26,8 @@ async function getAllDesignNames(userCookie) {
 /**
  * 
  * @param {string} userCookie 
- * @param {cells} cells 
- * @param {spawnAreas} spawnAreas 
+ * @param {cells[]} cells 
+ * @param {spawnAreas[]} spawnAreas 
  * @param {string} name 
  * @param {int} cellSize 
  */

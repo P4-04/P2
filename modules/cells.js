@@ -264,7 +264,7 @@ function DrawAllCells() {
 
 /**
  * 
- * @param {cells} newCells 
+ * @param {cells[]} newCells 
  * @param {int} newCellSize 
  */
 function loadCells(newCells, newCellSize) {
@@ -283,7 +283,7 @@ function loadCells(newCells, newCellSize) {
 }
 
 /** 
- * @returns {cells} All cells
+ * @returns {cells[]} All cells
 */
 function getCells() { return cells; }
 
