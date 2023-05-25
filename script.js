@@ -129,18 +129,18 @@ cellSlider.addEventListener("mouseup", function() {
 });
 
 //Event listener for changing velocity of agents
-velocitySlider.addEventListener("input", function () {
-    let agents = getAgents();
-    let sliderValue = parseFloat(velocitySlider.value);
-    agents.forEach(agent => {
-        agent.setSpeedModifier(sliderValue);
-    });
-});
+// velocitySlider.addEventListener("input", function () {
+//     let agents = getAgents();
+//     let sliderValue = parseFloat(velocitySlider.value);
+//     agents.forEach(agent => {
+//         agent.setSpeedModifier(sliderValue);
+//     });
+// });
 
 //Event listener for the color picker
-colorPicker.addEventListener('input', () => {
-    updateAgentColors(colorPicker.value);
-});
+// colorPicker.addEventListener('input', () => {
+//     updateAgentColors(colorPicker.value);
+// });
 
 // Add event to "Clear"-button
 clearButton.addEventListener("click", () => {

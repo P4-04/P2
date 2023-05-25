@@ -52,7 +52,7 @@ function markCells(cells, currentCell) {
 
             //Get next araray of cells to set distance for
             //Only get direct neighbors
-            NeighborArr = getNeighbors2(cells, currentCell[i]);
+            NeighborArr = getNeighbors4D(cells, currentCell[i]);
 
             //A maximum of 4 neighbors can be found for each cell
             nextNeighbors.push(NeighborArr[0]);
@@ -181,7 +181,7 @@ function calculateVectors(cells) {
             if (cell.value === 0 || cell.isWall === true) {
                 continue;
             }
-            let neighbors = getNeighbors(cell, cells);
+            let neighbors = getNeighbors8D(cell, cells);
 
             if (neighbors.N && neighbors.N.isWall) {
                 neighbors.NE = null
