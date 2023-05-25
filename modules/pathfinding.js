@@ -54,7 +54,7 @@ function markCells(cells, currentCell) {
     }
     distVal += 1;
 
-    //If neighbors are present around current cells, do same procedure on cells
+    //If neighbors are present around current cells, do fsame procedure on cells
     if (nextNeighbors.length !== 0) {
         markCells(cells, nextNeighbors);
     }
@@ -76,7 +76,12 @@ function markCellsController(cells, currentCell) {
     //currentCell.mark = true;
 }
 
-//Get all 8 neighbors
+/**
+ * Get all of the 8 closest cells, to the selected cell 
+ * @param {cell} currentCell the cell to get the neighbors for 
+ * @param {[cell]} cellsArray an array of all cells in the grid
+ * @returns a struct of the closest cells
+ */
 function getNeighbors8D(currentCell, cellsArray) {
     let neighbors = { N: null, S: null, E: null, W: null, NE: null, NW: null, SE: null, SW: null };
     let index = getCellIndex(currentCell.x, currentCell.y);
@@ -111,8 +116,12 @@ function getNeighbors8D(currentCell, cellsArray) {
     return neighbors;
 }
 
-
-//Get only direct neighbors of cell, adds them to array
+/**
+ * Gets only direct neighbors of cell
+ * @param {[cells]} cells an array of all cells in the grid
+ * @param {cell} currentCell the cell to find the neighbors for 
+ * @returns an array of the 4 closest cells
+ */
 function getNeighbors4D(cells, currentCell) {
     let newCurrentCell = [];
     let pCellSize = getCellSize();
