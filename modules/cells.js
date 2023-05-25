@@ -262,6 +262,11 @@ function DrawAllCells() {
     }
 }
 
+/**
+ * 
+ * @param {cells} newCells 
+ * @param {int} newCellSize 
+ */
 function loadCells(newCells, newCellSize) {
     let canvasWidth = window.innerWidth - window.innerWidth % cellSize;
     let canvasHeight = window.innerHeight - window.innerHeight % cellSize;
@@ -277,12 +282,15 @@ function loadCells(newCells, newCellSize) {
     DrawAllCells();
 }
 
+/** 
+ * @returns {cells} All cells
+*/
 function getCells() { return cells; }
 
 /** 
  * @param {int} x The X position of the cell to find
  * @param {int} y The Y position of the cell to find
- * @returns {cells} the cell we found
+ * @returns {cells} The cell that has been found
 */
 function getCell(x, y) { return cells[x][y]; }
 
