@@ -14,8 +14,6 @@ const loadSelectedButton = document.querySelector("#loadSelected");
 const showDesignsDropdown = document.querySelector("#showDesignsDropdownButton");
 const toggleSaveSubmenu = document.querySelector("#toggleSaveSubmenu");
 const saveButton = document.querySelector("#saveButton");
-const velocitySlider = document.querySelector("#velocitySlider");
-const colorPicker = document.querySelector("#colorPicker");
 const cellSlider = document.querySelector("#cellSlider");
 const sizeDisplay = document.querySelector("#sizeDisplay");
 const menu = document.querySelector(".menu");
@@ -127,20 +125,6 @@ cellSlider.addEventListener("mouseup", function() {
     createGrid(canvasWidth, canvasHeight, sizeChange);
     sizeChange = false;
 });
-
-//Event listener for changing velocity of agents
-// velocitySlider.addEventListener("input", function () {
-//     let agents = getAgents();
-//     let sliderValue = parseFloat(velocitySlider.value);
-//     agents.forEach(agent => {
-//         agent.setSpeedModifier(sliderValue);
-//     });
-// });
-
-//Event listener for the color picker
-// colorPicker.addEventListener('input', () => {
-//     updateAgentColors(colorPicker.value);
-// });
 
 // Add event to "Clear"-button
 clearButton.addEventListener("click", () => {
