@@ -203,6 +203,9 @@ function createGrid(canvasWidth, canvasHeight, sizeChange) {
     DrawAllCells(drawingArea);
 }
 
+/**
+ * Completly resets the grid 
+ */
 function resetGrid() {
     for (let x = 0; x < cells.length; x++) {
         for (let y = 0; y < cells[0].length; y++) {
