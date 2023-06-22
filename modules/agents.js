@@ -211,8 +211,8 @@ function populate() {
 
     let agentsSpawned = 0;
     spawnAreas.forEach((area, index) => {
-        let ratio = area.length / totalCells;
-        let agentsPerArea = Math.floor(ratio * agentNum);
+        let ratio = area.length / totalCells; //This ratio represents the proportion of cells in the current area compared to the total available cells.
+        let agentsPerArea = Math.floor(ratio * agentNum); //This gives an approximate number of agents that should be spawned in the current area based on its proportion of cells.
         if (index === spawnAreas.length - 1) {
             agentsPerArea = agentNum - agentsSpawned;
         }
@@ -229,9 +229,9 @@ function populateCells(area, agentsPerArea, minAgentDistance) {
     let lastCell = area[0];
     let fattiness = ((cellSize / 6) + Math.floor(Math.random() * (cellSize / 6)));
 
-    //increase the padding to ensure agents are not placed too close to the border
+    //primary purpose is to prevent agents from being placed too close to each other.
     let padding = minAgentDistance;
-    //add a limit to the number of tries
+    //the purpose of the maxTries variable is to provide a limit on the number of attempts made to find a valid agent position within the area
     let maxTries = 100; 
 
     for (let i = 0; i < agentsPerArea; ++i) {
@@ -268,7 +268,7 @@ function populateCells(area, agentsPerArea, minAgentDistance) {
  */
 function checkAgentDistance(x, y, minAgentDistance) {
     for (let agent of agents) {
-        let distance = Math.sqrt(Math.pow(agent.x - x, 2) + Math.pow(agent.y - y, 2));
+        let distance = Math.sqrt(Math.pow(agent.x - x, 2) + Math.pow(agent.y - y, 2)); //Euclidean distance formula
         //increase the distance check to also include the agent's fattiness
         if (distance < minAgentDistance + agent.fattiness * 2) {
             return false;
@@ -338,7 +338,7 @@ function animate(start) {
             let newY = agents[i].y + ((cells[x][y].dVector.y) * agents[i].SpeedModifier) / 3;
 
             //Applies decreasing fractions of previous vector to current vector
-            //Agent move further away from walls during corner turns
+            //This ensures that the agent moves further away from walls during corner turns
             if (getCell(x, y).dVector.x !== getCell(Math.floor(newX / cellSize), Math.floor(newY / cellSize)).dVector.x ||
                 getCell(x, y).dVector.y !== getCell(Math.floor(newX / cellSize), Math.floor(newY / cellSize)).dVector.y) {
                 agents[i].prevCell = getCell(x, y);
@@ -351,6 +351,7 @@ function animate(start) {
                 agents[i].prevCell = null;
                 agents[i].prevCellFract = null;
             }
+
             //If a fraction exists, apply it to current vector
             else if (agents[i].prevCellFract !== null) {
                 let prevVectorX = agents[i].prevCell.dVector.x * agents[i].prevCellFract;
@@ -365,9 +366,10 @@ function animate(start) {
             //Counterclockwise vector rotation
             if (collisionCheck(newX, newY, agents[i], cells[Math.floor(newX / cellSize)][Math.floor(newY / cellSize)])) {
                 if (agents[i].currVector.x != 0 && agents[i].currVector.y != 0) {
-                    newX = agents[i].x + agents[i].currVector.x / 3;
-                    newY = agents[i].y + agents[i].currVector.y / 3;
+                    newX = agents[i].x + agents[i].currVector.x / 3; // We can still say 0/3, so we don't need the 0 check
+                    newY = agents[i].y + agents[i].currVector.y / 3; // We can still say 0/3, so we don't need the 0 check
                 }
+                
                 if (collisionCheck(newX, newY, agents[i], cells[Math.floor(newX / cellSize)][Math.floor(newY / cellSize)])) {
                     //Rotation matrix application to vector
                     let vectorTransformX = Math.cos(90 * (Math.PI / 180)) * cells[x][y].dVector.x - Math.sin(90 * (Math.PI / 180)) * cells[x][y].dVector.y;
@@ -397,6 +399,7 @@ function animate(start) {
                     }
                 }
             }
+
             if (newX < 0) {
                 newX = 0;
             }
